@@ -357,7 +357,7 @@ void EventModelPrivate::modifyInModel(Event &event)
             if (parent == eventRootItem) {
                 q->beginMoveRows(index.parent(), row, row, index.parent(), 0);
                 parent->moveChild(row, 0);
-                q->endRemoveRows();
+                q->endMoveRows();
             } else {
                 emit q->layoutAboutToBeChanged();
                 parent->moveChild(row, 0);

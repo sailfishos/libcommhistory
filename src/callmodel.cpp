@@ -820,7 +820,7 @@ void CallModelPrivate::deleteFromModel( int id )
 
                         q->beginMoveRows(QModelIndex(), row, row, QModelIndex(), newRow + 1);
                         eventRootItem->moveChild(row, newRow);
-                        q->endRemoveRows();
+                        q->endMoveRows();
                         return;
                     }
                 }
