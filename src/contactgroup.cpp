@@ -497,7 +497,7 @@ GroupObject *ContactGroup::findGroup(const QString &localUid, const QStringList 
 
     RecipientList match = RecipientList::fromUids(localUid, remoteUids);
     foreach (GroupObject *g, d->groups) {
-        if (g->localUid() == localUid && g->recipients() == match)
+        if (g->localUid() == localUid && g->recipients().matches(match))
             return g;
     }
 
