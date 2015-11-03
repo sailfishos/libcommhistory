@@ -128,6 +128,7 @@ void ContactGroupModelPrivate::setManager(GroupManager *m)
         connect(manager, SIGNAL(groupUpdated(GroupObject*)), SLOT(groupUpdated(GroupObject*)));
         connect(manager, SIGNAL(groupDeleted(GroupObject*)), SLOT(groupDeleted(GroupObject*)));
         connect(manager, SIGNAL(modelReady(bool)), q, SIGNAL(modelReady(bool)));
+        connect(manager, SIGNAL(modelReady(bool)), q, SIGNAL(countChanged()));
 
         // Create data without sorting
         foreach (GroupObject *group, manager->groups()) {
@@ -242,6 +243,9 @@ void ContactGroupModelPrivate::addGroupToIndex(GroupObject *group, int index)
         q->endInsertRows();
 
         emit q->contactGroupCreated(item);
+        if (manager->isReady()) {
+            emit q->countChanged();
+        }
     } else {
         itemDataChanged(index);
     }
@@ -260,6 +264,9 @@ void ContactGroupModelPrivate::removeGroupFromIndex(GroupObject *group, int inde
         emit q->endRemoveRows();
 
         emit q->contactGroupRemoved(item);
+        if (manager->isReady()) {
+            emit q->countChanged();
+        }
 
         delete item;
     } else {
@@ -459,6 +466,11 @@ QVariant ContactGroupModel::data(const QModelIndex &index, int role) const
     }
 
     return var;
+}
+
+int ContactGroupModel::count() const
+{
+    return d->items.count();
 }
 
 ContactGroup *ContactGroupModel::at(const QModelIndex &index) const

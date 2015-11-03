@@ -47,6 +47,9 @@ class ContactGroupModelPrivate;
 class LIBCOMMHISTORY_EXPORT ContactGroupModel : public QAbstractTableModel
 {
     Q_OBJECT
+    Q_PROPERTY(QObject* manager READ manager WRITE setManager NOTIFY managerChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QList<QObject*> contactGroups READ contactGroups)
     Q_ENUMS(ColumnId)
 
 public:
@@ -94,7 +97,6 @@ public:
      * User is responsible for creating the manager, and querying groups with the desired
      * parameters.
      */
-    Q_PROPERTY(QObject* manager READ manager WRITE setManager NOTIFY managerChanged)
     GroupManager *manager() const;
     void setManager(GroupManager *manager);
     void setManager(QObject *manager) { setManager(qobject_cast<GroupManager*>(manager)); }
@@ -108,10 +110,11 @@ public:
     ContactGroup *at(const QModelIndex &index) const;
     Q_INVOKABLE QObject *at(int row) const { return at(index(row, 0)); }
 
+    int count() const;
+
     /*!
      * List of contact groups in the model
      */
-    Q_PROPERTY(QList<QObject*> contactGroups READ contactGroups)
     QList<QObject*> contactGroups() const;
 
     /* reimp */
@@ -132,6 +135,7 @@ Q_SIGNALS:
      */
     void modelReady(bool successful);
     void managerChanged();
+    void countChanged();
 
     void contactGroupCreated(CommHistory::ContactGroup *group);
     void contactGroupChanged(CommHistory::ContactGroup *group);
