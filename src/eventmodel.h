@@ -69,6 +69,7 @@ class LIBCOMMHISTORY_EXPORT EventModel: public QAbstractItemModel
     Q_PROPERTY(bool ready READ isReady NOTIFY modelReady)
     Q_PROPERTY(bool defaultAccept READ defaultAccept WRITE setDefaultAccept)
     Q_PROPERTY(int eventCategoryMask READ eventCategoryMask WRITE setEventCategoryMask)
+    Q_PROPERTY(bool bufferInsertions READ bufferInsertions WRITE setBufferInsertions NOTIFY bufferInsertionsChanged)
 
 public:
     enum QueryMode { AsyncQuery, StreamedAsyncQuery, SyncQuery };
@@ -253,6 +254,12 @@ public:
     void setEventCategoryMask(int mask);
 
     /*!
+     * When set to true, events insertions are not immediately processed but instead
+     * buffered until buffering is set to false.
+     */
+    void setBufferInsertions(bool buffer);
+
+    /*!
      * Add a new event.
      *
      * \param event Event data to be inserted into the database. If successful,
@@ -348,6 +355,7 @@ public:
     virtual bool isReady() const;
     bool defaultAccept() const;
     int eventCategoryMask() const;
+    bool bufferInsertions() const;
 
     /*** reimp from QAbstractItemModel ***/
     virtual QModelIndex parent(const QModelIndex &index) const;
@@ -407,6 +415,11 @@ Q_SIGNALS:
      * \param successful or false in case of an error
      */
     void eventsCommitted(const QList<CommHistory::Event> &events, bool successful);
+
+    /*!
+     * Emitted when the insertion processing policy is changed.
+     */
+    void bufferInsertionsChanged();
 
 protected:
     EventModelPrivate * const d_ptr;

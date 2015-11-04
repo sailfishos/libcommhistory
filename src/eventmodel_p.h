@@ -111,6 +111,8 @@ public:
      */
     virtual void clearEvents();
 
+    void setBufferInsertions(bool buffer);
+
     void addToModel(const Event &event, bool synchronous = false) { addToModel(QList<Event>() << event, synchronous); }
 
     virtual void addToModel(const QList<Event> &event, bool synchronous = false);
@@ -139,7 +141,7 @@ public:
     EventTreeItem *eventRootItem;
 
     mutable ContactResolver *addResolver, *receiveResolver, *onDemandResolver;
-    mutable QList<Event> pendingAdded, pendingReceived, pendingOnDemand;
+    mutable QList<Event> pendingAdded, pendingReceived, pendingOnDemand, bufferedInsertions;
 
     EventModel::QueryMode queryMode;
     uint chunkSize;
@@ -151,6 +153,7 @@ public:
     bool isReady;
     bool accept;
     bool threadCanFetchMore;
+    bool bufferInsertions;
 
     // Do not set directly, use setResolveContacts to enable listener
     EventModel::ContactResolveType resolveContacts;

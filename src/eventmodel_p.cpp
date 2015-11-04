@@ -66,6 +66,7 @@ EventModelPrivate::EventModelPrivate(EventModel *model)
         , isReady(true)
         , accept(false)
         , threadCanFetchMore(false)
+        , bufferInsertions(false)
         , resolveContacts(EventModel::DoNotResolve)
         , propertyMask(Event::allProperties())
         , bgThread(0)
@@ -236,9 +237,28 @@ void EventModelPrivate::clearEvents()
     eventRootItem = new EventTreeItem(Event());
 }
 
+void EventModelPrivate::setBufferInsertions(bool buffer)
+{
+    if (bufferInsertions != buffer) {
+        bufferInsertions = buffer;
+
+        if (!bufferInsertions && !bufferedInsertions.isEmpty()) {
+            // Add the events that were previously buffered
+            addToModel(bufferedInsertions, true);
+            bufferedInsertions.clear();
+        }
+    }
+}
+
 void EventModelPrivate::addToModel(const QList<Event> &events, bool sync)
 {
     DEBUG() << Q_FUNC_INFO << events.count();
+
+    if (bufferInsertions) {
+        // Queue events for later processing
+        bufferedInsertions.append(events);
+        return;
+    }
 
     // Insert immediately if synchronous (and resolve contact later if necessary),
     // or if not resolving contacts
