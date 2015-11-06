@@ -22,6 +22,7 @@ CallProxyModel::CallProxyModel(QObject *parent) :
     connect(this, SIGNAL(rowsRemoved(const QModelIndex&,int,int)), this, SIGNAL(countChanged()));
     connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
     connect(m_source, SIGNAL(modelReady(bool)), this, SLOT(modelReady(bool)));
+    connect(m_source, SIGNAL(bufferInsertionsChanged()), this, SIGNAL(bufferInsertionsChanged()));
 }
 
 void CallProxyModel::classBegin()
@@ -61,6 +62,16 @@ int CallProxyModel::count() const
 int CallProxyModel::limit() const
 {
     return m_source->limit();
+}
+
+bool CallProxyModel::bufferInsertions() const
+{
+    return m_source->bufferInsertions();
+}
+
+void CallProxyModel::setBufferInsertions(bool buffer)
+{
+    m_source->setBufferInsertions(buffer);
 }
 
 void CallProxyModel::setLimit(int count)

@@ -51,6 +51,8 @@ class CallProxyModel : public QSortFilterProxyModel, public QQmlParserStatus
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
     Q_PROPERTY(bool populated READ populated NOTIFY populatedChanged)
+    Q_PROPERTY(bool bufferInsertions READ bufferInsertions WRITE setBufferInsertions NOTIFY bufferInsertionsChanged)
+
     Q_PROPERTY(int _limit READ limit WRITE setLimit NOTIFY limitChanged)
 
 public:
@@ -135,6 +137,10 @@ public:
     void setResolveContacts(bool enabled);
 
     bool populated() const;
+
+    void setBufferInsertions(bool buffer);
+    bool bufferInsertions() const;
+
 public Q_SLOTS:
     void setSortRole(int role);
     void setFilterRole(int role);
@@ -151,6 +157,7 @@ Q_SIGNALS:
     void resolveContactsChanged();
     void populatedChanged();
     void limitChanged();
+    void bufferInsertionsChanged();
 
 private:
     CommHistory::CallModel *m_source;
