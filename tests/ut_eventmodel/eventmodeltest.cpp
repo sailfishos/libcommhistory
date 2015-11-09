@@ -1549,6 +1549,73 @@ void EventModelTest::testAddNonDigitRemoteId()
     QVERIFY(compareEvents(event, tevent));
 }
 
+void EventModelTest::testBufferInsertions()
+{
+    EventModel model;
+    model.setDefaultAccept(true);
+
+    watcher.setModel(&model);
+
+    QSignalSpy rowsInserted(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+
+    QCOMPARE(model.bufferInsertions(), false);
+
+    /* Add a valid event */
+    im.setType(Event::IMEvent);
+    im.setDirection(Event::Outbound);
+    im.setGroupId(group1.id());
+    im.setStartTime(QDateTime::fromString("2009-08-26T09:37:47Z", Qt::ISODate));
+    im.setEndTime(QDateTime::fromString("2009-08-26T09:37:47Z", Qt::ISODate));
+    im.setLocalUid("/org/freedesktop/Telepathy/Account/gabble/jabber/dut_40localhost0");
+    im.setRecipients(Recipient(im.localUid(), "td@localhost"));
+    im.setFreeText("imtest");
+    QVERIFY(model.addEvent(im));
+    QVERIFY(watcher.waitForAdded());
+    QVERIFY(im.id() != -1);
+
+    /* A row should have been inserted */
+    QVERIFY(waitSignal(rowsInserted));
+    QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
+    rowsInserted.clear();
+
+    Event event;
+    QVERIFY(model.databaseIO().getEvent(im.id(), event));
+    QVERIFY(compareEvents(event, im));
+
+    /* Set insertion buffering */
+    model.setBufferInsertions(true);
+    QCOMPARE(model.bufferInsertions(), true);
+
+    /* Add a second event, which is buffered */
+    im.setId(-1);
+    QVERIFY(model.addEvent(im));
+    QVERIFY(watcher.waitForAdded());
+    QVERIFY(im.id() != -1);
+
+    /* No rows should have been added */
+    bool inserted = waitSignal(rowsInserted);
+    QCOMPARE(inserted, false);
+    QCOMPARE(rowsInserted.count(), 0);
+
+    /* Turn off buffering so the event is added to the model */
+    model.setBufferInsertions(false);
+    QCOMPARE(model.bufferInsertions(), false);
+
+    /* A row should now be reported as inserted */
+    QVERIFY(waitSignal(rowsInserted));
+    QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
+    rowsInserted.clear();
+
+    /* Add an unbuffered event */
+    im.setId(-1);
+    QVERIFY(model.addEvent(im));
+    QVERIFY(watcher.waitForAdded());
+    QVERIFY(im.id() != -1);
+    QVERIFY(waitSignal(rowsInserted));
+    QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
+    rowsInserted.clear();
+}
+
 void EventModelTest::cleanupTestCase()
 {
     deleteAll();

@@ -146,6 +146,12 @@ int EventModel::eventCategoryMask() const
     return d->eventCategoryMask;
 }
 
+bool EventModel::bufferInsertions() const
+{
+    Q_D(const EventModel);
+    return d->bufferInsertions;
+}
+
 QModelIndex EventModel::parent(const QModelIndex &index) const
 {
     Q_D(const EventModel);
@@ -518,6 +524,15 @@ void EventModel::setEventCategoryMask(int mask)
 {
     Q_D(EventModel);
     d->eventCategoryMask = mask;
+}
+
+void EventModel::setBufferInsertions(bool buffer)
+{
+    Q_D(EventModel);
+    if (d->bufferInsertions != buffer) {
+        d->setBufferInsertions(buffer);
+        emit bufferInsertionsChanged();
+    }
 }
 
 EventModel::ContactResolveType EventModel::resolveContacts() const
