@@ -550,9 +550,9 @@ void CallModelPrivate::insertEvent(Event event)
                     emitDataChanged(0, matchingItem);
                 } else {
                     // move to top
-                    emit q->layoutAboutToBeChanged();
+                    q->beginMoveRows(QModelIndex(), matchingRow, matchingRow, QModelIndex(), 0);
                     eventRootItem->moveChild(matchingRow, 0);
-                    emit q->layoutChanged();
+                    q->endMoveRows();
                 }
             } else {
                 // no match, insert new row at top
@@ -954,9 +954,9 @@ void CallModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, bool
 
                 if (updatedGroupIndex < matchingRow) {
                     // The group must be moved
-                    emit q->layoutAboutToBeChanged();
+                    q->beginMoveRows(QModelIndex(), matchingRow, matchingRow, QModelIndex(), updatedGroupIndex);
                     eventRootItem->moveChild(matchingRow, updatedGroupIndex);
-                    emit q->layoutChanged();
+                    q->endMoveRows();
                 } else {
                     // We must report the change to the group
                     changedIds.append(matchingItem->event().id());
