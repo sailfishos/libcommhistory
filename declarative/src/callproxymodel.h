@@ -151,6 +151,7 @@ public Q_SLOTS:
 
 private slots:
     void modelReady(bool ready);
+
 Q_SIGNALS:
     void groupByChanged();
     void countChanged();
@@ -162,6 +163,9 @@ Q_SIGNALS:
 private:
     CommHistory::CallModel *m_source;
     GroupBy m_grouping;
+    int m_limit;
+    bool m_resolveContacts;
+    bool m_bufferInsertions;
     bool m_componentComplete;
     bool m_populated;
 };
