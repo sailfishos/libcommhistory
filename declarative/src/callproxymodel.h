@@ -30,12 +30,11 @@
 #ifndef CALLPROXYMODEL_H
 #define CALLPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
 #include <QQmlParserStatus>
 
 #include "callmodel.h"
 
-class CallProxyModel : public QSortFilterProxyModel, public QQmlParserStatus
+class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -51,8 +50,6 @@ class CallProxyModel : public QSortFilterProxyModel, public QQmlParserStatus
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
     Q_PROPERTY(bool populated READ populated NOTIFY populatedChanged)
-    Q_PROPERTY(bool bufferInsertions READ bufferInsertions WRITE setBufferInsertions NOTIFY bufferInsertionsChanged)
-
     Q_PROPERTY(int _limit READ limit WRITE setLimit NOTIFY limitChanged)
 
 public:
@@ -130,27 +127,24 @@ public:
 
     int count() const;
 
+    // Shadow CallModel functions:
     int limit() const;
     void setLimit(int);
 
+    // Shadow CallModel functions:
     bool resolveContacts() const;
     void setResolveContacts(bool enabled);
 
     bool populated() const;
 
-    void setBufferInsertions(bool buffer);
-    bool bufferInsertions() const;
-
 public Q_SLOTS:
-    void setSortRole(int role);
-    void setFilterRole(int role);
-
     void deleteAt(int index);
 
+    // Shadow CallModel function:
     bool markAllRead();
 
 private slots:
-    void modelReady(bool ready);
+    void onReadyChanged(bool ready);
 
 Q_SIGNALS:
     void groupByChanged();
@@ -158,14 +152,11 @@ Q_SIGNALS:
     void resolveContactsChanged();
     void populatedChanged();
     void limitChanged();
-    void bufferInsertionsChanged();
 
 private:
-    CommHistory::CallModel *m_source;
     GroupBy m_grouping;
     int m_limit;
     bool m_resolveContacts;
-    bool m_bufferInsertions;
     bool m_componentComplete;
     bool m_populated;
 };
