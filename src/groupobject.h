@@ -91,6 +91,11 @@ public:
     Q_INVOKABLE bool deleteGroup();
 
     /*!
+     * Test if the recipients set contains any of the supplied remoteUids
+     */
+    Q_INVOKABLE bool matchesAnyOf(const QStringList &remoteUids) const;
+
+    /*!
      * Object contains a valid group
      */
     bool isValid() const;

@@ -456,6 +456,17 @@ bool GroupObject::deleteGroup()
     return d->manager->deleteGroups(QList<int>() << id());
 }
 
+bool GroupObject::matchesAnyOf(const QStringList &remoteUids) const
+{
+    // See if any of these remoteUids is in our recipient list, assuming matching localUid
+    foreach (const QString &remoteUid, remoteUids) {
+        if (d->recipients.containsMatch(Recipient(d->localUid, remoteUid)))
+            return true;
+    }
+
+    return false;
+}
+
 bool GroupObject::isResolved() const
 {
     return d->recipientsResolved;
