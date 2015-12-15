@@ -3,8 +3,8 @@ Summary:    Communications event history database API
 Version:    1.9.11
 Release:    1
 Group:      System/Libraries
-License:    LGPL
-URL:        https://github.com/nemomobile/libcommhistory
+License:    LGPLv2.1
+URL:        https://git.merproject.org/mer-core/libcommhistory
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Contacts)
@@ -23,7 +23,6 @@ Library for accessing the communications (IM, SMS and call) history database.
 
 %package unit-tests
 Summary: Unit Test files for libcommhistory
-Group: Development/Libraries
 Requires: blts-tools
 
 %description unit-tests
@@ -31,14 +30,12 @@ Unit Test files for libcommhistory
 
 %package performance-tests
 Summary: Performance Test files for libcommhistory
-Group: Development/Libraries
 
 %description performance-tests
 Performance Test files for libcommhistory
 
 %package tools
 Summary: Command line tools for libcommhistory
-Group: Communications/Telephony and IM
 Requires: %{name} = %{version}-%{release}
 Conflicts: libcommhistory-tools
 
@@ -47,7 +44,6 @@ Command line tools for the commhistory library.
 
 %package declarative
 Summary: QML plugin for libcommhistory
-Group: System/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description declarative
@@ -55,7 +51,6 @@ QML plugin for libcommhistory
 
 %package devel
 Summary: Development files for libcommhistory
-Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description devel
@@ -63,7 +58,6 @@ Headers and static libraries for the commhistory library.
 
 %package doc
 Summary: Documentation for libcommhistory
-Group: Documentation
 
 %description doc
 Documentation for libcommhistory
