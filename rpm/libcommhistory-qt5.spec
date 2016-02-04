@@ -1,6 +1,6 @@
 Name:       libcommhistory-qt5
 Summary:    Communications event history database API
-Version:    1.9.21
+Version:    1.9.22
 Release:    1
 Group:      System/Libraries
 License:    LGPLv2.1
@@ -14,6 +14,8 @@ BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(qtcontacts-sqlite-qt5-extensions) >= 0.1.41
 BuildRequires:  pkgconfig(contactcache-qt5) >= 0.0.17
+
+Requires: telepathy-ring >= 2.5.2
 
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
