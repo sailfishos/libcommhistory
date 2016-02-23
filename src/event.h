@@ -2,7 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2014 Jolla Ltd.
+** Copyright (C) 2014-2016 Jolla Ltd.
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** Contact: John Brooks <john.brooks@jolla.com>
 **
@@ -215,6 +215,7 @@ public:
     void setExtraProperties(const QVariantMap &extraProperties);
     QVariant extraProperty(const QString &key) const;
     void setExtraProperty(const QString &key, const QVariant &value);
+    void removeExtraProperty(const QString &key);
 
     //\\//\\// G E T - A C C E S S O R S //\\//\\//
     int id() const;

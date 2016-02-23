@@ -2,7 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2014 Jolla Ltd.
+** Copyright (C) 2014-2016 Jolla Ltd.
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** Contact: John Brooks <john.brooks@jolla.com>
 **
@@ -1007,8 +1007,7 @@ QVariant Event::extraProperty(const QString &key) const
 void Event::setExtraProperty(const QString &key, const QVariant &value)
 {
     if (value.isNull()) {
-        if (d->extraProperties.remove(key))
-            d->propertyChanged(Event::ExtraProperties);
+        removeExtraProperty(key);
         return;
     }
 
@@ -1017,6 +1016,12 @@ void Event::setExtraProperty(const QString &key, const QVariant &value)
 
     d->extraProperties.insert(key, value);
     d->propertyChanged(Event::ExtraProperties);
+}
+
+void Event::removeExtraProperty(const QString &key)
+{
+    if (d->extraProperties.remove(key))
+        d->propertyChanged(Event::ExtraProperties);
 }
 
 void Event::setStartTimeT(quint32 startTime)
