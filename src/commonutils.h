@@ -27,7 +27,7 @@
 
 namespace CommHistory {
 
-const QString RING_ACCOUNT = QStringLiteral("/org/freedesktop/Telepathy/Account/ring/tel/");
+const QString RING_ACCOUNT = QStringLiteral("/org/freedesktop/Telepathy/Account/ring/tel");
 
 /*!
  * Whether the given localUid needs phone number comparsions
