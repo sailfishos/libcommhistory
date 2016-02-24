@@ -2,7 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2015 Jolla Ltd.
+** Copyright (C) 2015-2016 Jolla Ltd.
 ** Contact: Slava Monich <slava.monich@jolla.com>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -36,7 +36,7 @@
 #define MMS_ENGINE_INTERFACE    "org.nemomobile.MmsEngine"
 
 // Event properties
-#define MMS_PROPERTY_IMSI       "mms-notification-imsi"
+#define MMS_PROPERTY_UNREAD     "mms-unread"
 #define MMS_PROPERTY_PUSH_DATA  "mms-push-data"
 #define MMS_PROPERTY_EXPIRY     "mms-expiry"
 

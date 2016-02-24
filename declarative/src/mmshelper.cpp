@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2015 Jolla Ltd.
+/* Copyright (C) 2014-2016 Jolla Ltd.
  * Contact: John Brooks <john.brooks@jollamobile.com>
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -105,7 +105,7 @@ bool MmsHelper::receiveMessage(int id)
         return false;
     }
 
-    QString imsi = event.extraProperty(MMS_PROPERTY_IMSI).toString();
+    QString imsi = event.subscriberIdentity();
     QByteArray pushData = QByteArray::fromBase64(event.extraProperty(MMS_PROPERTY_PUSH_DATA).toByteArray());
 
     if (imsi.isEmpty() || pushData.isEmpty()) {

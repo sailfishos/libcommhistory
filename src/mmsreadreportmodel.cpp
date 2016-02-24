@@ -2,7 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2015 Jolla Ltd.
+** Copyright (C) 2015-2016 Jolla Ltd.
 ** Contact: Slava Monich <slava.monich@jolla.com>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -66,7 +66,7 @@ QSqlQuery MmsReadReportModel::Private::buildGroupQuery(int groupId)
     query.bindValue(QUERY_EVENT_TYPE, Event::MMSEvent);
     query.bindValue(QUERY_EVENT_DIRECTION, Event::Inbound);
     query.bindValue(QUERY_EVENT_REPORT_READ, true);
-    query.bindValue(QUERY_EVENT_PROPERTY_KEY, QString(MMS_PROPERTY_IMSI));
+    query.bindValue(QUERY_EVENT_PROPERTY_KEY, QString(MMS_PROPERTY_UNREAD));
     return query;
 }
 
@@ -77,7 +77,7 @@ bool MmsReadReportModel::acceptsEvent(const Event &event)
             event.isRead() &&
             event.reportRead() &&
             !event.mmsId().isEmpty() &&
-            !event.extraProperty(MMS_PROPERTY_IMSI).toString().isEmpty());
+            !event.extraProperty(MMS_PROPERTY_UNREAD).toString().isEmpty());
 }
 
 MmsReadReportModel::MmsReadReportModel(QObject *parent) : EventModel(parent), d(NULL)
