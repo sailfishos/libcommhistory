@@ -32,6 +32,8 @@ declarative.depends = src
 tools.depends = src
 tests.depends = src
 
+OTHER_FILES += rpm/libcommhistory-qt5.spec
+
 #-----------------------------------------------------------------------------
 # installation setup
 #-----------------------------------------------------------------------------
@@ -40,6 +42,4 @@ tests.depends = src
 
 include( doc/doc.pri )
 
-
 # End of File
-
