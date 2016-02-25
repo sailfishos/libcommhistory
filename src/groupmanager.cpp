@@ -442,9 +442,9 @@ GroupObject *GroupManager::group(int groupId) const
     return d->groups.value(groupId);
 }
 
-bool GroupManager::remoteUidsMatch(const QString &localUid, const QString &remoteUid1, const QString &remoteUid2) const
+bool GroupManager::uidPairsMatch(const QString &localUid1, const QString &remoteUid1, const QString &localUid2, const QString &remoteUid2) const
 {
-    return Recipient(localUid, remoteUid1).matches(Recipient(localUid, remoteUid2));
+    return Recipient(localUid1, remoteUid1).matches(Recipient(localUid2, remoteUid2));
 }
 
 GroupObject *GroupManager::findGroup(const QString &localUid, const QString &remoteUid) const
