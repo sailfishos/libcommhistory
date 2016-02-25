@@ -104,9 +104,9 @@ public:
     Q_INVOKABLE CommHistory::GroupObject *group(int groupId) const;
 
     /*!
-     * Test if two remoteUids are equivalent in the context of the localUid
+     * Test if two UID pairs are equivalent
      */
-    Q_INVOKABLE bool remoteUidsMatch(const QString &localUid, const QString &remoteUid1, const QString &remoteUid2) const;
+    Q_INVOKABLE bool uidPairsMatch(const QString &localUid1, const QString &remoteUid1, const QString &localUid2, const QString &remoteUid2) const;
 
     /*!
      * Get the group object representing a local and remote UID pair
