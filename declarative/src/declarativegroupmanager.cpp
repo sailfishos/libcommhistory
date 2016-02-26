@@ -51,7 +51,10 @@ Event outgoingEvent(int groupId, const QString &localUid, const QStringList &rem
     event.setFreeText(text);
     event.setStartTimeT(Event::currentTime_t());
     event.setEndTimeT(event.startTimeT());
-    event.setStatus(Event::SendingStatus);
+
+    // If we don't get as far as marking this message as Sending, it should remain
+    // in a temporarily-failed state to be manually retry-able
+    event.setStatus(Event::TemporarilyFailedStatus);
     return event;
 }
 
