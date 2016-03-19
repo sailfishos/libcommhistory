@@ -49,6 +49,7 @@ public slots:
     bool receiveMessage(int id);
     bool cancel(int id);
     bool sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts);
+    bool sendMessage(const QString& imsi, const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts);
     bool retrySendMessage(int id);
 
 private:

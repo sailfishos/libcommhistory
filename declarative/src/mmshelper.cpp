@@ -168,13 +168,18 @@ static QString createTemporaryTextFile(const QString &text, QString &contentType
     return file.fileName();
 }
 
+bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts)
+{
+    return sendMessage(QString(), to, cc, bcc, subject, parts);
+}
+
 /* Parts should be an array of objects, each with the following:
  *   - contentId = string/integer uniquely representing the part within this message)
  *   - contentType = mime type, include charset for text
  *   - path = path to a file, which will be copied for the event
  *   - freeText = Instead of path, string contents for a textual part
  */
-bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts)
+bool MmsHelper::sendMessage(const QString &imsi, const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts)
 {
     MmsPartList outParts;
     foreach (const QVariant &v, parts) {
@@ -207,7 +212,13 @@ bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const 
         outParts.append(part);
     }
 
-    callHandler("sendMessage", QVariantList() << to << cc << bcc << subject << QVariant::fromValue(outParts));
+    QVariantList params;
+    if (!imsi.isNull())
+        params << imsi;
+
+    params << to << cc << bcc << subject << QVariant::fromValue(outParts);
+
+    callHandler("sendMessage", params);
     return true;
 }
 
