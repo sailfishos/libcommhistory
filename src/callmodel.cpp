@@ -545,15 +545,15 @@ void CallModelPrivate::insertEvent(Event event)
                 matchingItem->setEvent(event);
                 matchingItem->event().setEventCount(increaseEventCount ? groupEventCount + 1 : 1);
 
-                if (matchingRow == 0) {
-                    // already at the top, update row
-                    emitDataChanged(0, matchingItem);
-                } else {
+                if (matchingRow != 0) {
                     // move to top
                     q->beginMoveRows(QModelIndex(), matchingRow, matchingRow, QModelIndex(), 0);
                     eventRootItem->moveChild(matchingRow, 0);
                     q->endMoveRows();
                 }
+
+                // update row data
+                emitDataChanged(0, matchingItem);
             } else {
                 // no match, insert new row at top
                 emit q->beginInsertRows(QModelIndex(), 0, 0);
@@ -821,6 +821,9 @@ void CallModelPrivate::deleteFromModel( int id )
                         q->beginMoveRows(QModelIndex(), row, row, QModelIndex(), newRow + 1);
                         eventRootItem->moveChild(row, newRow);
                         q->endMoveRows();
+
+                        // update row data
+                        emitDataChanged(newRow, group);
                         return;
                     }
                 }
@@ -957,10 +960,10 @@ void CallModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, bool
                     q->beginMoveRows(QModelIndex(), matchingRow, matchingRow, QModelIndex(), updatedGroupIndex);
                     eventRootItem->moveChild(matchingRow, updatedGroupIndex);
                     q->endMoveRows();
-                } else {
-                    // We must report the change to the group
-                    changedIds.append(matchingItem->event().id());
                 }
+
+                // We must report the change to the group
+                changedIds.append(matchingItem->event().id());
             }
         }
     }
