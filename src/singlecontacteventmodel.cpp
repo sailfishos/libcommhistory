@@ -46,6 +46,8 @@ public:
 
     virtual bool acceptsEvent(const Event &event) const;
 
+    virtual bool fillModel(int start, int end, QList<CommHistory::Event> events, bool resolved);
+
     ContactFetcher m_fetcher;
     int m_contactId;
     Recipient m_recipient;
@@ -66,6 +68,24 @@ bool SingleContactEventModelPrivate::acceptsEvent(const Event &event) const
     return event.recipients().contactIds().contains(m_contactId);
 }
 
+bool SingleContactEventModelPrivate::fillModel(int start, int end, QList<CommHistory::Event> events, bool resolved)
+{
+    Q_UNUSED(end)
+
+    // Filter out any events that did not resolve to our contact
+    QList<CommHistory::Event>::iterator it = events.begin();
+    while (it != events.end()) {
+        const Event &event(*it);
+        if (event.recipients().contactIds().contains(m_contactId)) {
+            ++it;
+        } else {
+            it = events.erase(it);
+        }
+    }
+
+    return EventModelPrivate::fillModel(start, start + events.size(), events, resolved);
+}
+
 void SingleContactEventModelPrivate::fetcherFinished()
 {
     if (!m_recipient.isNull())
@@ -78,11 +98,12 @@ void SingleContactEventModelPrivate::fetcherFinished()
         QStringList clauses;
         QVariantList values;
         foreach (const Recipient &recipient, recipients) {
-            values.append(recipient.remoteUid());
             if (recipient.localUid().isEmpty()) {
-                clauses.append(QString("(remoteUid = ? AND localUid LIKE '%1%%')").arg(RING_ACCOUNT));
+                clauses.append(QString("(remoteUid LIKE ? AND localUid LIKE '%1%%')").arg(RING_ACCOUNT));
+                values.append(QString("%%%1%%").arg(minimizePhoneNumber(recipient.remoteUid())));
             } else {
                 clauses.append("(remoteUid = ? AND localUid = ?)");
+                values.append(recipient.remoteUid());
                 values.append(recipient.localUid());
             }
         }

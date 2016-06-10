@@ -48,13 +48,16 @@ void SingleContactEventModelTest::testGetEvents_data()
 {
     QTest::addColumn<QString>("localId");
     QTest::addColumn<QString>("remoteId");
+    QTest::addColumn<QString>("readableRemoteId");
     QTest::addColumn<int>("eventType");
 
     QTest::newRow("im") << "/org/freedesktop/Telepathy/Account/gabble/jabber/good_40localhost0"
             << "abc@localhost"
+            << "abc@localhost"
             << (int)Event::IMEvent;
     QTest::newRow("cell") << RING_ACCOUNT
             << "+42382394"
+            << "+42 382 394"
             << (int)Event::SMSEvent;
 }
 
@@ -62,6 +65,7 @@ void SingleContactEventModelTest::testGetEvents()
 {
     QFETCH(QString, localId);
     QFETCH(QString, remoteId);
+    QFETCH(QString, readableRemoteId);
     QFETCH(int, eventType);
 
     deleteAll();
@@ -82,7 +86,7 @@ void SingleContactEventModelTest::testGetEvents()
     model.databaseIO().getEvent(eventId, event);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId = addTestContact("Correspondent", remoteId, localId);
+    int contactId = addTestContact("Correspondent", readableRemoteId, localId);
     QVERIFY(contactId != -1);
     QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
 
