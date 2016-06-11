@@ -21,6 +21,7 @@
 ******************************************************************************/
 
 #include <QDBusArgument>
+#include <QDataStream>
 
 #include "group.h"
 #include "event.h"

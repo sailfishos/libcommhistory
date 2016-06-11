@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QSharedDataPointer>
 #include <QDBusArgument>
+#include <QDataStream>
 #include "event.h"
 #include "messagepart.h"
 #include "constants.h"

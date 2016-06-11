@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextCodec>
+#include <QDataStream>
 #include "messagepart.h"
 
 namespace CommHistory {
