@@ -74,6 +74,8 @@ public:
     Q_PROPERTY(bool isValid READ isValid NOTIFY isValidChanged)
     bool isValid() const;
 
+    Q_INVOKABLE bool load(int eventId);
+
 public slots:
     void save();
     void reset();
