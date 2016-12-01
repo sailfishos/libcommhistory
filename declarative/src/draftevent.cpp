@@ -195,3 +195,16 @@ bool DraftEvent::isValid() const
            m_event.groupId() >= 0;
 }
 
+bool DraftEvent::load(int eventId)
+{
+    if (eventId != 0 && eventId != m_event.id()) {
+        SingleEventModel model;
+        if (model.getEventById(eventId)) {
+            setEvent(model.event());
+            return true;
+        }
+    }
+
+    return false;
+}
+
