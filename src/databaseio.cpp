@@ -2,7 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2013 Jolla Ltd.
+** Copyright (C) 2013-2017 Jolla Ltd.
 ** Contact: John Brooks <john.brooks@jollamobile.com>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -768,38 +768,42 @@ bool DatabaseIO::getEventByMessageToken(const QString &token, Event &event)
     return re;
 }
 
-bool DatabaseIO::getEventByMmsId(const QString &mmsId, int groupId, Event &event)
+bool DatabaseIO::getEventByMmsId(const QString &mmsId, Event &event)
 {
-    QByteArray q = baseEventQuery;
-    q += "\n WHERE Events.mmsId = :mmsId AND Events.groupId = :groupId LIMIT 1";
+    Event e;
+    bool ok = false;
 
-    QSqlQuery query = CommHistoryDatabase::prepare(q, d->connection());
-    query.bindValue(":mmsId", mmsId);
-    query.bindValue(":groupId", groupId);
+    if (!mmsId.isEmpty()) {
+        QByteArray q = baseEventQuery;
+        q += "WHERE Events.mmsId=:mmsId"
+             " AND Events.type=:type"
+             " AND Events.direction=:direction LIMIT 1";
 
-    if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
-        return false;
+        QSqlQuery query = CommHistoryDatabase::prepare(q, d->connection());
+        query.bindValue(":mmsId", mmsId);
+        query.bindValue(":type", Event::MMSEvent);
+        query.bindValue(":direction", Event::Inbound);
+
+        if (query.exec()) {
+            if (query.next()) {
+                bool extra = false, parts = false;
+                d->readEventResult(query, e, extra, parts);
+                query.finish();
+
+                if ((!extra || getEventExtraProperties(e)) &&
+                    (!parts || getMessageParts(e))) {
+                    ok = true;
+                }
+            }
+        } else {
+            qWarning() << "Failed to execute query";
+            qWarning() << query.lastError();
+            qWarning() << query.lastQuery();
+        }
     }
 
-    Event e;
-    bool re = true;
-    bool extra = false, parts = false;
-    if (query.next())
-        d->readEventResult(query, e, extra, parts);
-    else
-        re = false;
-    query.finish();
-
-    if (extra)
-        re &= getEventExtraProperties(e);
-    if (parts)
-        re &= getMessageParts(e);
-
     event = e;
-    return re;
+    return ok;
 }
 
 bool DatabaseIO::eventExists(int id)
