@@ -2,9 +2,8 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2013 Jolla Ltd. <john.brooks@jollamobile.com>
+** Copyright (C) 2013-2017 Jolla Ltd. <john.brooks@jollamobile.com>
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: Reto Zingg <reto.zingg@nokia.com>
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU Lesser General Public License version 2.1 as
@@ -97,14 +96,13 @@ public:
     bool getEventByMessageToken(const QString &token, Event &event);
 
     /*!
-     * Query a single event by mms id.
+     * Query a single inbound MMS event by mms id.
      *
      * \param mmsId mms id
-     * \param groupId Group ID
      * \param event Return value for event details.
      * \return true if successful, otherwise false
      */
-    bool getEventByMmsId(const QString &mmsId, int groupId, Event &event);
+    bool getEventByMmsId(const QString &mmsId, Event &event);
 
     /*!
      * Checks if event with the specified id exists in the database.
