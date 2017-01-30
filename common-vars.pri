@@ -2,7 +2,7 @@
 #
 # This file is part of libcommhistory.
 #
-# Copyright (C) 2013-2015 Jolla Ltd.
+# Copyright (C) 2013-2017 Jolla Ltd.
 # Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 # Contact: Reto Zingg <reto.zingg@jolla.com>
 #
@@ -33,7 +33,7 @@ PROJECT_NAME = libcommhistory-qt5
 #------------------------------------------------------------------------------
 # Project version
 #-----------------------------------------------------------------------------
-PROJECT_VERSION = 1.9.26
+PROJECT_VERSION = 1.9.32
 
 #------------------------------------------------------------------------------
 # Library version
