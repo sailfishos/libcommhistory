@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2015 Jolla Ltd.
+/* Copyright (C) 2014-2017 Jolla Ltd.
  * Contact: John Brooks <john.brooks@jollamobile.com>
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -36,7 +36,7 @@
 #include <QStringList>
 #include <QVariantList>
 
-class QDBusMessage;
+class QDBusPendingCallWatcher;
 
 class MmsHelper : public QObject
 {
@@ -49,12 +49,15 @@ public slots:
     bool receiveMessage(int id);
     bool cancel(int id);
     bool sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts);
-    bool sendMessage(const QString& imsi, const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts);
+    bool sendMessage(const QString &imsi, const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts);
     bool retrySendMessage(int id);
 
 private:
+    class TempDir;
     static void callEngine(const QString &method, const QVariantList &args);
-    static void callHandler(const QString &method, const QVariantList &args);
+    QDBusPendingCallWatcher *sendMessage(const TempDir &tempDir, const QString &imsi,
+        const QStringList &to, const QStringList &cc, const QStringList &bcc,
+        const QString &subject, const QVariantList &parts);
 };
 
 #endif
