@@ -30,6 +30,7 @@ HEADERS += src/constants.h \
 TEMPLATE = lib
 CONFIG += qt plugin hide_symbols 
 QT += qml contacts dbus
+QT -= gui
 
 LIBS += -L../src ../src/libcommhistory-qt5.so
 PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5

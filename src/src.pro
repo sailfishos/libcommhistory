@@ -39,6 +39,7 @@ CONFIG  += shared \
            debug
 
 QT += dbus sql contacts
+QT -= gui
 
 TARGET = commhistory-qt5
 PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
