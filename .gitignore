@@ -28,3 +28,4 @@ tests/ut_unreadeventsmodel/ut_unreadeventsmodel
 tests/bin/*
 .dotest/
 tests/perf_bin/*
+src/commhistory-qt5.pc

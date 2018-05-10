@@ -66,7 +66,7 @@ Documentation for libcommhistory
 
 %build
 unset LD_AS_NEEDED
-%qtc_qmake5
+%qtc_qmake5 "PROJECT_VERSION=$(sed 's/+.*//' <<<"%{version}")"
 %qtc_make %{?_smp_mflags}
 
 %install
