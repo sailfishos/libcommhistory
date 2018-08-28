@@ -34,7 +34,10 @@ PROJECT_NAME = libcommhistory-qt5
 # Project version
 #-----------------------------------------------------------------------------
 # This should be passed on qmake command line
-isEmpty(PROJECT_VERSION):error("PROJECT_VERSION is not set or empty")
+isEmpty(PROJECT_VERSION) {
+    PROJECT_VERSION = 1.9.36
+    message("PROJECT_VERSION is unset, assuming $$PROJECT_VERSION")
+}
 
 #------------------------------------------------------------------------------
 # Library version
