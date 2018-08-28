@@ -86,6 +86,7 @@ headers.files = $$HEADERS \
 # -----------------------------------------------------------------------------
 # Installation target for .pc file
 # -----------------------------------------------------------------------------
+QMAKE_SUBSTITUTES += $${TARGET}.pc.in
 pkgconfig.files = $${TARGET}.pc
 pkgconfig.path  = $${INSTALL_PREFIX}/lib/pkgconfig
 INSTALLS       += pkgconfig
