@@ -49,8 +49,7 @@ class EventPrivate;
 class LIBCOMMHISTORY_EXPORT Event
 {
 public:
-    enum EventType
-    {
+    enum EventType {
         UnknownType = 0,
         IMEvent,
         SMSEvent,
@@ -67,8 +66,7 @@ public:
         ClassZeroSMSEvent
     };
 
-    enum EventCategory
-    {
+    enum EventCategory {
         AnyCategory                 = 0,
         VoicecallCategory           = (1 << 0),
         VoicemailCategory           = (1 << 1),
@@ -78,8 +76,7 @@ public:
         OtherCategory               = (1 << 5)
     };
 
-    enum EventDirection
-    {
+    enum EventDirection {
         UnknownDirection = 0,
         Inbound,
         Outbound

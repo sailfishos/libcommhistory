@@ -254,17 +254,14 @@ bool CallModelPrivate::belongToSameGroup( const Event &e1, const Event &e2 )
     if (sortBy == CallModel::SortByContact
         && (e1.isResolved() && e2.isResolved() ? e1.recipients().hasSameContacts(e2.recipients())
                                                : e1.recipients().matches(e2.recipients()))
-        && e1.isVideoCall() == e2.isVideoCall())
-    {
+        && e1.isVideoCall() == e2.isVideoCall()) {
         return true;
-    }
-    else if ((sortBy == CallModel::SortByTime || sortBy == CallModel::SortByContactAndType)
+    } else if ((sortBy == CallModel::SortByTime || sortBy == CallModel::SortByContactAndType)
              && (e1.direction() == e2.direction()
                  && e1.isMissedCall() == e2.isMissedCall()
                  && (e1.isResolved() && e2.isResolved() ? e1.recipients().hasSameContacts(e2.recipients())
                                                         : e1.recipients().matches(e2.recipients()))
-                 && e1.isVideoCall() == e2.isVideoCall()))
-    {
+                 && e1.isVideoCall() == e2.isVideoCall())) {
         return true;
     }
     return false;

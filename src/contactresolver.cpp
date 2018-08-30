@@ -170,8 +170,6 @@ bool ContactResolverPrivate::checkIfFinished()
 
 void ContactResolverPrivate::addressResolved(const QString &first, const QString &second, SeasideCache::CacheItem *item)
 {
-    QSet<Recipient>::iterator it = pending.end();
-
     if (second.isEmpty()) {
         qWarning() << "Got addressResolved with empty UIDs" << first << second << item;
         return;
@@ -179,7 +177,7 @@ void ContactResolverPrivate::addressResolved(const QString &first, const QString
         // This resolution is for a phone number - we need to call back to libcontacts
         // to select the best match from multiple possible resolutions
         const Recipient::PhoneNumberMatchDetails phoneNumber(Recipient::phoneNumberMatchDetails(second));
-        for (it = pending.begin(); it != pending.end(); ) {
+        for (QSet<Recipient>::iterator it = pending.begin(); it != pending.end(); ) {
             if (it->matchesPhoneNumber(phoneNumber)) {
                 // Look up the best match for the full number
                 it->setResolved(SeasideCache::itemByPhoneNumber(it->remoteUid(), false));
@@ -189,7 +187,7 @@ void ContactResolverPrivate::addressResolved(const QString &first, const QString
             }
         }
     } else {
-        it = pending.find(Recipient(first, second));
+        QSet<Recipient>::iterator it = pending.find(Recipient(first, second));
         if (it != pending.end()) {
             it->setResolved(item);
             pending.erase(it);

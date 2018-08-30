@@ -41,23 +41,23 @@
 class ConversationProxyModel : public CommHistory::ConversationModel
 {
     Q_OBJECT
+    Q_PROPERTY(QObject* contactGroup READ contactGroup WRITE setContactGroup NOTIFY contactGroupChanged)
+    Q_PROPERTY(bool useBackgroundThread READ useBackgroundThread WRITE setUseBackgroundThread NOTIFY backgroundThreadChanged)
+    Q_PROPERTY(int groupId READ groupId WRITE setGroupId NOTIFY groupIdChanged)
+    Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
 
 public:
     ConversationProxyModel(QObject *parent = 0);
 
-    Q_PROPERTY(QObject* contactGroup READ contactGroup WRITE setContactGroup NOTIFY contactGroupChanged)
     CommHistory::ContactGroup *contactGroup() const { return m_contactGroup; }
     void setContactGroup(QObject *group);
 
-    Q_PROPERTY(bool useBackgroundThread READ useBackgroundThread WRITE setUseBackgroundThread NOTIFY backgroundThreadChanged)
     bool useBackgroundThread() { return backgroundThread() != 0; }
     void setUseBackgroundThread(bool on);
 
-    Q_PROPERTY(int groupId READ groupId WRITE setGroupId NOTIFY groupIdChanged)
     int groupId() const { return m_groupId; }
     void setGroupId(int groupId);
 
-    Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
     // Shadow ConversationModel functions:
     bool resolveContacts() const;
     void setResolveContacts(bool enabled);
