@@ -309,8 +309,8 @@ void RecentContactsModelPrivate::prependEvents(QList<Event> events, bool resolve
     }
 
     if (resolved) {
-        emit q->resolvingChanged();
         modelUpdatedSlot(true);
+        emit q->resolvingChanged();
     }
 }
 
