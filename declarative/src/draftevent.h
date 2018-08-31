@@ -39,39 +39,39 @@
 class DraftEvent : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(CommHistory::Event event READ event WRITE setEvent RESET reset NOTIFY eventChanged)
+    Q_PROPERTY(int eventId READ eventId WRITE setEventId NOTIFY eventIdChanged)
+    Q_PROPERTY(int groupId READ groupId WRITE setGroupId NOTIFY groupIdChanged)
+    Q_PROPERTY(QString localUid READ localUid WRITE setLocalUid NOTIFY localUidChanged)
+    Q_PROPERTY(QStringList remoteUids READ remoteUids WRITE setRemoteUids NOTIFY remoteUidsChanged)
+    Q_PROPERTY(QString freeText READ freeText WRITE setFreeText NOTIFY freeTextChanged)
+    Q_PROPERTY(bool isModified READ isModified NOTIFY isModifiedChanged)
+    Q_PROPERTY(bool isValid READ isValid NOTIFY isValidChanged)
 
 public:
     DraftEvent(QObject *parent = 0);
     ~DraftEvent();
 
-    Q_PROPERTY(CommHistory::Event event READ event WRITE setEvent RESET reset NOTIFY eventChanged)
     CommHistory::Event event() const;
     void setEvent(const CommHistory::Event &event);
 
-    Q_PROPERTY(int eventId READ eventId WRITE setEventId NOTIFY eventIdChanged)
     int eventId() const;
     void setEventId(int id);
 
-    Q_PROPERTY(int groupId READ groupId WRITE setGroupId NOTIFY groupIdChanged)
     int groupId() const;
     void setGroupId(int id);
 
-    Q_PROPERTY(QString localUid READ localUid WRITE setLocalUid NOTIFY localUidChanged)
     QString localUid() const;
     void setLocalUid(const QString &localUid);
 
-    Q_PROPERTY(QStringList remoteUids READ remoteUids WRITE setRemoteUids NOTIFY remoteUidsChanged)
     QStringList remoteUids() const;
     void setRemoteUids(const QStringList &remoteUids);
 
-    Q_PROPERTY(QString freeText READ freeText WRITE setFreeText NOTIFY freeTextChanged)
     QString freeText() const;
     void setFreeText(const QString &freeText);
 
-    Q_PROPERTY(bool isModified READ isModified NOTIFY isModifiedChanged)
     bool isModified() const;
 
-    Q_PROPERTY(bool isValid READ isValid NOTIFY isValidChanged)
     bool isValid() const;
 
     Q_INVOKABLE bool load(int eventId);

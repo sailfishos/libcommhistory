@@ -55,7 +55,7 @@ static bool contactIsFavorite(int contactId)
 class RecentContactsModelPrivate : public EventModelPrivate
 {
 public:
-    Q_DECLARE_PUBLIC(RecentContactsModel);
+    Q_DECLARE_PUBLIC(RecentContactsModel)
 
     RecentContactsModelPrivate(EventModel *model)
         : EventModelPrivate(model),
@@ -309,8 +309,8 @@ void RecentContactsModelPrivate::prependEvents(QList<Event> events, bool resolve
     }
 
     if (resolved) {
-        emit q->resolvingChanged();
         modelUpdatedSlot(true);
+        emit q->resolvingChanged();
     }
 }
 
