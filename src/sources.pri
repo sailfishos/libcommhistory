@@ -6,6 +6,8 @@ HEADERS += commonutils.h \
            callevent.h \
            eventtreeitem.h \
            conversationmodel.h \
+           callstatistics.h \
+           callstatistics_p.h \
            callmodel.h \
            groupmodel.h \
            groupmodel_p.h \
@@ -41,6 +43,7 @@ SOURCES += commonutils.cpp \
            eventmodel_p.cpp \
            eventtreeitem.cpp \
            conversationmodel.cpp \
+           callstatistics.cpp \
            callmodel.cpp \
            groupmodel.cpp \
            group.cpp \
