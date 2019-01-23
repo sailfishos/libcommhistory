@@ -100,21 +100,21 @@ done
 
 %files declarative
 %defattr(-,root,root,-)
-%{_libdir}/qt5/qml/org/nemomobile/commhistory/*
+%{_libdir}/qt5/qml/org/nemomobile/commhistory
 
 %files unit-tests
 %defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-unit-tests/*
+/opt/tests/libcommhistory-qt5-unit-tests
 
 %files performance-tests
 %defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-performance-tests/*
+/opt/tests/libcommhistory-qt5-performance-tests
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/commhistory-qt5.pc
-%{_includedir}/commhistory-qt5/CommHistory/*
+%{_includedir}/commhistory-qt5
 
 %files doc
 %defattr(-,root,root,-)
-%{_datadir}/doc/libcommhistory-qt5/*
+%{_datadir}/doc/libcommhistory-qt5
