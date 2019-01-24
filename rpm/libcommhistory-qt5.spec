@@ -6,6 +6,7 @@ Group:      System/Libraries
 License:    LGPLv2.1
 URL:        https://git.merproject.org/mer-core/libcommhistory
 Source0:    %{name}-%{version}.tar.bz2
+Source1:    %{name}.privileges
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Contacts)
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -73,6 +74,9 @@ unset LD_AS_NEEDED
 rm -rf %{buildroot}
 %qmake_install
 
+mkdir -p %{buildroot}%{_datadir}/mapplauncherd/privileges.d
+install -m 644 -p %{SOURCE1} %{buildroot}%{_datadir}/mapplauncherd/privileges.d
+
 %post
 /sbin/ldconfig
 
@@ -92,24 +96,25 @@ done
 %files tools
 %defattr(-,root,root,-)
 %{_bindir}/commhistory-tool
+%{_datadir}/mapplauncherd/privileges.d/*
 
 %files declarative
 %defattr(-,root,root,-)
-%{_libdir}/qt5/qml/org/nemomobile/commhistory/*
+%{_libdir}/qt5/qml/org/nemomobile/commhistory
 
 %files unit-tests
 %defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-unit-tests/*
+/opt/tests/libcommhistory-qt5-unit-tests
 
 %files performance-tests
 %defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-performance-tests/*
+/opt/tests/libcommhistory-qt5-performance-tests
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/commhistory-qt5.pc
-%{_includedir}/commhistory-qt5/CommHistory/*
+%{_includedir}/commhistory-qt5
 
 %files doc
 %defattr(-,root,root,-)
-%{_datadir}/doc/libcommhistory-qt5/*
+%{_datadir}/doc/libcommhistory-qt5
