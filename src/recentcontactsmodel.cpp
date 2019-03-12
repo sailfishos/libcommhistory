@@ -341,8 +341,11 @@ void RecentContactsModel::setRequiredProperty(int requiredProperty)
     if (requiredProperty & RecentContactsModel::AccountUriRequired)
         addressFlags |= QContactStatusFlags::HasOnlineAccount;
 
-    d->requiredProperty = requiredProperty;
     d->addressFlags = addressFlags;
+    if (d->requiredProperty != requiredProperty) {
+        d->requiredProperty = requiredProperty;
+        emit requiredPropertyChanged();
+    }
 }
 
 bool RecentContactsModel::excludeFavorites() const
@@ -354,7 +357,10 @@ bool RecentContactsModel::excludeFavorites() const
 void RecentContactsModel::setExcludeFavorites(bool exclude)
 {
     Q_D(RecentContactsModel);
-    d->excludeFavorites = exclude;
+    if (d->excludeFavorites != exclude) {
+        d->excludeFavorites = exclude;
+        emit excludeFavoritesChanged();
+    }
 }
 
 bool RecentContactsModel::resolving() const

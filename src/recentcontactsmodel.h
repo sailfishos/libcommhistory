@@ -40,8 +40,8 @@ class LIBCOMMHISTORY_EXPORT RecentContactsModel : public EventModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(int requiredProperty READ requiredProperty WRITE setRequiredProperty)
-    Q_PROPERTY(bool excludeFavorites READ excludeFavorites WRITE setExcludeFavorites)
+    Q_PROPERTY(int requiredProperty READ requiredProperty WRITE setRequiredProperty NOTIFY requiredPropertyChanged)
+    Q_PROPERTY(bool excludeFavorites READ excludeFavorites WRITE setExcludeFavorites NOTIFY excludeFavoritesChanged)
     Q_PROPERTY(bool resolving READ resolving NOTIFY resolvingChanged)
     Q_ENUMS(RequiredPropertyType)
 
@@ -108,6 +108,8 @@ public:
     bool resolving() const;
 
 Q_SIGNALS:
+    void requiredPropertyChanged();
+    void excludeFavoritesChanged();
     void resolvingChanged();
 
 private:
