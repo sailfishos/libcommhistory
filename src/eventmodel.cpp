@@ -85,6 +85,7 @@ QHash<int, QByteArray> EventModel::roleNames() const
     roles[MessagePartsRole] = "messageParts";
     roles[SubjectRole] = "subject";
     roles[AccountRole] = "account";
+    roles[DateAndAccountGroupingRole] = "dateAndAccountGrouping";
     return roles;
 }
 
@@ -293,6 +294,10 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
                 return QVariant::fromValue(CommHistory::RING_ACCOUNT);
             }
             return QVariant::fromValue(localUid);
+        }
+        case DateAndAccountGroupingRole: {
+            QString dateString = event.startTime().date().toString("yyyy-MM-dd");
+            return dateString + QStringLiteral(" ") + event.localUid();
         }
         default:
             break;
