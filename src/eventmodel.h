@@ -113,6 +113,7 @@ public:
         MessagePartsRole,
         SubjectRole,
         AccountRole,
+        DateAndAccountGroupingRole,
         BaseRole = Qt::UserRole + 1000,
     };
 
