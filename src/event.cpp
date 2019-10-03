@@ -550,6 +550,12 @@ QString Event::localUid() const
     return d->localUid;
 }
 
+QString Event::dateAndAccountGrouping() const
+{
+    QString dateString = startTime().date().toString("yyyy-MM-dd");
+    return dateString + QStringLiteral(" ") + localUid();
+}
+
 const RecipientList &Event::recipients() const
 {
     return d->recipients;
