@@ -3,8 +3,8 @@ Summary:    Communications event history database API
 Version:    1.9.36
 Release:    1
 Group:      System/Libraries
-License:    LGPLv2.1
-URL:        https://git.merproject.org/mer-core/libcommhistory
+License:    LGPLv2
+URL:        https://git.sailfishos.org/mer-core/libcommhistory
 Source0:    %{name}-%{version}.tar.bz2
 Source1:    %{name}.privileges
 BuildRequires:  pkgconfig(Qt5Core)
@@ -44,6 +44,7 @@ Command line tools for the commhistory library.
 
 %package declarative
 Summary: QML plugin for libcommhistory
+License: BSD and LGPLv2
 Requires: %{name} = %{version}-%{release}
 
 %description declarative
@@ -92,6 +93,7 @@ done
 %files
 %defattr(-,root,root,-)
 %{_libdir}/libcommhistory-qt5.so*
+%license COPYING
 
 %files tools
 %defattr(-,root,root,-)
