@@ -86,6 +86,8 @@ QHash<int, QByteArray> EventModel::roleNames() const
     roles[SubjectRole] = "subject";
     roles[AccountRole] = "account";
     roles[DateAndAccountGroupingRole] = "dateAndAccountGrouping";
+    roles[PreviousEventDateAndAccountGroupingRole] = "previousEventDateAndAccountGrouping";
+    roles[PreviousEventDirection] = "previousEventDirection";
     return roles;
 }
 
@@ -298,6 +300,23 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         case DateAndAccountGroupingRole: {
             QString dateString = event.startTime().date().toString("yyyy-MM-dd");
             return dateString + QStringLiteral(" ") + event.localUid();
+        }
+        case PreviousEventDateAndAccountGroupingRole: {
+            int row = index.row();
+            if (row == 0) {
+                return QVariant();
+            }
+            Event previousEvent = this->event(row - 1);
+            QString dateString = previousEvent.startTime().date().toString("yyyy-MM-dd");
+            return dateString + QStringLiteral(" ") + previousEvent.localUid();
+        }
+        case PreviousEventDirection: {
+            int row = index.row();
+            if (row == 0) {
+                return QVariant();
+            }
+            Event previousEvent = this->event(row - 1);
+            return previousEvent.direction();
         }
         default:
             break;

@@ -114,6 +114,8 @@ public:
         SubjectRole,
         AccountRole,
         DateAndAccountGroupingRole,
+        PreviousEventDateAndAccountGroupingRole,
+        PreviousEventDirection,
         BaseRole = Qt::UserRole + 1000,
     };
 
