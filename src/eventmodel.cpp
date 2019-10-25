@@ -296,8 +296,7 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
             return QVariant::fromValue(localUid);
         }
         case DateAndAccountGroupingRole: {
-            QString dateString = event.startTime().date().toString("yyyy-MM-dd");
-            return dateString + QStringLiteral(" ") + event.localUid();
+            return event.dateAndAccountGrouping();
         }
         default:
             break;

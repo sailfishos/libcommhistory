@@ -48,6 +48,13 @@ class EventPrivate;
  */
 class LIBCOMMHISTORY_EXPORT Event
 {
+    Q_GADGET
+    Q_PROPERTY(int id READ id CONSTANT)
+    Q_PROPERTY(QDateTime startTime READ startTime CONSTANT)
+    Q_PROPERTY(CommHistory::Event::EventDirection direction READ direction CONSTANT)
+    Q_PROPERTY(QString localUid READ localUid CONSTANT)
+    Q_PROPERTY(QString dateAndAccountGrouping READ dateAndAccountGrouping CONSTANT)
+
 public:
     enum EventType {
         UnknownType = 0,
@@ -81,6 +88,7 @@ public:
         Inbound,
         Outbound
     };
+    Q_ENUM(EventDirection)
 
     enum EventStatus {
         ManualNotificationStatus = -4,
@@ -254,6 +262,8 @@ public:
     int bytesReceived() const;
 
     QString localUid() const;
+
+    QString dateAndAccountGrouping() const;
 
     const RecipientList &recipients() const;
     RecipientList contactRecipients() const;
@@ -455,5 +465,6 @@ Q_DECLARE_METATYPE(CommHistory::Event)
 Q_DECLARE_METATYPE(QList<CommHistory::Event>)
 Q_DECLARE_METATYPE(CommHistory::Event::Contact)
 Q_DECLARE_METATYPE(QList<CommHistory::Event::Contact>)
+Q_DECLARE_METATYPE(CommHistory::Event::EventDirection)
 
 #endif
