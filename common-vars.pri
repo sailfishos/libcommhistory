@@ -2,9 +2,8 @@
 #
 # This file is part of libcommhistory.
 #
-# Copyright (C) 2013-2017 Jolla Ltd.
+# Copyright (C) 2013-2019 Jolla Ltd.
 # Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-# Contact: Reto Zingg <reto.zingg@jolla.com>
 #
 # This library is free software; you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License version 2.1 as
@@ -35,7 +34,7 @@ PROJECT_NAME = libcommhistory-qt5
 #-----------------------------------------------------------------------------
 # This should be passed on qmake command line
 isEmpty(PROJECT_VERSION) {
-    PROJECT_VERSION = 1.9.36
+    PROJECT_VERSION = 1.9.44
     message("PROJECT_VERSION is unset, assuming $$PROJECT_VERSION")
 }
 
@@ -45,4 +44,3 @@ isEmpty(PROJECT_VERSION) {
 LIBRARY_VERSION = $$PROJECT_VERSION
 
 # End of File
-
