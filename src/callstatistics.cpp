@@ -186,6 +186,8 @@ namespace CommHistory {
 CallStatisticsPrivate::CallStatisticsPrivate(CallStatistics *parent)
     : QObject(parent)
     , q(parent)
+    , callType(CallEvent::UnknownCallType)
+    , timeInterval(CallStatistics::NoTimeInterval)
 {
 }
 

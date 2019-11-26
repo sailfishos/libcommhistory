@@ -27,7 +27,8 @@ public:
 
     struct Result {
         QDateTime when;
-        int callCount = 0;
+        int callCount;
+        Result() : callCount(0) {}
     };
 
     explicit CallStatistics(QObject *parent = 0);

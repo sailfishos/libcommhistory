@@ -12,8 +12,8 @@ public:
     CallStatistics *q;
     QDateTime startTime;
     QDateTime endTime;
-    CallEvent::CallType callType = CallEvent::UnknownCallType;
-    CallStatistics::TimeInterval timeInterval = CallStatistics::NoTimeInterval;
+    CallEvent::CallType callType;
+    CallStatistics::TimeInterval timeInterval;
 };
 
 }
