@@ -26,6 +26,8 @@
 #include <QHash>
 #include <QDebug>
 
+#include <phonenumbers/phonenumberutil.h>
+
 namespace {
 
 bool initializeTypes()
@@ -243,11 +245,21 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
 {
     if (!d->isPhoneNumber)
         return false;
-    if (d->remoteUidHash != phoneNumber.minimizedNumberHash)
+
+    // Matching the minimized phone number is necessary, but insufficient
+    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0 && d->remoteUidHash != phoneNumber.minimizedNumberHash)
         return false;
-    if (!phoneNumber.minimizedNumber.isEmpty())
-        return d->minimizedRemoteUid == phoneNumber.minimizedNumber;
-    return d->remoteUid == phoneNumber.number;
+    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty() && d->minimizedRemoteUid != phoneNumber.minimizedNumber)
+        return false;
+
+    // Full match of the full phone number is always sufficient
+    if (d->remoteUid == phoneNumber.number)
+        return true;
+
+    // TODO: consider plumbing the region code here for potentially more accurate matching
+    ::i18n::phonenumbers::PhoneNumberUtil *util = ::i18n::phonenumbers::PhoneNumberUtil::GetInstance();
+    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(), phoneNumber.number.toStdString());
+    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
 }
 
 bool Recipient::matchesAddressFlags(quint64 flags) const

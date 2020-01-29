@@ -43,6 +43,7 @@ QT -= gui
 
 TARGET = commhistory-qt5
 PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
+LIBS += -lphonenumber
 
 DEFINES += LIBCOMMHISTORY_SHARED
 CONFIG += hide_symbols
