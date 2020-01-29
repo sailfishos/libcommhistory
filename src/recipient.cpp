@@ -206,8 +206,15 @@ bool Recipient::matches(const Recipient &o) const
         return false;
     if (!d->isPhoneNumber && d->localUid != o.d->localUid)
         return false;
+
+    // Phone numbers are a special case
+    if (d->isPhoneNumber)
+        return matchesPhoneNumber(o.toPhoneNumberMatchDetails());
+
+    // For non-phonenumbers, matching the minimized remote uid is sufficient
     if (!d->minimizedRemoteUid.isEmpty() || !o.d->minimizedRemoteUid.isEmpty())
         return d->minimizedRemoteUid == o.d->minimizedRemoteUid;
+
     return d->remoteUid == o.d->remoteUid;
 }
 
@@ -222,6 +229,10 @@ bool Recipient::isSameContact(const Recipient &o) const
 
 bool Recipient::matchesRemoteUid(const QString &o) const
 {
+    // Phone numbers are a special case
+    if (d->isPhoneNumber)
+        return matchesPhoneNumber(Recipient::phoneNumberMatchDetails(o));
+
     const QString minimizedMatch(::minimizeRemoteUid(o, d->isPhoneNumber));
     if (!minimizedMatch.isEmpty())
         return d->minimizedRemoteUid == minimizedMatch;
@@ -332,6 +343,21 @@ Recipient::PhoneNumberMatchDetails Recipient::phoneNumberMatchDetails(const QStr
     rv.minimizedNumber = minimizeRemoteUid(s, true);
     rv.minimizedNumberHash = qHash(rv.minimizedNumber);
     return rv;
+}
+
+Recipient::PhoneNumberMatchDetails Recipient::toPhoneNumberMatchDetails() const
+{
+    Q_ASSERT(d->isPhoneNumber);
+
+    if (d->minimizedRemoteUid.isEmpty() || d->remoteUidHash == 0) {
+        return phoneNumberMatchDetails(d->remoteUid);
+    }
+
+    PhoneNumberMatchDetails det;
+    det.number = d->remoteUid;
+    det.minimizedNumber = d->minimizedRemoteUid;
+    det.minimizedNumberHash = d->remoteUidHash;
+    return det;
 }
 
 RecipientList::RecipientList()
