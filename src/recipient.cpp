@@ -26,6 +26,8 @@
 #include <QHash>
 #include <QDebug>
 
+#include <phonenumbers/phonenumberutil.h>
+
 namespace {
 
 bool initializeTypes()
@@ -206,8 +208,15 @@ bool Recipient::matches(const Recipient &o) const
         return false;
     if (!d->isPhoneNumber && d->localUid != o.d->localUid)
         return false;
+
+    // Phone numbers are a special case
+    if (d->isPhoneNumber)
+        return matchesPhoneNumber(o.toPhoneNumberMatchDetails());
+
+    // For non-phonenumbers, matching the minimized remote uid is sufficient
     if (!d->minimizedRemoteUid.isEmpty() || !o.d->minimizedRemoteUid.isEmpty())
         return d->minimizedRemoteUid == o.d->minimizedRemoteUid;
+
     return d->remoteUid == o.d->remoteUid;
 }
 
@@ -222,6 +231,10 @@ bool Recipient::isSameContact(const Recipient &o) const
 
 bool Recipient::matchesRemoteUid(const QString &o) const
 {
+    // Phone numbers are a special case
+    if (d->isPhoneNumber)
+        return matchesPhoneNumber(Recipient::phoneNumberMatchDetails(o));
+
     const QString minimizedMatch(::minimizeRemoteUid(o, d->isPhoneNumber));
     if (!minimizedMatch.isEmpty())
         return d->minimizedRemoteUid == minimizedMatch;
@@ -232,11 +245,21 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
 {
     if (!d->isPhoneNumber)
         return false;
-    if (d->remoteUidHash != phoneNumber.minimizedNumberHash)
+
+    // Matching the minimized phone number is necessary, but insufficient
+    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0 && d->remoteUidHash != phoneNumber.minimizedNumberHash)
         return false;
-    if (!phoneNumber.minimizedNumber.isEmpty())
-        return d->minimizedRemoteUid == phoneNumber.minimizedNumber;
-    return d->remoteUid == phoneNumber.number;
+    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty() && d->minimizedRemoteUid != phoneNumber.minimizedNumber)
+        return false;
+
+    // Full match of the full phone number is always sufficient
+    if (d->remoteUid == phoneNumber.number)
+        return true;
+
+    // TODO: consider plumbing the region code here for potentially more accurate matching
+    ::i18n::phonenumbers::PhoneNumberUtil *util = ::i18n::phonenumbers::PhoneNumberUtil::GetInstance();
+    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(), phoneNumber.number.toStdString());
+    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
 }
 
 bool Recipient::matchesAddressFlags(quint64 flags) const
@@ -332,6 +355,21 @@ Recipient::PhoneNumberMatchDetails Recipient::phoneNumberMatchDetails(const QStr
     rv.minimizedNumber = minimizeRemoteUid(s, true);
     rv.minimizedNumberHash = qHash(rv.minimizedNumber);
     return rv;
+}
+
+Recipient::PhoneNumberMatchDetails Recipient::toPhoneNumberMatchDetails() const
+{
+    Q_ASSERT(d->isPhoneNumber);
+
+    if (d->minimizedRemoteUid.isEmpty() || d->remoteUidHash == 0) {
+        return phoneNumberMatchDetails(d->remoteUid);
+    }
+
+    PhoneNumberMatchDetails det;
+    det.number = d->remoteUid;
+    det.minimizedNumber = d->minimizedRemoteUid;
+    det.minimizedNumberHash = d->remoteUidHash;
+    return det;
 }
 
 RecipientList::RecipientList()

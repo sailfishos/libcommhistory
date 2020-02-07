@@ -141,6 +141,10 @@ public:
      */
     static PhoneNumberMatchDetails phoneNumberMatchDetails(const QString &s);
 
+    /* Represent the current recipient as suitable for phone number matching
+     */
+    PhoneNumberMatchDetails toPhoneNumberMatchDetails() const;
+
 private:
     QSharedPointer<RecipientPrivate> d;
 
