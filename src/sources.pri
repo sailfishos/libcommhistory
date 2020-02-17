@@ -22,6 +22,8 @@ HEADERS += commonutils.h \
            libcommhistoryexport.h \
            singlecontacteventmodel.h \
            singleeventmodel.h \
+           recipienteventmodel.h \
+           recipienteventmodel_p.h \
            recentcontactsmodel.h \
            updatesemitter.h \
            constants.h \
@@ -60,6 +62,7 @@ SOURCES += commonutils.cpp \
            singlecontacteventmodel.cpp \
            smshistory.cpp \
            singleeventmodel.cpp \
+           recipienteventmodel.cpp \
            recentcontactsmodel.cpp \
            updatesemitter.cpp \
            groupmanager.cpp \

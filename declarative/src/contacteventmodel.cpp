@@ -30,13 +30,14 @@
  */
 
 #include "contacteventmodel.h"
+#include "commonutils.h"
 #include <QTimer>
 
 using namespace CommHistory;
 
 ContactEventModel::ContactEventModel(QObject *parent)
     : SingleContactEventModel(parent)
-    , m_contactId(-1)
+    , m_contactId(0)
 {
 }
 
@@ -51,8 +52,31 @@ void ContactEventModel::setContactId(int contactId)
     QTimer::singleShot(0, this, SLOT(reload()));
 }
 
-void ContactEventModel::reload()
+void ContactEventModel::setFallbackPhoneId(const QString &fallbackPhoneId)
 {
-    getEvents(m_contactId);
+    if (fallbackPhoneId == m_fallbackPhoneId)
+        return;
+
+    m_fallbackPhoneId = fallbackPhoneId;
+    emit fallbackPhoneIdChanged();
+
+    if (!m_contactId) {
+        QTimer::singleShot(0, this, SLOT(reload()));
+    }
 }
 
+void ContactEventModel::reload()
+{
+    if (m_contactId > 0) {
+        getEvents(m_contactId);
+    } else if (!m_fallbackPhoneId.isEmpty()) {
+        // LocalUID is set to QString because we don't care about which sim
+        // the call was received on.
+        // SingleContactEventModel::getEvents(Recipient) also exists and
+        // is matching a stored contact from recipient phone number. We actually
+        // need here to get events for a recipient event if not saved, so we
+        // must call the RecipientEventModel::getEvents() explicitely to avoid
+        // calling implicitely the SingleContactEventModel variant.
+        RecipientEventModel::getEvents(Recipient(QString(), m_fallbackPhoneId));
+    }
+}

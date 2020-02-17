@@ -24,7 +24,7 @@
 
 #include "databaseio_p.h"
 #include "commhistorydatabase.h"
-#include "eventmodel_p.h"
+#include "recipienteventmodel_p.h"
 #include "contactfetcher.h"
 
 #include <QDebug>
@@ -35,7 +35,7 @@ namespace CommHistory {
 
 using namespace CommHistory;
 
-class SingleContactEventModelPrivate : public EventModelPrivate
+class SingleContactEventModelPrivate : public RecipientEventModelPrivate
 {
     Q_OBJECT
 
@@ -57,7 +57,7 @@ public slots:
 };
 
 SingleContactEventModelPrivate::SingleContactEventModelPrivate(SingleContactEventModel *model)
-    : EventModelPrivate(model)
+    : RecipientEventModelPrivate(model)
     , m_contactId(-1)
 {
     connect(&m_fetcher, SIGNAL(finished()), SLOT(fetcherFinished()));
@@ -73,7 +73,7 @@ bool SingleContactEventModelPrivate::fillModel(int start, int end, QList<CommHis
     Q_UNUSED(end)
 
     // Filter out any events that did not resolve to our contact
-    QList<CommHistory::Event>::iterator it = events.begin();
+    QList<CommHistory::Event>::iterator it = m_contactId > 0 ? events.begin() : events.end();
     while (it != events.end()) {
         const Event &event(*it);
         if (event.recipients().contactIds().contains(m_contactId)) {
@@ -92,41 +92,13 @@ void SingleContactEventModelPrivate::fetcherFinished()
         m_contactId = m_recipient.contactId();
 
     // Our contact is now loaded in the cache
-    RecipientList recipients = RecipientList::fromContact(m_contactId);
-    if (!recipients.isEmpty()) {
-        // Get the events that match these addresses
-        QStringList clauses;
-        QVariantList values;
-        foreach (const Recipient &recipient, recipients) {
-            if (recipient.localUid().isEmpty()) {
-                clauses.append(QString("(remoteUid LIKE ? AND localUid LIKE '%1%%')").arg(RING_ACCOUNT));
-                values.append(QString("%%%1%%").arg(minimizePhoneNumber(recipient.remoteUid())));
-            } else {
-                clauses.append("(remoteUid = ? AND localUid = ?)");
-                values.append(recipient.remoteUid());
-                values.append(recipient.localUid());
-            }
-        }
-
-        QString where("WHERE ( ");
-        where.append(clauses.join(" OR "));
-        where.append(" ) ORDER BY Events.endTime DESC, Events.id DESC");
-
-        QSqlQuery query = prepareQuery(DatabaseIOPrivate::eventQueryBase() + where);
-
-        foreach (const QVariant &value, values)
-            query.addBindValue(value);
-
-        executeQuery(query);
-    } else {
-        modelUpdatedSlot(true);
-    }
+    m_recipients = RecipientList::fromContact(m_contactId);
+    fetchEvents();
 }
 
 SingleContactEventModel::SingleContactEventModel(QObject *parent)
-    : EventModel(*new SingleContactEventModelPrivate(this), parent)
+    : RecipientEventModel(*new SingleContactEventModelPrivate(this), parent)
 {
-    setResolveContacts(ResolveImmediately);
 }
 
 SingleContactEventModel::~SingleContactEventModel()

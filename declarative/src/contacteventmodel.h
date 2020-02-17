@@ -40,6 +40,7 @@ class ContactEventModel : public CommHistory::SingleContactEventModel
 {
     Q_OBJECT
     Q_PROPERTY(int contactId READ contactId WRITE setContactId NOTIFY contactIdChanged)
+    Q_PROPERTY(QString fallbackPhoneId READ fallbackPhoneId WRITE setFallbackPhoneId NOTIFY fallbackPhoneIdChanged)
 
 public:
     ContactEventModel(QObject *parent = 0);
@@ -47,14 +48,19 @@ public:
     int contactId() const { return m_contactId; }
     void setContactId(int contactId);
 
+    QString fallbackPhoneId() const { return m_fallbackPhoneId; }
+    void setFallbackPhoneId(const QString &fallbackPhoneId);
+
 signals:
     void contactIdChanged();
+    void fallbackPhoneIdChanged();
 
 public slots:
     void reload();
 
 private:
     int m_contactId;
+    QString m_fallbackPhoneId;
 };
 
 #endif

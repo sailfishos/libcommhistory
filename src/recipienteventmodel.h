@@ -2,8 +2,8 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2015 Jolla Ltd.
-** Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+** Copyright (C) 2020 D. Caliste
+** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU Lesser General Public License version 2.1 as
@@ -20,23 +20,21 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_SINGLE_CONTACT_EVENT_MODEL_H
-#define COMMHISTORY_SINGLE_CONTACT_EVENT_MODEL_H
+#ifndef COMMHISTORY_RECIPIENT_EVENT_MODEL_H
+#define COMMHISTORY_RECIPIENT_EVENT_MODEL_H
 
-#include "recipienteventmodel.h"
 #include "libcommhistoryexport.h"
-
-#include <QContactId>
+#include "eventmodel.h"
 
 namespace CommHistory {
 
-class SingleContactEventModelPrivate;
+class RecipientEventModelPrivate;
 
 /*!
- * \class SingleContactEventModel
- * \brief Model representing events from a single contact
+ * \class RecipientEventModel
+ * \brief Model representing events from one or several local / remote uids.
  */
-class LIBCOMMHISTORY_EXPORT SingleContactEventModel : public RecipientEventModel
+class LIBCOMMHISTORY_EXPORT RecipientEventModel : public EventModel
 {
     Q_OBJECT
 
@@ -46,45 +44,40 @@ public:
      *
      * \param parent Parent object.
      */
-    explicit SingleContactEventModel(QObject *parent = 0);
+    RecipientEventModel(QObject *parent = 0);
 
     /*!
      * Destructor.
      */
-    ~SingleContactEventModel();
+    ~RecipientEventModel();
 
     /*!
-     * Populate model with events matching the provided contact ID.
+     * Populate model with events matching the recipient list.
+     * It's not necessary that the recipients are contact resolved.
      *
-     * \param contactId, identifies the contact whose events should be fetched.
+     * \param recipients, local / remote uid pairs to be fetched.
      *
      * \return true if successful, otherwise false
      */
-    bool getEvents(int contactId);
-
+    bool getEvents(const RecipientList &recipients);
     /*!
-     * Populate model with events matching the provided contact ID.
+     * Populate model with events matching the given recipient.
+     * It's not necessary that the recipient is contact resolved.
      *
-     * \param contactId, identifies the contact whose events should be fetched.
-     *
-     * \return true if successful, otherwise false
-     */
-    bool getEvents(const QContactId &contactId);
-
-    /*!
-     * Populate model with events matching the provided recipient.
-     *
-     * \param recipient, identifies the contact whose events should be fetched.
+     * \param recipient, local / remote uid pairs to be fetched.
      *
      * \return true if successful, otherwise false
      */
     bool getEvents(const Recipient &recipient);
 
+protected:
+    RecipientEventModel(RecipientEventModelPrivate &dd, QObject *parent = 0);
+
 private:
-    Q_DECLARE_PRIVATE(SingleContactEventModel)
+    Q_DECLARE_PRIVATE(RecipientEventModel)
 };
 
 } // namespace CommHistory
 
-#endif // COMMHISTORY_SINGLE_CONTACT_EVENT_MODEL_H
+#endif // COMMHISTORY_RECIPIENT_EVENT_MODEL_H
 
