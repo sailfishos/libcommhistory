@@ -78,7 +78,7 @@ public:
         GroupRole = Qt::UserRole,
         ContactIdsRole,
         GroupObjectRole,
-        WeekdaySectionRole,
+        TimeSectionRole,
         BaseRole = Qt::UserRole + 1000
     };
 

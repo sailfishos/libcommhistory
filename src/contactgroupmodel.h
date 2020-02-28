@@ -76,7 +76,7 @@ public:
 
     enum {
         ContactGroupRole = Qt::UserRole,
-        WeekdaySectionRole,
+        TimeSectionRole,
         BaseRole = Qt::UserRole + 2000
     };
 
