@@ -118,3 +118,18 @@ void CallProxyModel::onReadyChanged(bool ready)
     }
 }
 
+int CallProxyModel::createOutgoingCallEvent(const QString &localUid, const QString &remoteUid)
+{
+    Event event;
+    EventModel model;
+
+    event.setStartTime(QDateTime::currentDateTime());
+    event.setEndTime(event.startTime());
+    event.setType(CommHistory::Event::CallEvent);
+    event.setDirection(CommHistory::Event::Outbound);
+    event.setLocalUid(localUid);
+    event.setRecipients(Recipient(localUid, remoteUid));
+    if (model.addEvent(event))
+        return event.id();
+    return -1;
+}
