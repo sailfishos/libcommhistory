@@ -137,6 +137,8 @@ public:
 
     bool populated() const;
 
+    Q_INVOKABLE int createOutgoingCallEvent(const QString &localUid, const QString &remoteUid);
+
 public Q_SLOTS:
     void deleteAt(int index);
 
