@@ -193,7 +193,7 @@ QHash<int, QByteArray> GroupModel::roleNames() const
     roles[BaseRole + StartTime] = "startTime";
     roles[ContactIdsRole] = "contactIds";
     roles[GroupObjectRole] = "group";
-    roles[WeekdaySectionRole] = "weekdaySection";
+    roles[TimeSectionRole] = "timeSection";
     return roles;
 }
 
@@ -276,17 +276,8 @@ QVariant GroupModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue<QObject*>(group);
     } else if (role == ContactIdsRole) {
         return QVariant::fromValue<QList<int> >(group->recipients().contactIds());
-    } else if (role == WeekdaySectionRole) {
-        QDateTime dateTime = group->endTime().toLocalTime();
-
-        // Return the date for the past week, and group all older items together under an
-        // arbitrary older date
-        const int daysDiff = QDate::currentDate().toJulianDay() - dateTime.date().toJulianDay();
-        if (daysDiff < 7)
-            return dateTime.date();
-
-        // Arbitrary static date for older items..
-        return QDate(2000, 1, 1);
+    } else if (role == TimeSectionRole) {
+        return group->endTime().toLocalTime().date();
     }
 
     int column = index.column();
