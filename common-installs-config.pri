@@ -27,7 +27,7 @@
 #-----------------------------------------------------------------------------
 # setup the installation prefix
 #-----------------------------------------------------------------------------
-INSTALL_PREFIX = /usr  # default installation prefix
+INSTALL_PREFIX = $$[QT_INSTALL_PREFIX] # default installation prefix
 
 # default prefix can be overriden by defining PREFIX when running qmake
 isEmpty( PREFIX ) {
@@ -56,7 +56,7 @@ contains( TEMPLATE, app ) {
 #-----------------------------------------------------------------------------
 contains( TEMPLATE, lib ) {
 
-    target.path  = $${INSTALL_PREFIX}/lib
+    target.path  = $$[QT_INSTALL_LIBS]
     INSTALLS    += target
     message("====")
     message("==== INSTALLS += target")

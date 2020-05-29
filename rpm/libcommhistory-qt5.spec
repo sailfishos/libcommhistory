@@ -2,7 +2,6 @@ Name:       libcommhistory-qt5
 Summary:    Communications event history database API
 Version:    1.9.44
 Release:    1
-Group:      System/Libraries
 License:    LGPLv2
 URL:        https://git.sailfishos.org/mer-core/libcommhistory
 Source0:    %{name}-%{version}.tar.bz2
@@ -69,7 +68,7 @@ Documentation for libcommhistory
 
 %build
 unset LD_AS_NEEDED
-%qtc_qmake5 "PROJECT_VERSION=$(sed 's/+.*//' <<<"%{version}")"
+%qtc_qmake5 "PROJECT_VERSION=$(sed 's/+.*//' <<<"%{version}")" "PKGCONFIG_LIB=%{_lib}"
 %qtc_make %{?_smp_mflags}
 
 %install
