@@ -38,6 +38,12 @@ isEmpty(PROJECT_VERSION) {
     message("PROJECT_VERSION is unset, assuming $$PROJECT_VERSION")
 }
 
+# This should be passed on qmake command line
+isEmpty(PKGCONFIG_LIB) {
+    PKGCONFIG_LIB = lib
+    message("PKGCONFIG_LIB is unset, assuming $$PKGCONFIG_LIB")
+}
+
 #------------------------------------------------------------------------------
 # Library version
 #------------------------------------------------------------------------------
