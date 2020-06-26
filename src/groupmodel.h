@@ -50,6 +50,7 @@ class DatabaseIO;
 class LIBCOMMHISTORY_EXPORT GroupModel: public QAbstractTableModel
 {
     Q_OBJECT
+    Q_PROPERTY(QObject* manager READ manager WRITE setManager)
 
     Q_ENUMS(ColumnId)
 
@@ -101,7 +102,6 @@ public:
      *
      * If not set, a manager will be created internally and settings copied to it.
      */
-    Q_PROPERTY(QObject* manager READ manager WRITE setManager)
     GroupManager *manager() const;
     void setManager(GroupManager *manager);
     void setManager(QObject *manager) { setManager(qobject_cast<GroupManager*>(manager)); }
