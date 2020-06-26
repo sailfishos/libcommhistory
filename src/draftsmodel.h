@@ -34,12 +34,12 @@ class LIBCOMMHISTORY_EXPORT DraftsModel : public EventModel
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DraftsModel)
+    Q_PROPERTY(QList<int> filterGroups READ filterGroups WRITE setFilterGroups RESET clearFilterGroups NOTIFY filterGroupsChanged)
 
 public:
     DraftsModel(QObject *parent = 0);
     ~DraftsModel();
 
-    Q_PROPERTY(QList<int> filterGroups READ filterGroups WRITE setFilterGroups RESET clearFilterGroups NOTIFY filterGroupsChanged)
     QList<int> filterGroups() const;
     void setFilterGroups(const QList<int> &groupIds);
     void setFilterGroup(int groupId);

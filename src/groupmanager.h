@@ -48,6 +48,12 @@ class DatabaseIO;
 class LIBCOMMHISTORY_EXPORT GroupManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(CommHistory::EventModel::QueryMode queryMode READ queryMode WRITE setQueryMode)
+    Q_PROPERTY(int chunkSize READ chunkSize WRITE setChunkSize)
+    Q_PROPERTY(int firstChunkSize READ firstChunkSize WRITE setFirstChunkSize)
+    Q_PROPERTY(int limit READ limit WRITE setLimit)
+    Q_PROPERTY(int offset READ offset WRITE setOffset)
+    Q_PROPERTY(bool isReady READ isReady NOTIFY modelReady)
 
 public:
     enum ContactResolveType {
@@ -62,7 +68,6 @@ public:
     /*!
      * Set query mode. See EventModel::setQueryMode().
      */
-    Q_PROPERTY(CommHistory::EventModel::QueryMode queryMode READ queryMode WRITE setQueryMode)
     EventModel::QueryMode queryMode() const;
     void setQueryMode(EventModel::QueryMode mode);
 
@@ -70,28 +75,24 @@ public:
      * Set chunk size (number of groups to fetch per request) for asynchronous
      * and streamed queries.
      */
-    Q_PROPERTY(int chunkSize READ chunkSize WRITE setChunkSize)
     int chunkSize() const;
     void setChunkSize(int size);
 
     /*!
      * Set the size of first chunk for asynchronous and streamed queries.
      */
-    Q_PROPERTY(int firstChunkSize READ firstChunkSize WRITE setFirstChunkSize)
     int firstChunkSize() const;
     void setFirstChunkSize(int size);
 
     /*!
      * Set number of groups to fetch in the next query.
      */
-    Q_PROPERTY(int limit READ limit WRITE setLimit)
     int limit() const;
     void setLimit(int limit);
 
     /*!
      * Set offset for the next query, usually used with limit
      */
-    Q_PROPERTY(int offset READ offset WRITE setOffset)
     int offset() const;
     void setOffset(int offset);
 
@@ -200,7 +201,6 @@ public:
     /*!
      * True when data is loaded from the database
      */
-    Q_PROPERTY(bool isReady READ isReady NOTIFY modelReady)
     bool isReady() const;
 
     /*!
