@@ -122,17 +122,7 @@ bool SingleContactEventModel::getEvents(int contactId)
 
 bool SingleContactEventModel::getEvents(const QContactId &contactId)
 {
-    Q_D(SingleContactEventModel);
-
-    beginResetModel();
-    d->clearEvents();
-    d->isReady = false;
-    endResetModel();
-
-    d->m_contactId = SeasideCache::internalId(contactId);
-    d->m_recipient = Recipient();
-    d->m_fetcher.add(d->m_contactId);
-    return true;
+    return getEvents(SeasideCache::internalId(contactId));
 }
 
 bool SingleContactEventModel::getEvents(const Recipient &recipient)
