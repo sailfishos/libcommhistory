@@ -234,8 +234,8 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
         return -1;
     }
 
-    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact, QContactRelationship::Second)) {
-        const QContactId &aggId = relationship.first().id();
+    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
+        const QContactId &aggId = relationship.first();
         qDebug() << "********** contact id" << aggId;
         addedContactIds.insert(aggId);
         return internalContactId(aggId);
@@ -269,8 +269,8 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
         constituentIds.insert(contact.id());
     }
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates())) {
-        if (constituentIds.contains(relationship.second().id())) {
-            const QContactId &aggId = relationship.first().id();
+        if (constituentIds.contains(relationship.second())) {
+            const QContactId &aggId = relationship.first();
             qDebug() << "********** contact id" << aggId;
             addedContactIds.insert(aggId);
             ids.append(internalContactId(aggId));
@@ -373,8 +373,8 @@ void cleanUpTestContacts()
         QString aggregatesType = QContactRelationship::Aggregates();
 
         foreach (const QContactRelationship &rel, manager()->relationships(aggregatesType)) {
-            QContactId firstId = rel.first().id();
-            QContactId secondId = rel.second().id();
+            QContactId firstId = rel.first();
+            QContactId secondId = rel.second();
             if (addedContactIds.contains(firstId)) {
                 addedContactIds.insert(secondId);
             }
