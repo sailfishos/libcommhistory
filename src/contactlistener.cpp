@@ -31,7 +31,6 @@
 #include <QContactOnlineAccount>
 #include <QContactPhoneNumber>
 #include <QContactEmailAddress>
-#include <QContactSyncTarget>
 
 #include "commonutils.h"
 #include "contactresolver.h"
@@ -163,9 +162,7 @@ void ContactListenerPrivate::itemUpdated(SeasideCache::CacheItem *item)
     Q_Q(ContactListener);
 
     // Only aggregate contacts are relevant
-    static const QString aggregateTarget(QString::fromLatin1("aggregate"));
-    QContactSyncTarget syncTarget(item->contact.detail<QContactSyncTarget>());
-    if (syncTarget.syncTarget() != aggregateTarget)
+    if (item->contact.collectionId() != SeasideCache::aggregateCollectionId())
         return;
 
     // Make a list of Recipient from the contacts addresses to compare against

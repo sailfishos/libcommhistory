@@ -41,7 +41,6 @@
 #include <QContactNickname>
 #include <QContactOnlineAccount>
 #include <QContactPhoneNumber>
-#include <QContactSyncTarget>
 
 #include <QEventLoop>
 #include <QFile>
@@ -87,13 +86,6 @@ QContactManager *manager()
 QContact createTestContact(const QString &name, const QString &remoteUid, const QString &localUid, const QString &contactUri)
 {
     QContact contact;
-
-    QContactSyncTarget syncTarget;
-    syncTarget.setSyncTarget(QLatin1String("commhistory-tests"));
-    if (!contact.saveDetail(&syncTarget)) {
-        qWarning() << "Unable to add sync target to contact:" << contactUri;
-        return QContact();
-    }
 
     if (!localUid.isEmpty() && !localUidComparesPhoneNumbers(localUid)) {
         // Create a metadata detail to link the contact with the account
