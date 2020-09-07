@@ -274,7 +274,7 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
 
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid)
 {
-    QContact existing = manager()->contact(apiContactId(contactId));
+    QContact existing = manager()->contact(apiContactId(contactId, manager()->managerUri()));
     if (internalContactId(existing.id()) != (unsigned)contactId) {
         qWarning() << "Could not retrieve contact:" << contactId;
         return false;
@@ -321,7 +321,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 {
     qDebug() << Q_FUNC_INFO << id << name;
 
-    QContact contact = manager()->contact(apiContactId(id));
+    QContact contact = manager()->contact(apiContactId(id, manager()->managerUri()));
     if (internalContactId(contact.id()) != (unsigned)id) {
         qWarning() << "Could not retrieve contact:" << id;
         return;
@@ -353,10 +353,10 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 
 void deleteTestContact(int id)
 {
-    if (!manager()->removeContact(apiContactId(id))) {
+    if (!manager()->removeContact(apiContactId(id, manager()->managerUri()))) {
         qWarning() << "error deleting contact:" << id;
     }
-    addedContactIds.remove(apiContactId(id));
+    addedContactIds.remove(apiContactId(id, manager()->managerUri()));
 }
 
 void cleanUpTestContacts()
