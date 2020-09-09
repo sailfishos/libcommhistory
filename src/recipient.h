@@ -97,6 +97,7 @@ public:
 
     int contactId() const;
     QString contactName() const;
+    QUrl contactAvatarUrl() const;
     bool isContactResolved() const;
 
     /* Update the resolved contact for this recipient
