@@ -101,7 +101,7 @@ ContactListenerPrivate::ContactListenerPrivate(ContactListener *q)
     , retryResolver(0)
     , q_ptr(q)
 {
-    SeasideCache::registerChangeListener(this);
+    SeasideCache::registerChangeListener(this, SeasideCache::FetchAvatar);
 }
 
 ContactListenerPrivate::~ContactListenerPrivate()

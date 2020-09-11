@@ -67,7 +67,7 @@ ContactFetcherPrivate::ContactFetcherPrivate(ContactFetcher *parent)
     , m_resolver(0)
     , m_fetching(false)
 {
-    SeasideCache::registerChangeListener(this);
+    SeasideCache::registerChangeListener(this, SeasideCache::FetchAvatar);
 }
 
 ContactFetcherPrivate::~ContactFetcherPrivate()
