@@ -41,7 +41,6 @@
 #include <QContactNickname>
 #include <QContactOnlineAccount>
 #include <QContactPhoneNumber>
-#include <QContactSyncTarget>
 
 #include <QEventLoop>
 #include <QFile>
@@ -87,13 +86,6 @@ QContactManager *manager()
 QContact createTestContact(const QString &name, const QString &remoteUid, const QString &localUid, const QString &contactUri)
 {
     QContact contact;
-
-    QContactSyncTarget syncTarget;
-    syncTarget.setSyncTarget(QLatin1String("commhistory-tests"));
-    if (!contact.saveDetail(&syncTarget)) {
-        qWarning() << "Unable to add sync target to contact:" << contactUri;
-        return QContact();
-    }
 
     if (!localUid.isEmpty() && !localUidComparesPhoneNumbers(localUid)) {
         // Create a metadata detail to link the contact with the account
@@ -234,8 +226,8 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
         return -1;
     }
 
-    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact, QContactRelationship::Second)) {
-        const QContactId &aggId = relationship.first().id();
+    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
+        const QContactId &aggId = relationship.first();
         qDebug() << "********** contact id" << aggId;
         addedContactIds.insert(aggId);
         return internalContactId(aggId);
@@ -269,8 +261,8 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
         constituentIds.insert(contact.id());
     }
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates())) {
-        if (constituentIds.contains(relationship.second().id())) {
-            const QContactId &aggId = relationship.first().id();
+        if (constituentIds.contains(relationship.second())) {
+            const QContactId &aggId = relationship.first();
             qDebug() << "********** contact id" << aggId;
             addedContactIds.insert(aggId);
             ids.append(internalContactId(aggId));
@@ -282,7 +274,7 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
 
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid)
 {
-    QContact existing = manager()->contact(apiContactId(contactId));
+    QContact existing = manager()->contact(apiContactId(contactId, manager()->managerUri()));
     if (internalContactId(existing.id()) != (unsigned)contactId) {
         qWarning() << "Could not retrieve contact:" << contactId;
         return false;
@@ -329,7 +321,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 {
     qDebug() << Q_FUNC_INFO << id << name;
 
-    QContact contact = manager()->contact(apiContactId(id));
+    QContact contact = manager()->contact(apiContactId(id, manager()->managerUri()));
     if (internalContactId(contact.id()) != (unsigned)id) {
         qWarning() << "Could not retrieve contact:" << id;
         return;
@@ -361,10 +353,10 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 
 void deleteTestContact(int id)
 {
-    if (!manager()->removeContact(apiContactId(id))) {
+    if (!manager()->removeContact(apiContactId(id, manager()->managerUri()))) {
         qWarning() << "error deleting contact:" << id;
     }
-    addedContactIds.remove(apiContactId(id));
+    addedContactIds.remove(apiContactId(id, manager()->managerUri()));
 }
 
 void cleanUpTestContacts()
@@ -373,8 +365,8 @@ void cleanUpTestContacts()
         QString aggregatesType = QContactRelationship::Aggregates();
 
         foreach (const QContactRelationship &rel, manager()->relationships(aggregatesType)) {
-            QContactId firstId = rel.first().id();
-            QContactId secondId = rel.second().id();
+            QContactId firstId = rel.first();
+            QContactId secondId = rel.second();
             if (addedContactIds.contains(firstId)) {
                 addedContactIds.insert(secondId);
             }

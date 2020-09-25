@@ -1,6 +1,6 @@
 Name:       libcommhistory-qt5
 Summary:    Communications event history database API
-Version:    1.9.44
+Version:    1.11.0
 Release:    1
 License:    LGPLv2
 URL:        https://git.sailfishos.org/mer-core/libcommhistory
@@ -11,8 +11,8 @@ BuildRequires:  pkgconfig(Qt5Contacts)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Test)
-BuildRequires:  pkgconfig(qtcontacts-sqlite-qt5-extensions) >= 0.1.41
-BuildRequires:  pkgconfig(contactcache-qt5) >= 0.2.12
+BuildRequires:  pkgconfig(qtcontacts-sqlite-qt5-extensions) >= 0.3.0
+BuildRequires:  pkgconfig(contactcache-qt5) >= 0.3.0
 BuildRequires:  libphonenumber-devel
 
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
