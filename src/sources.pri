@@ -8,6 +8,8 @@ HEADERS += commonutils.h \
            conversationmodel.h \
            callstatistics.h \
            callstatistics_p.h \
+           smshistory.h \
+           smshistory_p.h \
            callmodel.h \
            groupmodel.h \
            groupmodel_p.h \
@@ -53,6 +55,7 @@ SOURCES += commonutils.cpp \
            mmsreadreportmodel.cpp \
            contactlistener.cpp \
            singlecontacteventmodel.cpp \
+           smshistory.cpp \
            singleeventmodel.cpp \
            recentcontactsmodel.cpp \
            updatesemitter.cpp \
