@@ -281,6 +281,11 @@ QString Recipient::contactName() const
     return d->item ? d->item->displayLabel : QString();
 }
 
+QUrl Recipient::contactAvatarUrl() const
+{
+    return d->item ? SeasideCache::filteredAvatarUrl(d->item->contact) : QUrl();
+}
+
 bool Recipient::isContactResolved() const
 {
     return d->isResolved;

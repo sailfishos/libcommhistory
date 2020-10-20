@@ -12,7 +12,7 @@ BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(qtcontacts-sqlite-qt5-extensions) >= 0.1.41
-BuildRequires:  pkgconfig(contactcache-qt5) >= 0.0.17
+BuildRequires:  pkgconfig(contactcache-qt5) >= 0.2.11.1
 BuildRequires:  libphonenumber-devel
 
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
