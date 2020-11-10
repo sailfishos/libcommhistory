@@ -68,7 +68,7 @@ Documentation for libcommhistory
 
 %build
 unset LD_AS_NEEDED
-%qtc_qmake5 "PROJECT_VERSION=$(sed 's/+.*//' <<<"%{version}")" "PKGCONFIG_LIB=%{_lib}"
+%qtc_qmake5 "PROJECT_VERSION=%{version}" "PKGCONFIG_LIB=%{_lib}"
 %qtc_make %{?_smp_mflags}
 
 %install
