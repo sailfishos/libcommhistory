@@ -193,8 +193,19 @@ public:
 
     virtual bool deleteEvent( Event &event );
 
+    /*!
+    * \brief Signal all callmodel objects to call getEvents()
+    * Used after call history restoration to display the history properly.
+    */
+    void signalGetEvents();
+
 private:
     Q_DECLARE_PRIVATE(CallModel)
+private slots:
+    void getEventsSlot()
+    {
+        getEvents();
+    }
 };
 
 }

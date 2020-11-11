@@ -30,6 +30,7 @@
 #include "eventmodel.h"
 #include "eventmodel_p.h"
 #include "callmodel.h"
+#include "constants.h"
 #include "event.h"
 #include "commonutils.h"
 #include "debug.h"
@@ -983,6 +984,10 @@ CallModel::CallModel(QObject *parent)
 {
     Q_D(CallModel);
     d->isInTreeMode = true;
+
+    QDBusConnection::sessionBus().connect(
+            QString(), QString(), COMM_HISTORY_SERVICE_NAME, GET_EVENTS_SIGNAL,
+            this, SLOT(getEventsSlot()));
 }
 
 CallModel::~CallModel()
@@ -1235,6 +1240,14 @@ bool CallModel::deleteEvent( Event &event )
     if (!d->isInTreeMode)
         return EventModel::deleteEvent(event);
     return deleteEvent(event.id());
+}
+
+void CallModel::signalGetEvents()
+{
+    auto backupDoneMsg = QDBusMessage::createSignal("/",
+                                                    COMM_HISTORY_SERVICE_NAME,
+                                                    GET_EVENTS_SIGNAL);
+    QDBusConnection::sessionBus().send(backupDoneMsg);
 }
 
 }

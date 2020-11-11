@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QUuid>
 #include <QEventLoop>
+#include <unistd.h>
 
 #include "../src/groupmodel.h"
 #include "../src/conversationmodel.h"
@@ -1132,7 +1133,7 @@ int doImport(const QStringList &arguments, const QVariantMap &options)
     int numCalls;
     in >> numCalls;
     if (numCalls) {
-        EventModel model;
+        CallModel model;
         model.setQueryMode(EventModel::SyncQuery);
         Catcher catcher(&model);
 
@@ -1146,6 +1147,8 @@ int doImport(const QStringList &arguments, const QVariantMap &options)
             qWarning() << "Error adding calls";
         } else {
             catcher.waitCommit(numCalls);
+            sleep(10); // Wait for callmodels to settle
+            model.signalGetEvents();
         }
     }
 
