@@ -19,23 +19,52 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_SMSHISTORY_P_H
-#define COMMHISTORY_SMSHISTORY_P_H
+#ifndef COMMHISTORY_CALLHISTORY_H
+#define COMMHISTORY_CALLHISTORY_H
 
-#include "smshistory.h"
+#include <QObject>
+#include <QDateTime>
+
+#include "libcommhistoryexport.h"
+#include "callevent.h"
 
 namespace CommHistory {
 
-class SMSHistoryPrivate: public QObject
+class CallHistoryPrivate;
+
+class LIBCOMMHISTORY_EXPORT CallHistory : public QObject
 {
     Q_OBJECT
-public:
-    explicit SMSHistoryPrivate(SMSHistory *parent);
 
-    QList<CommHistory::SMSHistory::Result> results;
-    SMSHistory *q;
-    QDateTime startTime;
-    QDateTime endTime;
+public:
+    struct Result {
+        QDateTime when;
+        QDateTime finish;
+        QString phoneNumber;
+    };
+
+    explicit CallHistory(QObject *parent = 0);
+
+    void setStartTime(const QDateTime &dt);
+    QDateTime startTime() const;
+
+    void setEndTime(const QDateTime &dt);
+    QDateTime endTime() const;
+
+    void setCallType(CallEvent::CallType type);
+    CallEvent::CallType callType() const;
+
+    QList<CommHistory::CallHistory::Result> results() const;
+
+    bool reload();
+
+Q_SIGNALS:
+    void startTimeChanged();
+    void endTimeChanged();
+    void callTypeChanged();
+
+private:
+    CallHistoryPrivate *d;
 };
 
 }

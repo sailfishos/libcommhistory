@@ -19,7 +19,7 @@
 **
 ******************************************************************************/
 
-#include "smshistory_p.h"
+#include "callhistory_p.h"
 #include "databaseio_p.h"
 #include "event.h"
 
@@ -32,22 +32,37 @@ namespace {
 
 const QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0), Qt::UTC);
 
-QString buildEventsQuery(const QDateTime &startTime,
+QString buildEventsQuery(CommHistory::CallEvent::CallType callType,
+                         const QDateTime &startTime,
                          const QDateTime &endTime)
 {
-    qint64 startTimeSecs = (startTime.isValid() ? startTime : epoch).toMSecsSinceEpoch() / 1000;
+    qint64 startTimeSecs = (startTime.isValid() ? startTime : QDateTime::fromMSecsSinceEpoch(0)).toMSecsSinceEpoch() / 1000;
     qint64 endTimeSecs = (endTime.isValid() ? endTime : QDateTime::currentDateTimeUtc()).toMSecsSinceEpoch() / 1000;
 
     QStringList conditions;
 
-    conditions.append(QString::fromLatin1("startTime >= %1").arg(startTimeSecs));
-    conditions.append(QString::fromLatin1("startTime <= %1").arg(endTimeSecs));
-    conditions.append(QString::fromLatin1("type=%1").arg(CommHistory::Event::EventType::SMSEvent));
+    conditions.append(QStringLiteral("startTime >= %1").arg(startTimeSecs));
+    conditions.append(QStringLiteral("startTime <= %1").arg(endTimeSecs));
+    conditions.append(QStringLiteral("type=%1").arg(CommHistory::Event::EventType::CallEvent));
+
+    switch (callType) {
+    case CommHistory::CallEvent::UnknownCallType:
+        break;
+    case CommHistory::CallEvent::ReceivedCallType:
+        conditions.append(QString::fromLatin1("direction=%1 AND isMissedCall=0").arg(CommHistory::Event::Inbound));
+        break;
+    case CommHistory::CallEvent::MissedCallType:
+        conditions.append(QString::fromLatin1("direction=%1 AND isMissedCall=1").arg(CommHistory::Event::Inbound));
+        break;
+    case CommHistory::CallEvent::DialedCallType:
+        conditions.append(QString::fromLatin1("direction=%1").arg(CommHistory::Event::Outbound));
+        break;
+    }
 
     QString group;
     static const QString groupTemplate = QStringLiteral(" GROUP BY strftime('%1', datetime(startTime, 'unixepoch'))");
 
-    QString q = "SELECT startTime, remoteUid from Events";
+    QString q = "SELECT startTime, endTime, remoteUid from Events";
     if (!conditions.isEmpty()) {
         q += " WHERE " + conditions.join(" AND ");
     }
@@ -55,13 +70,14 @@ QString buildEventsQuery(const QDateTime &startTime,
     return q + group;
 }
 
-QList<CommHistory::SMSHistory::Result> readQueryResult(QSqlQuery *query)
+QList<CommHistory::CallHistory::Result> readQueryResult(QSqlQuery *query)
 {
-    QList<CommHistory::SMSHistory::Result> results;
+    QList<CommHistory::CallHistory::Result> results;
     while (query->next()) {
-        CommHistory::SMSHistory::Result result;
+        CommHistory::CallHistory::Result result;
         result.when = QDateTime::fromMSecsSinceEpoch(query->value(0).toLongLong() * 1000).toUTC();
-        result.phoneNumber = query->value(1).toString();
+        result.finish = QDateTime::fromMSecsSinceEpoch(query->value(1).toLongLong() * 1000).toUTC();
+        result.phoneNumber = query->value(2).toString();
         results.append(result);
     }
     return results;
@@ -71,19 +87,20 @@ QList<CommHistory::SMSHistory::Result> readQueryResult(QSqlQuery *query)
 
 namespace CommHistory {
 
-SMSHistoryPrivate::SMSHistoryPrivate(SMSHistory *parent)
+CallHistoryPrivate::CallHistoryPrivate(CallHistory *parent)
     : QObject(parent)
     , q(parent)
+    , callType(CallEvent::UnknownCallType)
 {
 }
 
-SMSHistory::SMSHistory(QObject *parent)
+CallHistory::CallHistory(QObject *parent)
     : QObject(parent)
-    , d(new SMSHistoryPrivate(this))
+    , d(new CallHistoryPrivate(this))
 {
 }
 
-void SMSHistory::setStartTime(const QDateTime &dt)
+void CallHistory::setStartTime(const QDateTime &dt)
 {
     if (dt != d->startTime) {
         d->startTime = dt;
@@ -91,12 +108,12 @@ void SMSHistory::setStartTime(const QDateTime &dt)
     }
 }
 
-QDateTime SMSHistory::startTime() const
+QDateTime CallHistory::startTime() const
 {
     return d->startTime;
 }
 
-void SMSHistory::setEndTime(const QDateTime &dt)
+void CallHistory::setEndTime(const QDateTime &dt)
 {
     if (dt != d->endTime) {
         d->endTime = dt;
@@ -104,17 +121,30 @@ void SMSHistory::setEndTime(const QDateTime &dt)
     }
 }
 
-QDateTime SMSHistory::endTime() const
+QDateTime CallHistory::endTime() const
 {
     return d->endTime;
 }
 
-QList<CommHistory::SMSHistory::Result> SMSHistory::results() const
+void CallHistory::setCallType(CallEvent::CallType type)
+{
+    if (type != d->callType) {
+        d->callType = type;
+        emit callTypeChanged();
+    }
+}
+
+CallEvent::CallType CallHistory::callType() const
+{
+    return d->callType;
+}
+
+QList<CommHistory::CallHistory::Result> CallHistory::results() const
 {
     return d->results;
 }
 
-bool SMSHistory::reload()
+bool CallHistory::reload()
 {
     d->results.clear();
 
@@ -124,7 +154,7 @@ bool SMSHistory::reload()
         return false;
     }
 
-    QString queryString = buildEventsQuery(d->startTime, d->endTime);
+    QString queryString = buildEventsQuery(d->callType, d->startTime, d->endTime);
 
     QSqlQuery query = DatabaseIOPrivate::prepareQuery(queryString);
     if (!query.exec()) {

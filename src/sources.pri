@@ -10,6 +10,8 @@ HEADERS += commonutils.h \
            callstatistics_p.h \
            smshistory.h \
            smshistory_p.h \
+           callhistory.h \
+           callhistory_p.h \
            callmodel.h \
            groupmodel.h \
            groupmodel_p.h \
@@ -46,6 +48,7 @@ SOURCES += commonutils.cpp \
            eventtreeitem.cpp \
            conversationmodel.cpp \
            callstatistics.cpp \
+           callhistory.cpp \
            callmodel.cpp \
            groupmodel.cpp \
            group.cpp \

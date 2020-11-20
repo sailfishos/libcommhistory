@@ -19,25 +19,4 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_SMSHISTORY_P_H
-#define COMMHISTORY_SMSHISTORY_P_H
-
-#include "smshistory.h"
-
-namespace CommHistory {
-
-class SMSHistoryPrivate: public QObject
-{
-    Q_OBJECT
-public:
-    explicit SMSHistoryPrivate(SMSHistory *parent);
-
-    QList<CommHistory::SMSHistory::Result> results;
-    SMSHistory *q;
-    QDateTime startTime;
-    QDateTime endTime;
-};
-
-}
-
-#endif
+#include "callhistory.h"

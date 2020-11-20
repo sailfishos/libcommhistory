@@ -19,23 +19,24 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_SMSHISTORY_P_H
-#define COMMHISTORY_SMSHISTORY_P_H
+#ifndef CALLHISTORY_P_H
+#define CALLHISTORY_P_H
 
-#include "smshistory.h"
+#include "callhistory.h"
 
 namespace CommHistory {
 
-class SMSHistoryPrivate: public QObject
+class CallHistoryPrivate: public QObject
 {
     Q_OBJECT
 public:
-    explicit SMSHistoryPrivate(SMSHistory *parent);
+    explicit CallHistoryPrivate(CallHistory *parent);
 
-    QList<CommHistory::SMSHistory::Result> results;
-    SMSHistory *q;
+    QList<CommHistory::CallHistory::Result> results;
+    CallHistory *q;
     QDateTime startTime;
     QDateTime endTime;
+    CallEvent::CallType callType;
 };
 
 }
