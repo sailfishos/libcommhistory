@@ -36,7 +36,6 @@ public:
     SMSHistory *q;
     QDateTime startTime;
     QDateTime endTime;
-    SMSHistory::TimeInterval timeInterval;
 };
 
 }

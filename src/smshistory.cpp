@@ -32,8 +32,7 @@ namespace {
 
 const QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0), Qt::UTC);
 
-QString buildEventsQuery(CommHistory::SMSHistory::TimeInterval timeInterval,
-                         const QDateTime &startTime,
+QString buildEventsQuery(const QDateTime &startTime,
                          const QDateTime &endTime)
 {
     qint64 startTimeSecs = (startTime.isValid() ? startTime : epoch).toMSecsSinceEpoch() / 1000;
@@ -48,23 +47,6 @@ QString buildEventsQuery(CommHistory::SMSHistory::TimeInterval timeInterval,
     QString group;
     static const QString groupTemplate = QStringLiteral(" GROUP BY strftime('%1', datetime(startTime, 'unixepoch'))");
 
-    switch (timeInterval) {
-    case CommHistory::SMSHistory::NoTimeInterval:
-        break;
-    case CommHistory::SMSHistory::Yearly:
-        group = groupTemplate.arg("%Y");
-        break;
-    case CommHistory::SMSHistory::Monthly:
-        group = groupTemplate.arg("%Y-%m");
-        break;
-    case CommHistory::SMSHistory::Weekly:
-        group = groupTemplate.arg("%Y-%W");
-        break;
-    case CommHistory::SMSHistory::Daily:
-        group = groupTemplate.arg("%Y-%m-%d");
-        break;
-    }
-
     QString q = "SELECT startTime, remoteUid from Events";
     if (!conditions.isEmpty()) {
         q += " WHERE " + conditions.join(" AND ");
@@ -73,109 +55,15 @@ QString buildEventsQuery(CommHistory::SMSHistory::TimeInterval timeInterval,
     return q + group;
 }
 
-CommHistory::SMSHistory::Result readNextResult(QSqlQuery *query)
-{
-    CommHistory::SMSHistory::Result result;
-    if (!query->next()) {
-        return result;
-    }
-    result.when = QDateTime::fromMSecsSinceEpoch(query->value(0).toLongLong() * 1000).toUTC();
-    result.phoneNumber = query->value(1).toString();
-    return result;
-}
-
-bool dateMatchesForInterval(const QDate &d1, const QDate &d2, CommHistory::SMSHistory::TimeInterval timeInterval)
-{
-    switch (timeInterval) {
-    case CommHistory::SMSHistory::NoTimeInterval:
-        return true;
-    case CommHistory::SMSHistory::Yearly:
-        return d1.year() == d2.year();
-    case CommHistory::SMSHistory::Monthly:
-        return d1.year() == d2.year() && d1.month() == d2.month();
-    case CommHistory::SMSHistory::Weekly:
-    {
-        int d1YearNumber = 0;
-        int d1WeekNumber = d1.weekNumber(&d1YearNumber);
-        int d2YearNumber = 0;
-        int d2WeekNumber = d2.weekNumber(&d2YearNumber);
-        return d1YearNumber == d2YearNumber && d1WeekNumber == d2WeekNumber;
-    }
-    case CommHistory::SMSHistory::Daily:
-        return d1 == d2;
-    }
-    return false;
-}
-
-QList<CommHistory::SMSHistory::Result> readQueryResults(CommHistory::SMSHistory::TimeInterval timeInterval,
-                                                        const QDateTime &startTime,
-                                                        const QDateTime &endTime,
-                                                        QSqlQuery *query)
+QList<CommHistory::SMSHistory::Result> readQueryResult(QSqlQuery *query)
 {
     QList<CommHistory::SMSHistory::Result> results;
-
-    if (timeInterval == CommHistory::SMSHistory::NoTimeInterval) {
-        CommHistory::SMSHistory::Result result = readNextResult(query);
-        if (result.when.isValid()) {
-            results.append(result);
-        }
-        return results;
+    while (query->next()) {
+        CommHistory::SMSHistory::Result result;
+        result.when = QDateTime::fromMSecsSinceEpoch(query->value(0).toLongLong() * 1000).toUTC();
+        result.phoneNumber = query->value(1).toString();
+        results.append(result);
     }
-
-    const QDateTime &startTimeUtc = startTime.toUTC();
-    const QDateTime &endTimeUtc = endTime.toUTC();
-    const QDate &startDate = startTimeUtc.date();
-    const QDate &endDate = endTimeUtc.date();
-
-    QDate nextDate = startDate;
-    CommHistory::SMSHistory::Result rowResult;
-    bool readNewResult = true;
-
-    while (nextDate <= endDate) {
-        if (readNewResult) {
-            rowResult = readNextResult(query);
-        }
-
-        const QDateTime &rowDateTime = rowResult.when;
-        const QDate &rowDate = rowDateTime.date();
-
-        CommHistory::SMSHistory::Result newResult;
-        if (dateMatchesForInterval(nextDate, startDate, timeInterval)) {
-            newResult.when = startTimeUtc;
-        } else {
-            newResult.when = QDateTime(nextDate, QTime(), Qt::UTC);
-        }
-
-        if (rowResult.when.isValid() && dateMatchesForInterval(nextDate, rowDate, timeInterval)) {
-            newResult.phoneNumber = rowResult.phoneNumber;
-            readNewResult = true;
-        } else {
-            readNewResult = false;
-        }
-
-        if (readNewResult) {
-            results.append(newResult);
-        }
-
-        switch (timeInterval) {
-        case CommHistory::SMSHistory::NoTimeInterval:
-            break;
-        case CommHistory::SMSHistory::Yearly:
-            nextDate.setDate(nextDate.year() + 1, 1, 1);
-            break;
-        case CommHistory::SMSHistory::Monthly:
-            nextDate = nextDate.addMonths(1);
-            nextDate.setDate(nextDate.year(), nextDate.month(), 1);
-            break;
-        case CommHistory::SMSHistory::Weekly:
-            nextDate = nextDate.addDays(Qt::Sunday - nextDate.dayOfWeek() + 1);
-            break;
-        case CommHistory::SMSHistory::Daily:
-            nextDate = nextDate.addDays(1);
-            break;
-        }
-    }
-
     return results;
 }
 
@@ -186,7 +74,6 @@ namespace CommHistory {
 SMSHistoryPrivate::SMSHistoryPrivate(SMSHistory *parent)
     : QObject(parent)
     , q(parent)
-    , timeInterval(SMSHistory::NoTimeInterval)
 {
 }
 
@@ -222,19 +109,6 @@ QDateTime SMSHistory::endTime() const
     return d->endTime;
 }
 
-void SMSHistory::setTimeInterval(TimeInterval timeInterval)
-{
-    if (timeInterval != d->timeInterval) {
-        d->timeInterval = timeInterval;
-        emit timeIntervalChanged();
-    }
-}
-
-SMSHistory::TimeInterval SMSHistory::timeInterval() const
-{
-    return d->timeInterval;
-}
-
 QList<CommHistory::SMSHistory::Result> SMSHistory::results() const
 {
     return d->results;
@@ -250,7 +124,7 @@ bool SMSHistory::reload()
         return false;
     }
 
-    QString queryString = buildEventsQuery(d->timeInterval, d->startTime, d->endTime);
+    QString queryString = buildEventsQuery(d->startTime, d->endTime);
 
     QSqlQuery query = DatabaseIOPrivate::prepareQuery(queryString);
     if (!query.exec()) {
@@ -259,7 +133,7 @@ bool SMSHistory::reload()
         return false;
     }
 
-    d->results = readQueryResults(d->timeInterval, d->startTime, d->endTime, &query);
+    d->results = readQueryResult(&query);
     return true;
 }
 

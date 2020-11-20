@@ -37,15 +37,6 @@ class LIBCOMMHISTORY_EXPORT SMSHistory : public QObject
     Q_OBJECT
 
 public:
-    enum TimeInterval {
-        NoTimeInterval,
-        Yearly,
-        Monthly,
-        Weekly,
-        Daily
-    };
-    Q_ENUM(TimeInterval)
-
     struct Result {
         QDateTime when;
         QString phoneNumber;
@@ -59,9 +50,6 @@ public:
     void setEndTime(const QDateTime &dt);
     QDateTime endTime() const;
 
-    void setTimeInterval(TimeInterval timeInterval);
-    TimeInterval timeInterval() const;
-
     QList<CommHistory::SMSHistory::Result> results() const;
 
     bool reload();
@@ -69,7 +57,6 @@ public:
 Q_SIGNALS:
     void startTimeChanged();
     void endTimeChanged();
-    void timeIntervalChanged();
 
 private:
     SMSHistoryPrivate *d;
