@@ -1,3 +1,6 @@
+#ifndef CALLSTATISTICS_P_H
+#define CALLSTATISTICS_P_H
+
 #include "callstatistics.h"
 
 namespace CommHistory {
@@ -17,3 +20,5 @@ public:
 };
 
 }
+
+#endif

@@ -56,6 +56,7 @@ QT_LIKE_HEADERS += \
                    headers/CallModel \
                    headers/CallStatistics \
                    headers/SmsHistory \
+                   headers/CallHistory \
                    headers/ContactListener \
                    headers/ContactResolver \
                    headers/ConversationModel \
