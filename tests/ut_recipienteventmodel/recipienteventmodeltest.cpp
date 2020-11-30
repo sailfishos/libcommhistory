@@ -3,6 +3,7 @@
 ** This file is part of libcommhistory.
 **
 ** Copyright (C) 2020 D. Caliste.
+** Copyright (C) 2020 Open Mobile Platform LLC.
 ** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -44,7 +45,7 @@ void RecipientEventModelTest::cleanupTestCase()
     QTest::qWait(100);
 }
 
-void RecipientEventModelTest::testGetEvents_data()
+void RecipientEventModelTest::testGetRecipientEvents_data()
 {
     QTest::addColumn<QString>("localId");
     QTest::addColumn<QString>("remoteId");
@@ -61,7 +62,7 @@ void RecipientEventModelTest::testGetEvents_data()
             << (int)Event::SMSEvent;
 }
 
-void RecipientEventModelTest::testGetEvents()
+void RecipientEventModelTest::testGetRecipientEvents()
 {
     QFETCH(QString, localId);
     QFETCH(QString, remoteId);
@@ -83,7 +84,9 @@ void RecipientEventModelTest::testGetEvents()
     QCOMPARE(model.rowCount(), 0);
 
     const Recipient testRecipient(localId, remoteId);
-    QVERIFY(model.getEvents(testRecipient));
+    model.setRecipients(testRecipient);
+    QVERIFY(model.getEvents());
+
     QTRY_VERIFY(model.isReady());
     QCOMPARE(model.rowCount(), 1);
 
@@ -93,7 +96,8 @@ void RecipientEventModelTest::testGetEvents()
     QCOMPARE(event.recipients().first(), testRecipient);
 
     // Reset to an unused recipient
-    QVERIFY(model.getEvents(Recipient(RING_ACCOUNT, "not-a-real-number")));
+    model.setRecipients(Recipient(RING_ACCOUNT, "not-a-real-number"));
+    QVERIFY(model.getEvents());
     QTRY_VERIFY(model.isReady());
     QCOMPARE(model.rowCount(), 0);
 
@@ -104,7 +108,8 @@ void RecipientEventModelTest::testGetEvents()
     QCOMPARE(model.rowCount(), 0);
 
     // Still get the only the matching one.
-    QVERIFY(model.getEvents(testRecipient));
+    model.setRecipients(testRecipient);
+    QVERIFY(model.getEvents());
     QTRY_VERIFY(model.isReady());
     QCOMPARE(model.rowCount(), 1);
 
@@ -120,6 +125,195 @@ void RecipientEventModelTest::testGetEvents()
     QCOMPARE(event.id(), eventId);
     QCOMPARE(event.recipients().size(), 1);
     QCOMPARE(event.recipients().first(), testRecipient);
+}
+
+void RecipientEventModelTest::testGetContactEvents_data()
+{
+    QTest::addColumn<QString>("localId");
+    QTest::addColumn<QString>("remoteId");
+    QTest::addColumn<QString>("readableRemoteId");
+    QTest::addColumn<int>("eventType");
+
+    QTest::newRow("im") << "/org/freedesktop/Telepathy/Account/gabble/jabber/good_40localhost0"
+            << "abc@localhost"
+            << "abc@localhost"
+            << (int)Event::IMEvent;
+    QTest::newRow("cell") << RING_ACCOUNT
+            << "+42382394"
+            << "+42 382 394"
+            << (int)Event::SMSEvent;
+}
+
+void RecipientEventModelTest::testGetContactEvents()
+{
+    QFETCH(QString, localId);
+    QFETCH(QString, remoteId);
+    QFETCH(QString, readableRemoteId);
+    QFETCH(int, eventType);
+
+    deleteAll();
+    QTest::qWait(100);
+
+    addTestGroups(group1, group2);
+
+    RecipientEventModel model;
+
+    int eventId = addTestEvent(model, (Event::EventType)eventType, Event::Inbound, localId, group1.id(),
+                               "text", false, false, QDateTime::currentDateTime(), remoteId, false);
+    QVERIFY(eventId != -1);
+
+    // Not added to the model
+    QCOMPARE(model.rowCount(), 0);
+
+    Event event;
+    model.databaseIO().getEvent(eventId, event);
+    QCOMPARE(event.contactId(), 0);
+
+    int contactId = addTestContact("Correspondent", readableRemoteId, localId);
+    QVERIFY(contactId != -1);
+    QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
+
+    // We need to wait for libcontacts to process this contact addition, which involves
+    // various delays and event handling asynchronicities
+    QTest::qWait(1000);
+
+    model.setRecipients(contactId);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QTest::qWait(1000);
+    QCOMPARE(model.rowCount(), 1);
+
+    event = model.event(model.index(0, 0));
+    QCOMPARE(event.id(), eventId);
+    QCOMPARE(event.contactId(), contactId);
+    QCOMPARE(event.contactName(), QString("Correspondent"));
+
+    // Reset to an unused recipient
+    model.setRecipients(Recipient(RING_ACCOUNT, "not-a-real-number"));
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 0);
+
+    // Look up the original contact via the event UID
+    model.setRecipients(Recipient(localId, remoteId));
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 1);
+
+    event = model.event(model.index(0, 0));
+    QCOMPARE(event.id(), eventId);
+    QCOMPARE(event.contactId(), contactId);
+    QCOMPARE(event.contactName(), QString("Correspondent"));
+
+    // Look up the contact via the a different UID
+    model.setRecipients(Recipient(localId, remoteId + "123"));
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 1);
+
+    event = model.event(model.index(0, 0));
+    QCOMPARE(event.id(), eventId);
+    QCOMPARE(event.contactId(), contactId);
+    QCOMPARE(event.contactName(), QString("Correspondent"));
+
+    // Add a non-matching event
+    eventId = addTestEvent(model, (Event::EventType)eventType, Event::Inbound, localId, group1.id(),
+                           "text", false, false, QDateTime::currentDateTime(), remoteId + "999", false);
+    QVERIFY(eventId != -1);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 1);
+    QCOMPARE(model.findEvent(eventId), QModelIndex());
+
+    // Add a matching event
+    eventId = addTestEvent(model, (Event::EventType)eventType, Event::Inbound, localId, group1.id(),
+                           "text", false, false, QDateTime::currentDateTime(), remoteId + "123", false);
+    QVERIFY(eventId != -1);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 2);
+
+    event = model.event(model.findEvent(eventId));
+    QCOMPARE(event.id(), eventId);
+    QCOMPARE(event.contactId(), contactId);
+    QCOMPARE(event.contactName(), QString("Correspondent"));
+}
+
+void RecipientEventModelTest::testLimitOffset_data()
+{
+    QTest::addColumn<QString>("localId");
+    QTest::addColumn<QString>("remoteId");
+    QTest::addColumn<int>("eventType");
+
+    QTest::newRow("im") << "/org/freedesktop/Telepathy/Account/gabble/jabber/good_40localhost0"
+            << "abc@localhost"
+            << (int)Event::IMEvent;
+    QTest::newRow("cell") << RING_ACCOUNT
+            << "+42382394"
+            << (int)Event::SMSEvent;
+}
+
+void RecipientEventModelTest::testLimitOffset()
+{
+    QFETCH(QString, localId);
+    QFETCH(QString, remoteId);
+    QFETCH(int, eventType);
+
+    deleteAll();
+    QTest::qWait(100);
+
+    addTestGroups(group1, group2);
+
+    RecipientEventModel model;
+
+    QList<int> eventIds;
+    QDateTime when(QDateTime::currentDateTime());
+    for (int i = 0; i  < 4; ++i) {
+        when = when.addSecs(-1);
+        int eventId = addTestEvent(model, (Event::EventType)eventType, Event::Inbound, localId, group1.id(),
+                                   "text", false, false, when, remoteId, false);
+        QVERIFY(eventId != -1);
+        eventIds.append(eventId);
+    }
+
+    // Not added to the model
+    QCOMPARE(model.rowCount(), 0);
+
+    Event event;
+
+    int contactId = addTestContact("Correspondent", remoteId, localId);
+    QVERIFY(contactId != -1);
+    QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
+
+    // We need to wait for libcontacts to process this contact addition, which involves
+    // various delays and event handling asynchronicities
+    QTest::qWait(1000);
+
+    model.setRecipients(contactId);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 4);
+
+    QCOMPARE(model.event(model.index(0, 0)).id(), eventIds.at(0));
+    QCOMPARE(model.event(model.index(1, 0)).id(), eventIds.at(1));
+    QCOMPARE(model.event(model.index(2, 0)).id(), eventIds.at(2));
+    QCOMPARE(model.event(model.index(3, 0)).id(), eventIds.at(3));
+
+    model.setLimit(2);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 2);
+
+    QCOMPARE(model.event(model.index(0, 0)).id(), eventIds.at(0));
+    QCOMPARE(model.event(model.index(1, 0)).id(), eventIds.at(1));
+
+    model.setOffset(2);
+    QVERIFY(model.getEvents());
+    QTRY_VERIFY(model.isReady());
+    QCOMPARE(model.rowCount(), 2);
+
+    QCOMPARE(model.event(model.index(0, 0)).id(), eventIds.at(2));
+    QCOMPARE(model.event(model.index(1, 0)).id(), eventIds.at(3));
 }
 
 QTEST_MAIN(RecipientEventModelTest)

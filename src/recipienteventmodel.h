@@ -3,6 +3,7 @@
 ** This file is part of libcommhistory.
 **
 ** Copyright (C) 2020 D. Caliste
+** Copyright (C) 2020 Open Mobile Platform LLC.
 ** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -32,7 +33,7 @@ class RecipientEventModelPrivate;
 
 /*!
  * \class RecipientEventModel
- * \brief Model representing events from one or several local / remote uids.
+ * \brief Model representing events from one or several local / remote uids or contacts.
  */
 class LIBCOMMHISTORY_EXPORT RecipientEventModel : public EventModel
 {
@@ -52,23 +53,40 @@ public:
     ~RecipientEventModel();
 
     /*!
-     * Populate model with events matching the recipient list.
-     * It's not necessary that the recipients are contact resolved.
+     * Set the recipient for the model.
+     * The model will attempt to resolve it to a contact when fetching events
+     * for this recipient. If it does not resolve to a contact, the recipient
+     * the model will just fetch events for this recipient.
+     *
+     * \param recipient, local / remote uid pair to be fetched.
+     */
+    void setRecipients(const Recipient &recipient);
+
+    /*!
+     * Sets the recipients for the model.
+     *
+     * \overload
+     */
+    void setRecipients(const RecipientList &recipients);
+
+    /*!
+     * Set the recipients for the model using a contact ID.
+     * The model will fetch events for the recipients of this contact.
+     * For example, if a contact has multiple phone numbers, all of
+     * its phone numbers will be added as recipients to the model.
+     *
+     * \param contactId ID of the contact to be fetched.
+     */
+    void setRecipients(int contactId);
+
+    /*!
+     * Populate the model with events matching the specified recipients.
      *
      * \param recipients, local / remote uid pairs to be fetched.
      *
      * \return true if successful, otherwise false
      */
-    bool getEvents(const RecipientList &recipients);
-    /*!
-     * Populate model with events matching the given recipient.
-     * It's not necessary that the recipient is contact resolved.
-     *
-     * \param recipient, local / remote uid pairs to be fetched.
-     *
-     * \return true if successful, otherwise false
-     */
-    bool getEvents(const Recipient &recipient);
+    bool getEvents();
 
 protected:
     RecipientEventModel(RecipientEventModelPrivate &dd, QObject *parent = 0);

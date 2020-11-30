@@ -20,7 +20,6 @@ HEADERS += commonutils.h \
            conversationmodel_p.h \
            contactlistener.h \
            libcommhistoryexport.h \
-           singlecontacteventmodel.h \
            singleeventmodel.h \
            recipienteventmodel.h \
            recipienteventmodel_p.h \
@@ -59,7 +58,6 @@ SOURCES += commonutils.cpp \
            messagepart.cpp \
            mmsreadreportmodel.cpp \
            contactlistener.cpp \
-           singlecontacteventmodel.cpp \
            smshistory.cpp \
            singleeventmodel.cpp \
            recipienteventmodel.cpp \

@@ -9,7 +9,7 @@ INCLUDEPATH += ../src
 
 SOURCES += src/plugin.cpp \
     src/callproxymodel.cpp \
-    src/contacteventmodel.cpp \
+    src/declarativerecipienteventmodel.cpp \
     src/conversationproxymodel.cpp \
     src/declarativegroupmanager.cpp \
     src/sharedbackgroundthread.cpp \
@@ -18,7 +18,7 @@ SOURCES += src/plugin.cpp \
 
 HEADERS += src/constants.h \
     src/callproxymodel.h \
-    src/contacteventmodel.h \
+    src/declarativerecipienteventmodel.h \
     src/conversationproxymodel.h \
     src/declarativegroupmanager.h \
     src/sharedbackgroundthread.h \

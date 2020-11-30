@@ -22,6 +22,8 @@
 
 #include <QtTest/QtTest>
 
+#include <seasidecache.h>
+
 #include <qtcontacts-extensions.h>
 #include <qtcontacts-extensions_impl.h>
 
@@ -65,16 +67,7 @@ static int contactNumber = 0;
 
 QContactManager *createManager()
 {
-    QMap<QString, QString> parameters;
-    QString envspec(QStringLiteral("org.nemomobile.contacts.sqlite"));
-    parameters.insert(QString::fromLatin1("mergePresenceChanges"), QString::fromLatin1("false"));
-    parameters.insert(QString::fromLatin1("autoTest"), QString::fromLatin1("true"));
-    if (!envspec.isEmpty()) {
-        qDebug() << "Using contact manager:" << envspec;
-        return new QContactManager(envspec, parameters);
-    }
-
-    return new QContactManager;
+    return SeasideCache::manager();
 }
 
 QContactManager *manager()
@@ -213,6 +206,15 @@ void addTestGroup(Group& grp, QString localUid, QString remoteUid)
     QVERIFY(ready.first().at(1).toBool());
 }
 
+QContactId localContactForAggregate(const QContactId &aggregateId)
+{
+    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), aggregateId, QContactRelationship::First)) {
+        return relationship.second();
+    }
+    qWarning() << "error finding local contact for aggregate:" << aggregateId.localId();
+    return QContactId();
+}
+
 int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid)
 {
     QString contactUri = QString("<testcontact:%1>").arg(contactNumber++);
@@ -274,11 +276,13 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
 
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid)
 {
-    QContact existing = manager()->contact(apiContactId(contactId, manager()->managerUri()));
-    if (internalContactId(existing.id()) != (unsigned)contactId) {
+    QContact existingAggregate = manager()->contact(apiContactId(contactId, manager()->managerUri()));
+    if (internalContactId(existingAggregate.id()) != (unsigned)contactId) {
         qWarning() << "Could not retrieve contact:" << contactId;
         return false;
     }
+
+    QContact existing = manager()->contact(localContactForAggregate(existingAggregate.id()));
 
     if (!localUidComparesPhoneNumbers(localUid)) {
         QContactOriginMetadata metadata = existing.detail<QContactOriginMetadata>();
@@ -321,11 +325,13 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 {
     qDebug() << Q_FUNC_INFO << id << name;
 
-    QContact contact = manager()->contact(apiContactId(id, manager()->managerUri()));
-    if (internalContactId(contact.id()) != (unsigned)id) {
+    QContact existingAggregate = manager()->contact(apiContactId(id, manager()->managerUri()));
+    if (internalContactId(existingAggregate.id()) != (unsigned)id) {
         qWarning() << "Could not retrieve contact:" << id;
         return;
     }
+
+    QContact contact = manager()->contact(localContactForAggregate(existingAggregate.id()));
 
     QContactName nameDetail = contact.detail<QContactName>();
     if (name != nameDetail.lastName()) {
@@ -353,10 +359,16 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 
 void deleteTestContact(int id)
 {
-    if (!manager()->removeContact(apiContactId(id, manager()->managerUri()))) {
-        qWarning() << "error deleting contact:" << id;
+    const QContactId contactId = apiContactId(id, manager()->managerUri());
+    const QContact contact = manager()->contact(contactId);
+
+    const QContactId localId = localContactForAggregate(contactId);
+    QContact localContact = manager()->contact(localId);
+
+    if (!SeasideCache::removeContact(localContact)) {
+        qWarning() << "error deleting contact:" << contactId.localId();
     }
-    addedContactIds.remove(apiContactId(id, manager()->managerUri()));
+    addedContactIds.remove(contactId);
 }
 
 void cleanUpTestContacts()
@@ -364,15 +376,17 @@ void cleanUpTestContacts()
     if (!addedContactIds.isEmpty()) {
         QString aggregatesType = QContactRelationship::Aggregates();
 
-        foreach (const QContactRelationship &rel, manager()->relationships(aggregatesType)) {
-            QContactId firstId = rel.first();
-            QContactId secondId = rel.second();
-            if (addedContactIds.contains(firstId)) {
-                addedContactIds.insert(secondId);
+        const QList<QContactId> contactIdsToRemove = addedContactIds.toList();
+        QList<QContact> contactsToRemove;
+        for (const QContactId &contactId : addedContactIds) {
+            const QContactId localId = localContactForAggregate(contactId);
+            QContact localContact = manager()->contact(localId);
+            if (!localContact.isEmpty()) {
+                contactsToRemove.append(localContact);
             }
         }
 
-        if (!manager()->removeContacts(addedContactIds.toList())) {
+        if (!SeasideCache::removeContacts(contactsToRemove)) {
             qWarning() << "Unable to remove test contacts:" << addedContactIds;
         }
 

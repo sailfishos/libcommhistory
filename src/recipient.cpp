@@ -417,7 +417,8 @@ RecipientList RecipientList::fromCacheItem(const SeasideCache::CacheItem *item)
             re << Recipient(account.value<QString>(QContactOnlineAccount__FieldAccountPath), account.accountUri());
         }
         foreach (const QContactPhoneNumber &phoneNumber, item->contact.details<QContactPhoneNumber>()) {
-            re << Recipient(QString(), phoneNumber.number());
+            // Match with recipients calling from any SIM
+            re << Recipient(RING_ACCOUNT, phoneNumber.number());
         }
     }
     return re;

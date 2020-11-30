@@ -3,6 +3,7 @@
 ** This file is part of libcommhistory.
 **
 ** Copyright (C) 2020 D. Caliste.
+** Copyright (C) 2020 Open Mobile Platform LLC.
 ** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -25,6 +26,7 @@
 
 #include "recipienteventmodel.h"
 #include "eventmodel_p.h"
+#include "contactfetcher.h"
 
 namespace CommHistory {
 
@@ -37,10 +39,16 @@ class LIBCOMMHISTORY_EXPORT RecipientEventModelPrivate : public EventModelPrivat
 public:
     RecipientEventModelPrivate(RecipientEventModel *model = 0);
 
-    virtual bool acceptsEvent(const Event &event) const;
+    bool acceptsEvent(const Event &event) const override;
+    bool fillModel(int start, int end, QList<CommHistory::Event> events, bool resolved) override;
     void fetchEvents();
 
+    ContactFetcher m_fetcher;
     RecipientList m_recipients;
+    int m_contactId = 0;
+
+public slots:
+    void fetcherFinished();
 };
 
 }

@@ -28,7 +28,6 @@ SUBDIRS = ut_eventmodel \
           ut_conversationmodel \
           ut_groupmodel \
           ut_recentcontactsmodel \
-          ut_singlecontacteventmodel \
           ut_singleeventmodel \
           ut_recipienteventmodel
 

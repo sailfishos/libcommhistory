@@ -3,6 +3,7 @@
 ** This file is part of libcommhistory.
 **
 ** Copyright (C) 2020 D. Caliste.
+** Copyright (C) 2020 Open Mobile Platform LLC.
 ** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
@@ -33,8 +34,14 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void testGetEvents_data();
-    void testGetEvents();
+    void testGetRecipientEvents_data();
+    void testGetRecipientEvents();
+
+    void testGetContactEvents_data();
+    void testGetContactEvents();
+
+    void testLimitOffset_data();
+    void testLimitOffset();
 };
 
 #endif

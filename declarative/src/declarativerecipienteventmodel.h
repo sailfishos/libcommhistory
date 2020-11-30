@@ -1,5 +1,6 @@
-/* Copyright (C) 2015 Jolla Ltd.
- * Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+/*
+ * Copyright (C) 2015 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -29,38 +30,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#ifndef COMMHISTORY_DECLARATIVE_CONTACTEVENTMODEL_H
-#define COMMHISTORY_DECLARATIVE_CONTACTEVENTMODEL_H
+#ifndef COMMHISTORY_DECLARATIVE_RECIPIENTEVENTMODEL_H
+#define COMMHISTORY_DECLARATIVE_RECIPIENTEVENTMODEL_H
 
-#include "singlecontacteventmodel.h"
+#include "recipienteventmodel.h"
 
-#include <QHash>
+#include <QQmlParserStatus>
 
-class ContactEventModel : public CommHistory::SingleContactEventModel
+class DeclarativeRecipientEventModelPrivate;
+
+class DeclarativeRecipientEventModel : public CommHistory::RecipientEventModel, public QQmlParserStatus
 {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(int contactId READ contactId WRITE setContactId NOTIFY contactIdChanged)
-    Q_PROPERTY(QString fallbackPhoneId READ fallbackPhoneId WRITE setFallbackPhoneId NOTIFY fallbackPhoneIdChanged)
+    Q_PROPERTY(QString remoteUid READ remoteUid WRITE setRemoteUid NOTIFY remoteUidChanged)
 
 public:
-    ContactEventModel(QObject *parent = 0);
+    DeclarativeRecipientEventModel(QObject *parent = 0);
 
-    int contactId() const { return m_contactId; }
+    int contactId() const;
     void setContactId(int contactId);
 
-    QString fallbackPhoneId() const { return m_fallbackPhoneId; }
-    void setFallbackPhoneId(const QString &fallbackPhoneId);
+    QString remoteUid() const;
+    void setRemoteUid(const QString &remoteUid);
+
+    void classBegin() override;
+    void componentComplete() override;
 
 signals:
     void contactIdChanged();
-    void fallbackPhoneIdChanged();
-
-public slots:
-    void reload();
+    void remoteUidChanged();
 
 private:
-    int m_contactId;
-    QString m_fallbackPhoneId;
+    void reload();
+
+    QString m_remoteUid;
+    int m_contactId = 0;
+    bool m_complete = false;
 };
 
 #endif

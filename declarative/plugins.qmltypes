@@ -428,10 +428,6 @@ Module {
         Method { name: "getEvents"; type: "bool" }
     }
     Component {
-        name: "CommHistory::SingleContactEventModel"
-        prototype: "CommHistory::EventModel"
-    }
-    Component {
         name: "CommHistoryConstants"
         prototype: "QObject"
         exports: ["org.nemomobile.commhistory/CommHistory 1.0"]
@@ -504,12 +500,12 @@ Module {
         }
     }
     Component {
-        name: "ContactEventModel"
-        prototype: "CommHistory::SingleContactEventModel"
-        exports: ["org.nemomobile.commhistory/CommContactEventModel 1.0"]
+        name: "DeclarativeRecipientEventModel"
+        prototype: "CommHistory::RecipientEventModel"
+        exports: ["org.nemomobile.commhistory/CommRecipientEventModel 1.0"]
         exportMetaObjectRevisions: [0]
         Property { name: "contactId"; type: "int" }
-        Method { name: "reload" }
+        Property { name: "remoteUid"; type: "string" }
     }
     Component {
         name: "ConversationProxyModel"

@@ -1,5 +1,6 @@
-/* Copyright (C) 2015 Jolla Ltd.
- * Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+/*
+ * Copyright (C) 2015 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -29,54 +30,83 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#include "contacteventmodel.h"
+#include "declarativerecipienteventmodel.h"
 #include "commonutils.h"
-#include <QTimer>
+
+#include <QQmlInfo>
 
 using namespace CommHistory;
 
-ContactEventModel::ContactEventModel(QObject *parent)
-    : SingleContactEventModel(parent)
-    , m_contactId(0)
+
+DeclarativeRecipientEventModel::DeclarativeRecipientEventModel(QObject *parent)
+    : RecipientEventModel(parent)
 {
 }
 
-void ContactEventModel::setContactId(int contactId)
+void DeclarativeRecipientEventModel::setContactId(int contactId)
 {
     if (contactId == m_contactId)
         return;
 
-    m_contactId = contactId;
-    emit contactIdChanged();
+    if (!m_remoteUid.isEmpty()) {
+        qmlInfo(this) << "remoteUid already set to" << m_remoteUid
+                      << ", ignoring contactId change to" << contactId;
+        return;
+    }
 
-    QTimer::singleShot(0, this, SLOT(reload()));
+    m_contactId = contactId;
+    reload();
+    emit contactIdChanged();
 }
 
-void ContactEventModel::setFallbackPhoneId(const QString &fallbackPhoneId)
+int DeclarativeRecipientEventModel::contactId() const
 {
-    if (fallbackPhoneId == m_fallbackPhoneId)
+    return m_contactId;
+}
+
+void DeclarativeRecipientEventModel::setRemoteUid(const QString &remoteUid)
+{
+    if (remoteUid == m_remoteUid)
         return;
 
-    m_fallbackPhoneId = fallbackPhoneId;
-    emit fallbackPhoneIdChanged();
-
-    if (!m_contactId) {
-        QTimer::singleShot(0, this, SLOT(reload()));
+    if (m_contactId > 0) {
+        qmlInfo(this) << "contactId already set to" << m_contactId
+                      << ", ignoring remoteUid change to" << remoteUid;
+        return;
     }
+
+    m_remoteUid = remoteUid;
+    reload();
+    emit remoteUidChanged();
 }
 
-void ContactEventModel::reload()
+QString DeclarativeRecipientEventModel::remoteUid() const
 {
+    return m_remoteUid;
+}
+
+void DeclarativeRecipientEventModel::classBegin()
+{
+}
+
+void DeclarativeRecipientEventModel::componentComplete()
+{
+    m_complete = true;
+    reload();
+}
+
+void DeclarativeRecipientEventModel::reload()
+{
+    if (!m_complete)
+        return;
+
     if (m_contactId > 0) {
-        getEvents(m_contactId);
-    } else if (!m_fallbackPhoneId.isEmpty()) {
-        // LocalUID is set to QString because we don't care about which sim
+        setRecipients(m_contactId);
+    } else if (!m_remoteUid.isEmpty()) {
+        // Use the generic RING_ACCOUNT because we don't care about which SIM
         // the call was received on.
-        // SingleContactEventModel::getEvents(Recipient) also exists and
-        // is matching a stored contact from recipient phone number. We actually
-        // need here to get events for a recipient event if not saved, so we
-        // must call the RecipientEventModel::getEvents() explicitely to avoid
-        // calling implicitely the SingleContactEventModel variant.
-        RecipientEventModel::getEvents(Recipient(QString(), m_fallbackPhoneId));
+        setRecipients(Recipient(RING_ACCOUNT, m_remoteUid));
     }
+
+    getEvents();
 }

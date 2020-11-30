@@ -29,7 +29,7 @@
 #include "../src/groupmodel.h"
 #include "../src/conversationmodel.h"
 #include "../src/callmodel.h"
-#include "../src/singlecontacteventmodel.h"
+#include "../src/recipienteventmodel.h"
 #include "../src/event.h"
 #include "../src/callevent.h"
 #include "../src/group.h"
@@ -619,16 +619,18 @@ int doListContact(const QStringList &arguments, const QVariantMap &options)
 {
     Q_UNUSED( options );
 
-    SingleContactEventModel model;
+    RecipientEventModel model;
 
     if (arguments.count() > 3) {
-        if (!model.getEvents(Recipient(arguments.at(2), arguments.at(3)))) {
+        model.setRecipients(Recipient(arguments.at(2), arguments.at(3)));
+        if (!model.getEvents()) {
             qCritical() << "Error fetching events for local-uid:" << arguments.at(2) << "remote-uid:" << arguments.at(3);
             return -1;
         }
     } else if (arguments.count() > 2) {
         int contactId = arguments.at(2).toInt();
-        if (!model.getEvents(contactId)) {
+        model.setRecipients(contactId);
+        if (!model.getEvents()) {
             qCritical() << "Error fetching events for contact-id:" << contactId;
             return -1;
         }
