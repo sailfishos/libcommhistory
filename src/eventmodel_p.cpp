@@ -195,8 +195,11 @@ bool EventModelPrivate::fillModel(int start, int end, QList<CommHistory::Event> 
     Q_UNUSED(end);
     Q_UNUSED(resolved);
 
-    if (events.isEmpty())
-        return false;
+    if (events.isEmpty()) {
+        // Empty results are still "ready"
+        modelUpdatedSlot(true);
+        return true;
+    }
 
     Q_Q(EventModel);
     DEBUG() << Q_FUNC_INFO << ": read" << events.count() << "events";
@@ -224,8 +227,14 @@ bool EventModelPrivate::fillModel(QList<CommHistory::Event> events, bool resolve
         }
     }
 
-    if (!events.isEmpty())
+    if (events.isEmpty()) {
+        // Empty results are still "ready"
+        modelUpdatedSlot(true);
+        return true;
+    } else {
         return fillModel(q->rowCount(), q->rowCount() + events.count() - 1, events, resolved);
+    }
+
 
     return true;
 }

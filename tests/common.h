@@ -86,6 +86,7 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid=QString());
 void modifyTestContact(int id, const QString &name, bool favorite = false);
 void deleteTestContact(int id);
+QContactId localContactForAggregate(const QContactId &contactId);
 void cleanUpTestContacts();
 void cleanupTestGroups();
 void cleanupTestEvents();

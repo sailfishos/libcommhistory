@@ -2,8 +2,9 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2015 Jolla Ltd.
-** Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+** Copyright (C) 2020 D. Caliste.
+** Copyright (C) 2020 Open Mobile Platform LLC.
+** Contact: Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU Lesser General Public License version 2.1 as
@@ -20,12 +21,12 @@
 **
 ******************************************************************************/
 
-#ifndef SINGLECONTACTEVENTMODELTEST_H
-#define SINGLECONTACTEVENTMODELTEST_H
+#ifndef RECIPIENTEVENTMODELTEST_H
+#define RECIPIENTEVENTMODELTEST_H
 
 #include <QObject>
 
-class SingleContactEventModelTest : public QObject
+class RecipientEventModelTest : public QObject
 {
     Q_OBJECT
 
@@ -33,8 +34,11 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void testGetEvents_data();
-    void testGetEvents();
+    void testGetRecipientEvents_data();
+    void testGetRecipientEvents();
+
+    void testGetContactEvents_data();
+    void testGetContactEvents();
 
     void testLimitOffset_data();
     void testLimitOffset();

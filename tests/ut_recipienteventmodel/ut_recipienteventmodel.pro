@@ -2,8 +2,8 @@
 #
 # This file is part of libcommhistory.
 #
-# Copyright (C) 2015 Jolla Ltd.
-# Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+# Copyright (C) 2020 D. Caliste.
+# Contact: Damien Caliste <dcaliste@free.fr>
 #
 # This library is free software; you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License version 2.1 as
@@ -24,8 +24,8 @@ include( ../../common-project-config.pri )
 include( ../../common-vars.pri )
 include( ../tests.pri )
 
-TARGET = ut_singlecontacteventmodel
+TARGET = ut_recipienteventmodel
 DESTDIR = ../bin
 QT -= gui
-SOURCES += singlecontacteventmodeltest.cpp
-HEADERS += singlecontacteventmodeltest.h
+SOURCES += recipienteventmodeltest.cpp
+HEADERS += recipienteventmodeltest.h

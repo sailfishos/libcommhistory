@@ -1,5 +1,6 @@
-/* Copyright (C) 2015 Jolla Ltd.
- * Contact: Matt Vogt <matthew.vogt@jollamobile.com>
+/*
+ * Copyright (C) 2015 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -29,30 +30,83 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#include "contacteventmodel.h"
-#include <QTimer>
+#include "declarativerecipienteventmodel.h"
+#include "commonutils.h"
+
+#include <QQmlInfo>
 
 using namespace CommHistory;
 
-ContactEventModel::ContactEventModel(QObject *parent)
-    : SingleContactEventModel(parent)
-    , m_contactId(-1)
+
+DeclarativeRecipientEventModel::DeclarativeRecipientEventModel(QObject *parent)
+    : RecipientEventModel(parent)
 {
 }
 
-void ContactEventModel::setContactId(int contactId)
+void DeclarativeRecipientEventModel::setContactId(int contactId)
 {
     if (contactId == m_contactId)
         return;
 
+    if (!m_remoteUid.isEmpty()) {
+        qmlInfo(this) << "remoteUid already set to" << m_remoteUid
+                      << ", ignoring contactId change to" << contactId;
+        return;
+    }
+
     m_contactId = contactId;
+    reload();
     emit contactIdChanged();
-
-    QTimer::singleShot(0, this, SLOT(reload()));
 }
 
-void ContactEventModel::reload()
+int DeclarativeRecipientEventModel::contactId() const
 {
-    getEvents(m_contactId);
+    return m_contactId;
 }
 
+void DeclarativeRecipientEventModel::setRemoteUid(const QString &remoteUid)
+{
+    if (remoteUid == m_remoteUid)
+        return;
+
+    if (m_contactId > 0) {
+        qmlInfo(this) << "contactId already set to" << m_contactId
+                      << ", ignoring remoteUid change to" << remoteUid;
+        return;
+    }
+
+    m_remoteUid = remoteUid;
+    reload();
+    emit remoteUidChanged();
+}
+
+QString DeclarativeRecipientEventModel::remoteUid() const
+{
+    return m_remoteUid;
+}
+
+void DeclarativeRecipientEventModel::classBegin()
+{
+}
+
+void DeclarativeRecipientEventModel::componentComplete()
+{
+    m_complete = true;
+    reload();
+}
+
+void DeclarativeRecipientEventModel::reload()
+{
+    if (!m_complete)
+        return;
+
+    if (m_contactId > 0) {
+        setRecipients(m_contactId);
+    } else if (!m_remoteUid.isEmpty()) {
+        // Use the generic RING_ACCOUNT because we don't care about which SIM
+        // the call was received on.
+        setRecipients(Recipient(RING_ACCOUNT, m_remoteUid));
+    }
+
+    getEvents();
+}
