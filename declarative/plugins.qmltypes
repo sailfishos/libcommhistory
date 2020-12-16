@@ -427,6 +427,7 @@ Module {
         Property { name: "resolving"; type: "bool"; isReadonly: true }
         Method { name: "getEvents"; type: "bool" }
     }
+    Component { name: "CommHistory::RecipientEventModel"; prototype: "CommHistory::EventModel" }
     Component {
         name: "CommHistoryConstants"
         prototype: "QObject"
@@ -500,14 +501,6 @@ Module {
         }
     }
     Component {
-        name: "DeclarativeRecipientEventModel"
-        prototype: "CommHistory::RecipientEventModel"
-        exports: ["org.nemomobile.commhistory/CommRecipientEventModel 1.0"]
-        exportMetaObjectRevisions: [0]
-        Property { name: "contactId"; type: "int" }
-        Property { name: "remoteUid"; type: "string" }
-    }
-    Component {
         name: "ConversationProxyModel"
         prototype: "CommHistory::ConversationModel"
         exports: ["org.nemomobile.commhistory/CommConversationModel 1.0"]
@@ -572,6 +565,14 @@ Module {
             Parameter { name: "localUid"; type: "string" }
             Parameter { name: "remoteUids"; type: "QStringList" }
         }
+    }
+    Component {
+        name: "DeclarativeRecipientEventModel"
+        prototype: "CommHistory::RecipientEventModel"
+        exports: ["org.nemomobile.commhistory/CommRecipientEventModel 1.0"]
+        exportMetaObjectRevisions: [0]
+        Property { name: "contactId"; type: "int" }
+        Property { name: "remoteUid"; type: "string" }
     }
     Component {
         name: "DraftEvent"
