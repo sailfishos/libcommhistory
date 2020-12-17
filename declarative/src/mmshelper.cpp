@@ -74,7 +74,16 @@ class MmsHelper::TempDir : public QObject {
     Q_OBJECT
 
 public:
-    TempDir() { m_tempDir.setAutoRemove(true); }
+    TempDir(QObject *parent = nullptr)
+        : QObject(parent)
+        , m_tempDir(TempDir::basePath() + "/mms")
+    {
+    }
+
+    static QString basePath() {
+        return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/commhistory-tmp");
+    }
+
     bool isValid() const { return m_tempDir.isValid(); }
     QString path() const { return m_tempDir.path(); }
 
@@ -197,6 +206,8 @@ bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const 
 bool MmsHelper::sendMessage(const QString &imsi, const QStringList &to, const QStringList &cc,
     const QStringList &bcc, const QString &subject, const QVariantList &parts)
 {
+    QDir dir;
+    dir.mkpath(TempDir::basePath());
     TempDir *tempDir = new TempDir;
     QDBusPendingCallWatcher *call = sendMessage(*tempDir, imsi, to, cc, bcc, subject, parts);
     if (call) {
