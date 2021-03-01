@@ -21,18 +21,12 @@ BuildRequires:  libphonenumber-devel
 %description
 Library for accessing the communications (IM, SMS and call) history database.
 
-%package unit-tests
-Summary: Unit Test files for libcommhistory
+%package tests
+Summary: Test files for libcommhistory
 Requires: blts-tools
 
-%description unit-tests
-Unit Test files for libcommhistory
-
-%package performance-tests
-Summary: Performance Test files for libcommhistory
-
-%description performance-tests
-Performance Test files for libcommhistory
+%description tests
+Test files for libcommhistory
 
 %package tools
 Summary: Command line tools for libcommhistory
@@ -84,12 +78,6 @@ install -m 644 -p %{SOURCE1} %{buildroot}%{_datadir}/mapplauncherd/privileges.d
 %postun
 /sbin/ldconfig
 
-%post unit-tests
-for n in ut_recentcontactsmodel ut_callmodel; do
-    pathname=/opt/tests/libcommhistory-qt5-unit-tests/$n
-    chgrp privileged $pathname && chmod g+s $pathname
-done
-
 %files
 %defattr(-,root,root,-)
 %{_libdir}/libcommhistory-qt5.so*
@@ -104,13 +92,9 @@ done
 %defattr(-,root,root,-)
 %{_libdir}/qt5/qml/org/nemomobile/commhistory
 
-%files unit-tests
+%files tests
 %defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-unit-tests
-
-%files performance-tests
-%defattr(-,root,root,-)
-/opt/tests/libcommhistory-qt5-performance-tests
+/opt/tests/libcommhistory-qt5
 
 %files devel
 %defattr(-,root,root,-)

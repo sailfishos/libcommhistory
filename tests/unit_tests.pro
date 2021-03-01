@@ -23,33 +23,14 @@
 !include( ../common-vars.pri ):error( "Unable to install common-vars.pri" )
 
 TEMPLATE = subdirs
-SUBDIRS = ut_eventmodel \
-          ut_callmodel \
-          ut_conversationmodel \
-          ut_groupmodel \
-          ut_recentcontactsmodel \
-          ut_singleeventmodel \
-          ut_recipienteventmodel
 
-# make sure the destination path exists
-!system( mkdir -p $${OUT_PWD}/bin ) : \
-    error( "Unable to create bin dir for tests." )
+SUBDIRS = \
+    mem_eventmodel \
+    ut_eventmodel \
+    ut_callmodel \
+    ut_conversationmodel \
+    ut_groupmodel \
+    ut_recentcontactsmodel \
+    ut_singleeventmodel \
+    ut_recipienteventmodel
 
-#-----------------------------------------------------------------------------
-# generate test xml
-#-----------------------------------------------------------------------------
-!system( ./do_tests_xml.sh $${OUT_PWD}/bin \
-                    $${PROJECT_NAME} \
-                    unit \
-                     \"$${SUBDIRS}\" ) : \
-     error("Error running do_tests_xml.sh")
-QMAKE_CLEAN += $${OUT_PWD}/bin/tests.xml
-
-#-----------------------------------------------------------------------------
-# installation setup
-#-----------------------------------------------------------------------------
-!include( ../common-installs-config.pri ) : \
-         error( "Unable to include common-installs-config.pri!" )
-autotests.files = $${OUT_PWD}/bin/*
-autotests.path  = /opt/tests/$${PROJECT_NAME}-unit-tests
-INSTALLS += autotests

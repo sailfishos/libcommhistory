@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../tests.pri )
 
 TARGET = ut_callmodel
-DESTDIR = ../bin
 QT -= gui
 SOURCES += callmodeltest.cpp
 HEADERS += callmodeltest.h

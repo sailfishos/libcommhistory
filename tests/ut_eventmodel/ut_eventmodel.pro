@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../tests.pri )
 
 TARGET = ut_eventmodel
-DESTDIR = ../bin
 QT -= gui
 SOURCES += eventmodeltest.cpp
 HEADERS += eventmodeltest.h

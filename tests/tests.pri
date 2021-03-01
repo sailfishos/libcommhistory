@@ -35,6 +35,6 @@ HEADERS += ../common.h ../modelwatcher.h
 !include( ../common-installs-config.pri ) : \
     error( "Unable to include common-installs-config.pri!" )
 # override default path for tests
-target.path = /opt/tests/$${PROJECT_NAME}-unit-tests
+target.path = /opt/tests/$${PROJECT_NAME}/auto
 # End of File
 

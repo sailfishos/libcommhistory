@@ -230,7 +230,6 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
 
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
         const QContactId &aggId = relationship.first();
-        qDebug() << "********** contact id" << aggId;
         addedContactIds.insert(aggId);
         return internalContactId(aggId);
     }
@@ -265,7 +264,6 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates())) {
         if (constituentIds.contains(relationship.second())) {
             const QContactId &aggId = relationship.first();
-            qDebug() << "********** contact id" << aggId;
             addedContactIds.insert(aggId);
             ids.append(internalContactId(aggId));
         }

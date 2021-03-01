@@ -21,4 +21,5 @@
 ###############################################################################
 
 TEMPLATE = subdirs
-SUBDIRS = unit_tests.pro performance_tests.pro mem_eventmodel
+SUBDIRS = unit_tests.pro performance_tests.pro tests_xml.pro
+

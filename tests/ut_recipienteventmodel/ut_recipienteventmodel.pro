@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../tests.pri )
 
 TARGET = ut_recipienteventmodel
-DESTDIR = ../bin
 QT -= gui
 SOURCES += recipienteventmodeltest.cpp
 HEADERS += recipienteventmodeltest.h
