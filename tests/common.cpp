@@ -583,6 +583,9 @@ void waitForIdle(int pollInterval) {
 
 bool waitSignal(QSignalSpy &spy, int msec)
 {
+    if (!spy.isEmpty()) {
+        return true;
+    }
     QTime timer;
     timer.start();
     while (timer.elapsed() < msec && spy.isEmpty()) {
