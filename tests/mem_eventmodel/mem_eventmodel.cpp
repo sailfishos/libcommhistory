@@ -40,7 +40,7 @@ Group group;
 
 void MemEventModelTest::initTestCase()
 {
-    deleteAll();
+    initTestDatabase();
 
     MALLINFO_DUMP("INIT");
 

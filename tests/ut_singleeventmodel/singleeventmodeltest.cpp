@@ -18,7 +18,7 @@ ModelWatcher watcher;
 
 void SingleEventModelTest::initTestCase()
 {
-    deleteAll();
+    initTestDatabase();
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 

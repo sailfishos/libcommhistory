@@ -60,9 +60,9 @@ QList<TestCallItem> testCalls;
 
 void CallModelTest::initTestCase()
 {
+    initTestDatabase();
     QVERIFY( QDBusConnection::sessionBus().isConnected() );
 
-    deleteAll();
     QTest::qWait(100);
 
     qsrand( QDateTime::currentDateTime().toTime_t() );

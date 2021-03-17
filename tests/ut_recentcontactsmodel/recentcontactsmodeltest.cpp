@@ -126,9 +126,8 @@ private:
 
 void RecentContactsModelTest::initTestCase()
 {
+    initTestDatabase();
     QVERIFY(QDBusConnection::sessionBus().isConnected());
-
-    deleteAll();
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 

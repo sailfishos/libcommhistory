@@ -34,7 +34,7 @@ Group group1, group2;
 
 void RecipientEventModelTest::initTestCase()
 {
-    deleteAll();
+    initTestDatabase();
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 }

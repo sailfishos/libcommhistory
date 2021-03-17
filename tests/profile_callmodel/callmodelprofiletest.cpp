@@ -34,6 +34,8 @@ using namespace CommHistory;
 
 void CallModelProfileTest::initTestCase()
 {
+    initTestDatabase();
+
     logFile = 0;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );

@@ -32,6 +32,8 @@ using namespace CommHistory;
 
 void CallModelPerfTest::initTestCase()
 {
+    initTestDatabase();
+
     logFile = new QFile("libcommhistory-performance-test.log");
     if(!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
@@ -39,8 +41,6 @@ void CallModelPerfTest::initTestCase()
     }
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
-
-    deleteAll();
 }
 
 void CallModelPerfTest::init()

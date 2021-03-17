@@ -35,6 +35,8 @@ using namespace CommHistory;
 
 void ConversationModelProfileTest::initTestCase()
 {
+    initTestDatabase();
+
     logFile = 0;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
