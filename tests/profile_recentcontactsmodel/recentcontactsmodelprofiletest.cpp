@@ -173,8 +173,6 @@ void RecentContactsModelProfileTest::execute()
         RecentContactsModel fetchModel;
         fetchModel.setLimit(limit);
 
-        waitForIdle();
-
         QTime time;
         time.start();
 

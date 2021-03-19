@@ -514,69 +514,6 @@ QString randomMessage(int words)
     return msg;
 }
 
-/*
- * Returns the average system load since last time this function was called (or
- * since boot if this first time this function is called). The scale is [1, 0],
- * where 1 is busy and 0 is idle system. In case of errors, -1 is returned.
- */
-double getSystemLoad()
-{
-    // Parsing assumes that first line of /proc/stat looks something like this:
-    // cpu  110807 325 23491 425840 37435 1367 32 0 0
-
-    QFile file("/proc/stat");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << Q_FUNC_INFO << "Failed to open /proc/stat";
-        return -1;
-    }
-
-    QTextStream in(&file);
-    QString line = in.readLine();
-    file.close();
-
-    QStringList parts = line.split(" ", QString::SkipEmptyParts);
-    if (parts.size() < 10) {
-        qWarning() << Q_FUNC_INFO << "Invalid input from /proc/stat:" << line;
-        return -1;
-    }
-    if (parts.at(0) != QStringLiteral("cpu")) {
-        qWarning() << Q_FUNC_INFO << "Invalid input from /proc/stat:" << line;
-        return -1;
-    }
-
-    int newIdleTicks = parts.at(4).toInt();
-    int newAllTicks = 0;
-    for (int i = 1; i < parts.count(); i++) {
-        newAllTicks += parts.at(i).toInt();
-    }
-
-    quint64 idleTickDelta = newIdleTicks - idleTicks;
-    quint64 allTickDelta = newAllTicks - allTicks;
-    idleTicks = newIdleTicks;
-    allTicks = newAllTicks;
-
-    return 1.0 - ((double)idleTickDelta / allTickDelta);
-}
-
-/*
- * Wait in semi-busy loop until system load drops below IDLE_TRESHOLD
- */
-void waitForIdle(int pollInterval) {
-    double load = 1.0;
-    QDateTime startTime = QDateTime::currentDateTime();
-    getSystemLoad();
-    while (load > IDLE_TRESHOLD) {
-        qDebug() << Q_FUNC_INFO << "Waiting system to calm down. Wait time:"
-            << startTime.secsTo(QDateTime::currentDateTime()) << "seconds. Load:"
-            << load * 100 << "\%";
-        QTest::qWait(pollInterval);
-        load = getSystemLoad();
-    }
-    qDebug() << Q_FUNC_INFO << "Done. Wait time:"
-        << startTime.secsTo(QDateTime::currentDateTime()) << "seconds. Load:"
-        << load * 100 << "\%";
-}
-
 bool waitSignal(QSignalSpy &spy, int msec)
 {
     if (!spy.isEmpty()) {

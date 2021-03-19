@@ -58,12 +58,6 @@ const QString TEST_DATABASE_DIR = QStandardPaths::writableLocation(QStandardPath
 const QString ACCOUNT1 = "/org/freedesktop/Telepathy/Account/gabble/jabber/dut_40localhost0";
 const QString ACCOUNT2 = "/org/freedesktop/Telepathy/Account/gabble/jabber/dut2_40localhost0";
 
-/* The default load polling interval when waiting system to become idle */
-const int IDLE_POLL_INTERVAL = 500;
-
-/* System is considered idle when system load drops below this value */
-const double IDLE_TRESHOLD = 0.07; // 7% (system often sits at 5-6%)
-
 const int WAIT_SIGNAL_TIMEOUT = 5000;
 
 /* Duration of phone calls added with addTestEvent */
@@ -98,8 +92,6 @@ void cleanupTestEvents();
 bool compareEvents(Event &e1, Event &e2);
 void deleteAll();
 QString randomMessage(int words);
-double getSystemLoad();
-void waitForIdle(int pollInterval = IDLE_POLL_INTERVAL);
 bool waitSignal(QSignalSpy &spy, int msec = WAIT_SIGNAL_TIMEOUT);
 // wait and allow deferred deletes to be processed (http://bugreports.qt.nokia.com/browse/QTBUG-12575)
 void waitWithDeletes(int msec = WAIT_SIGNAL_TIMEOUT);

@@ -214,8 +214,6 @@ void GroupModelPerfTest::getGroups()
 
         fetchModel.setManager(&manager);
 
-        waitForIdle();
-
         QTime time;
         time.start();
         bool result = fetchModel.getGroups();

@@ -184,8 +184,6 @@ void ConversationModelProfileTest::execute()
             fetchModel.setChunkSize(limit);
         }
 
-        waitForIdle();
-
         QTime time;
         time.start();
         bool result = fetchModel.getEvents();
