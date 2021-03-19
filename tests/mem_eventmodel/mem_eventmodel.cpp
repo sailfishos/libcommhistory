@@ -21,6 +21,7 @@
 ******************************************************************************/
 
 #include <QtTest/QtTest>
+#include <QTime>
 #include <time.h>
 #include <malloc.h>
 #include "eventmodel.h"
@@ -37,6 +38,18 @@ Group group;
 #define CALM_TIMEOUT 500
 
 #define MALLINFO_DUMP(s) {struct mallinfo m = mallinfo();qDebug() << "MALLINFO" << (s) << m.arena << m.uordblks << m.fordblks;}
+
+static void waitWithDeletes(int msec)
+{
+    QTime timer;
+    timer.start();
+    while (timer.elapsed() < msec) {
+        QCoreApplication::sendPostedEvents();
+        QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
+        QCoreApplication::processEvents();
+    }
+}
+
 
 void MemEventModelTest::initTestCase()
 {

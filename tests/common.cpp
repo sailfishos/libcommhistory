@@ -530,17 +530,6 @@ bool waitSignal(QSignalSpy &spy, int msec)
     return !spy.isEmpty();
 }
 
-void waitWithDeletes(int msec)
-{
-    QTime timer;
-    timer.start();
-    while (timer.elapsed() < msec) {
-        QCoreApplication::sendPostedEvents();
-        QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
-        QCoreApplication::processEvents();
-    }
-}
-
 void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs)
 {
     int sum = 0;
