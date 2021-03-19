@@ -33,6 +33,8 @@ using namespace CommHistory;
 
 void GroupModelPerfTest::initTestCase()
 {
+    initTestDatabase();
+
     logFile = new QFile("libcommhistory-performance-test.log");
     if(!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
@@ -40,8 +42,6 @@ void GroupModelPerfTest::initTestCase()
     }
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
-
-    deleteAll();
 }
 
 void GroupModelPerfTest::init()

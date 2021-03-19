@@ -30,6 +30,7 @@
 
 #include <QFile>
 #include <QSignalSpy>
+#include <QStandardPaths>
 
 #include <iterator>
 
@@ -51,6 +52,9 @@ void waitForSignal(QObject *object, const char *signal);
 
 using namespace CommHistory;
 
+const QString TEST_DATABASE_DIR = QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+        + "/tests";
+
 const QString ACCOUNT1 = "/org/freedesktop/Telepathy/Account/gabble/jabber/dut_40localhost0";
 const QString ACCOUNT2 = "/org/freedesktop/Telepathy/Account/gabble/jabber/dut2_40localhost0";
 
@@ -64,6 +68,8 @@ const int WAIT_SIGNAL_TIMEOUT = 5000;
 
 /* Duration of phone calls added with addTestEvent */
 const int TESTCALL_SECS = 100;
+
+void initTestDatabase();
 
 int addTestEvent(EventModel &model,
                  Event::EventType type,
@@ -87,7 +93,6 @@ bool addTestContactAddress(int contactId, const QString &remoteUid, const QStrin
 void modifyTestContact(int id, const QString &name, bool favorite = false);
 void deleteTestContact(int id);
 QContactId localContactForAggregate(const QContactId &contactId);
-void cleanUpTestContacts();
 void cleanupTestGroups();
 void cleanupTestEvents();
 bool compareEvents(Event &e1, Event &e2);

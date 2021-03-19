@@ -40,9 +40,8 @@ ModelWatcher watcher, watcher2;
 
 void ConversationModelTest::initTestCase()
 {
+    initTestDatabase();
     QVERIFY(QDBusConnection::sessionBus().isConnected());
-
-    deleteAll();
 
     loop = new QEventLoop(this);
 

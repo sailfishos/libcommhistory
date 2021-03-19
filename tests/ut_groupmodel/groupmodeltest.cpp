@@ -99,8 +99,7 @@ void GroupModelTest::dataChangedSlot(const QModelIndex &start, const QModelIndex
 
 void GroupModelTest::initTestCase()
 {
-    deleteAll();
-    QTest::qWait(100);
+    initTestDatabase();
 
     QVERIFY(QDBusConnection::sessionBus().isConnected());
 

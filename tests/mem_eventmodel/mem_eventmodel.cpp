@@ -40,6 +40,8 @@ Group group;
 
 void MemEventModelTest::initTestCase()
 {
+    initTestDatabase();
+
     MALLINFO_DUMP("INIT");
 
     addTestGroup(group, "/org/freedesktop/Telepathy/Account/gabble/jabber/dut_40localhost0", "td@localhost");
@@ -66,9 +68,9 @@ void MemEventModelTest::addEvent()
     e1.setRecipients(Recipient(e1.localUid(), "td@localhost"));
     e1.setFreeText("addEvents 1");
 
-    QVERIFY(model->addEvent(e1));
     QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
 
+    QVERIFY(model->addEvent(e1));
     QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
 
     QTest::qWait(CALM_TIMEOUT);
@@ -101,8 +103,8 @@ void MemEventModelTest::addEvents()
         e1.setRecipients(Recipient(e1.localUid(), "td@localhost"));
         e1.setFreeText(QString("addEvents %1").arg(i));
 
-        QVERIFY(model->addEvent(e1));
         QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
+        QVERIFY(model->addEvent(e1));
 
         QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
         waitWithDeletes(100);
@@ -197,8 +199,10 @@ void MemEventModelTest::callSetFilter()
     QSignalSpy ready(model, SIGNAL(modelReady(bool)));
 
     model->getEvents();
-    ready.clear();
-    QVERIFY(waitSignal(ready, WAIT_TIMEOUT));
+
+    int expectedReadyCount = 1;
+    QTRY_COMPARE(ready.count(), expectedReadyCount);
+    expectedReadyCount++;
 
     for(int i = 0; i < 5; i++) {
 
@@ -206,10 +210,9 @@ void MemEventModelTest::callSetFilter()
             model->setFilter(CallModel::SortByTime, CommHistory::CallEvent::MissedCallType);
         else
             model->setFilter(CallModel::SortByContact, CommHistory::CallEvent::UnknownCallType);
-        ready.clear();
-        QVERIFY(waitSignal(ready, WAIT_TIMEOUT));
-        QTest::qWait(100);
 
+        QTRY_COMPARE(ready.count(), expectedReadyCount);
+        expectedReadyCount++;
         MALLINFO_DUMP("get");
     }
     delete model;

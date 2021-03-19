@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../tests.pri )
 
 TARGET = ut_conversationmodel
-DESTDIR = ../bin
 QT -= gui
 SOURCES += conversationmodeltest.cpp
 HEADERS += conversationmodeltest.h

@@ -60,7 +60,7 @@ void EventModelTest::groupsDeletedSlot(const QList<int> &groupIds)
 
 void EventModelTest::initTestCase()
 {
-    deleteAll();
+    initTestDatabase();
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 

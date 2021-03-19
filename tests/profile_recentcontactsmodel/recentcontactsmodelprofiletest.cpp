@@ -33,6 +33,8 @@ using namespace CommHistory;
 
 void RecentContactsModelProfileTest::initTestCase()
 {
+    initTestDatabase();
+
     logFile = 0;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );

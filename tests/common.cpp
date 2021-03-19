@@ -56,6 +56,7 @@
 #include "common.h"
 #include "commonutils.h"
 #include "contactlistener.h"
+#include "commhistorydatabasepath.h"
 
 QTCONTACTS_USE_NAMESPACE
 
@@ -141,6 +142,13 @@ quint64 idleTicks = 0;
 
 QSet<QContactId> addedContactIds;
 QSet<int> addedEventIds;
+
+void initTestDatabase()
+{
+    deleteAll();
+
+    CommHistoryDatabasePath::setRootDir(TEST_DATABASE_DIR);
+}
 
 int addTestEvent(EventModel &model,
                  Event::EventType type,
@@ -230,7 +238,6 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
 
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
         const QContactId &aggId = relationship.first();
-        qDebug() << "********** contact id" << aggId;
         addedContactIds.insert(aggId);
         return internalContactId(aggId);
     }
@@ -265,7 +272,6 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > 
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates())) {
         if (constituentIds.contains(relationship.second())) {
             const QContactId &aggId = relationship.first();
-            qDebug() << "********** contact id" << aggId;
             addedContactIds.insert(aggId);
             ids.append(internalContactId(aggId));
         }
@@ -369,29 +375,6 @@ void deleteTestContact(int id)
         qWarning() << "error deleting contact:" << contactId.localId();
     }
     addedContactIds.remove(contactId);
-}
-
-void cleanUpTestContacts()
-{
-    if (!addedContactIds.isEmpty()) {
-        QString aggregatesType = QContactRelationship::Aggregates();
-
-        const QList<QContactId> contactIdsToRemove = addedContactIds.toList();
-        QList<QContact> contactsToRemove;
-        for (const QContactId &contactId : addedContactIds) {
-            const QContactId localId = localContactForAggregate(contactId);
-            QContact localContact = manager()->contact(localId);
-            if (!localContact.isEmpty()) {
-                contactsToRemove.append(localContact);
-            }
-        }
-
-        if (!SeasideCache::removeContacts(contactsToRemove)) {
-            qWarning() << "Unable to remove test contacts:" << addedContactIds;
-        }
-
-        addedContactIds.clear();
-    }
 }
 
 void cleanupTestGroups()
@@ -505,9 +488,20 @@ void deleteAll()
 {
     qDebug() << Q_FUNC_INFO << "- Deleting all";
 
-    cleanUpTestContacts();
     cleanupTestGroups();
     cleanupTestEvents();
+
+    if (!QDir(TEST_DATABASE_DIR).removeRecursively()) {
+        qWarning() << "Unable to remove test database directory:" << TEST_DATABASE_DIR;
+    }
+
+    if (!qgetenv("LIBCONTACTS_TEST_MODE").isEmpty()) {
+        QString contactsDbDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                + QStringLiteral("/system/privileged/Contacts/qtcontacts-sqlite-test");
+        if (!QDir(contactsDbDir).removeRecursively()) {
+            qWarning() << "Unable to remove test contacts database directory:" << contactsDbDir;
+        }
+    }
 }
 
 QString randomMessage(int words)
@@ -585,6 +579,9 @@ void waitForIdle(int pollInterval) {
 
 bool waitSignal(QSignalSpy &spy, int msec)
 {
+    if (!spy.isEmpty()) {
+        return true;
+    }
     QTime timer;
     timer.start();
     while (timer.elapsed() < msec && spy.isEmpty()) {

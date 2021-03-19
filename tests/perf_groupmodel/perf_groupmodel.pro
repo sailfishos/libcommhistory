@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../performance_tests.pri )
 
 TARGET = perf_groupmodel
-DESTDIR = ../perf_bin
 QT -= gui
 SOURCES += groupmodelperftest.cpp
 HEADERS += groupmodelperftest.h

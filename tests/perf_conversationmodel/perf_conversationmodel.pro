@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../performance_tests.pri )
 
 TARGET = perf_conversationmodel
-DESTDIR = ../perf_bin
 QT -= gui
 SOURCES += conversationmodelperftest.cpp
 HEADERS += conversationmodelperftest.h

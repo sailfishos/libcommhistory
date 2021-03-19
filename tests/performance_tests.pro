@@ -23,35 +23,14 @@
 !include( ../common-vars.pri ):error( "Unable to install common-vars.pri" )
 
 TEMPLATE = subdirs
-SUBDIRS = perf_callmodel \
-		  perf_conversationmodel \
-		  perf_groupmodel \
-		  perf_recentcontactsmodel \
-          profile_callmodel \
-		  profile_conversationmodel \
-		  profile_groupmodel \
-		  profile_recentcontactsmodel
 
-# make sure the destination path exists
-!system( mkdir -p $${OUT_PWD}/perf_bin ) : \
-    error( "Unable to create perf_bin dir for tests." )
+SUBDIRS = \
+    perf_callmodel \
+    perf_conversationmodel \
+    perf_groupmodel \
+    perf_recentcontactsmodel \
+    profile_callmodel \
+    profile_conversationmodel \
+    profile_groupmodel \
+    profile_recentcontactsmodel
 
-#-----------------------------------------------------------------------------
-# generate test xml
-#-----------------------------------------------------------------------------
-!system( ./do_tests_xml.sh $${OUT_PWD}/perf_bin \
-                    $${PROJECT_NAME} \
-                    performance \
-                     \"$${SUBDIRS}\" ) : \
-     error("Error running do_tests_xml.sh")
-QMAKE_CLEAN += $${OUT_PWD}/perf_bin/tests.xml
-
-#-----------------------------------------------------------------------------
-# installation setup
-#-----------------------------------------------------------------------------
-!include( ../common-installs-config.pri ) : \
-         error( "Unable to include common-installs-config.pri!" )
-perftests.files = $${OUT_PWD}/perf_bin/* \
-                  run_all_performance_tests.sh
-perftests.path  = /opt/tests/$${PROJECT_NAME}-performance-tests
-INSTALLS += perftests

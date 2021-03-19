@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../performance_tests.pri )
 
 TARGET = profile_recentcontactsmodel
-DESTDIR = ../perf_bin
 QT -= gui
 SOURCES += recentcontactsmodelprofiletest.cpp
 HEADERS += recentcontactsmodelprofiletest.h

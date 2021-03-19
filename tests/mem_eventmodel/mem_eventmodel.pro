@@ -25,7 +25,6 @@ include( ../../common-vars.pri )
 include( ../tests.pri )
 
 TARGET = mem_eventmodel
-DESTDIR = ../bin
 QT -= gui
 
 SOURCES += mem_eventmodel.cpp

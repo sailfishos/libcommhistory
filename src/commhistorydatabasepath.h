@@ -32,6 +32,8 @@ public:
     static QString databaseFile();
     static QString dataDir();
     static QString dataDir(int id);
+
+    static void setRootDir(const QString &rootDir);
 };
 
 #endif

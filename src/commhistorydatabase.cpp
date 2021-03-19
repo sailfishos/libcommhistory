@@ -28,11 +28,14 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QStandardPaths>
+#include <QCoreApplication>
 
 // Appended to GenericDataLocation (or a hardcoded equivalent on Qt4)
 #define COMMHISTORY_DATABASE_DIR "/commhistory/"
 #define COMMHISTORY_DATABASE_NAME "commhistory.db"
 #define COMMHISTORY_DATA_DIR COMMHISTORY_DATABASE_DIR "data/"
+
+static QString db_root_dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
 
 static const char *db_setup[] = {
     "PRAGMA temp_store = MEMORY",
@@ -345,9 +348,14 @@ QSqlQuery CommHistoryDatabase::prepare(const char *statement, const QSqlDatabase
     return query;
 }
 
+void CommHistoryDatabasePath::setRootDir(const QString &rootDir)
+{
+    db_root_dir = rootDir;
+}
+
 QString CommHistoryDatabasePath::databaseDir()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String(COMMHISTORY_DATABASE_DIR);
+    return db_root_dir + QLatin1String(COMMHISTORY_DATABASE_DIR);
 }
 
 QString CommHistoryDatabasePath::databaseFile()
@@ -357,7 +365,7 @@ QString CommHistoryDatabasePath::databaseFile()
 
 QString CommHistoryDatabasePath::dataDir()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral(COMMHISTORY_DATA_DIR);
+    return db_root_dir + QStringLiteral(COMMHISTORY_DATA_DIR);
 }
 
 QString CommHistoryDatabasePath::dataDir(int id)

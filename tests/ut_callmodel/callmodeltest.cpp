@@ -60,9 +60,9 @@ QList<TestCallItem> testCalls;
 
 void CallModelTest::initTestCase()
 {
+    initTestDatabase();
     QVERIFY( QDBusConnection::sessionBus().isConnected() );
 
-    deleteAll();
     QTest::qWait(100);
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
@@ -539,6 +539,23 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     }
 
     QDateTime when = QDateTime::currentDateTime();
+    model.setTreeMode(false);
+
+    QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::DialedCallType, when));
+    QVERIFY(model.getEvents());
+    QVERIFY(watcher.waitForModelReady());
+    int outboundCallCount = model.rowCount();
+
+    QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::MissedCallType, when));
+    QVERIFY(model.getEvents());
+    QVERIFY(watcher.waitForModelReady());
+    int missedCallCount = model.rowCount();
+
+    QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::ReceivedCallType, when));
+    QVERIFY(model.getEvents());
+    QVERIFY(watcher.waitForModelReady());
+    int receivedCallCount = model.rowCount();
+
     //3 dialled
     addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when );
     addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(5) );
@@ -558,13 +575,11 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 
     QDateTime time = when;
     //model.setQueryMode(EventModel::SyncQuery);
-    model.setTreeMode(false);
     QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::DialedCallType, time));
     QVERIFY(model.getEvents());
     QVERIFY(watcher.waitForModelReady());
 
-    int numEventsRet = model.rowCount();
-    QCOMPARE(numEventsRet, 3);
+    QCOMPARE(model.rowCount(), outboundCallCount + 3);
     Event e1 = model.event(model.index(0,0));
     Event e2 = model.event(model.index(1,0));
     Event e3 = model.event(model.index(2,0));
@@ -577,33 +592,26 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::MissedCallType, time));
     QVERIFY(watcher.waitForModelReady());
-    QVERIFY(model.rowCount() == 3);
+    QCOMPARE(model.rowCount(), missedCallCount + 3);
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::ReceivedCallType, time));
-    qDebug() << time;
     QVERIFY(watcher.waitForModelReady());
-    for (int i = 0; i < model.rowCount(); i++) {
-        qDebug() << model.event(model.index(i, 0)).toString();
-    }
-    QVERIFY(model.rowCount() == 2);
+    QCOMPARE(model.rowCount(), receivedCallCount + 2);
 
     /**
       * testing to check for adding events with wrong filters
       */
     time = when.addSecs(-60*5);
-    int numEventsGot = 0;
     //adding one more received but 5 minutes before the set time filter
     addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, time );
     QVERIFY(watcher.waitForAdded());
-    QVERIFY(model.rowCount() == 2); //event should not be added to model, so rowCount should remain same for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same for received calls
     //filter is set for received call, try to add missed and dialled calls with correct time filter
     addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when );
     QVERIFY(watcher.waitForAdded());
-    numEventsGot = model.rowCount();
-    QVERIFY(numEventsGot == 2); //event should not be added to model, so rowCount should remain same which was for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same which was for received calls
     addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when );
     QVERIFY(watcher.waitForAdded());
-    numEventsGot = model.rowCount();
-    QVERIFY(numEventsGot  == 2); //event should not be added to model, so rowCount should remain same which was for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same which was for received calls
 
     /**
       ** testing to check for getting events after he time when all events addition was complete
