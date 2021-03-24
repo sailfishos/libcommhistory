@@ -169,8 +169,6 @@ void GroupModelProfileTest::execute()
 
         fetchModel.setManager(&manager);
 
-        waitForIdle();
-
         QTime time;
         time.start();
 
