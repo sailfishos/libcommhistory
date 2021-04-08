@@ -48,6 +48,15 @@ quint32 addressFlagValues(quint64 statusFlags)
     return statusFlags & (QContactStatusFlags::HasPhoneNumber | QContactStatusFlags::HasEmailAddress | QContactStatusFlags::HasOnlineAccount);
 }
 
+QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remoteUid)
+{
+    // If localUid is for phone number, use prefix alone to find the RecipientPrivate
+    // this avoids problems with different SIMs etc.
+    const bool usesPhoneNumberComparison = CommHistory::localUidComparesPhoneNumbers(localUid);
+    return qMakePair(usesPhoneNumberComparison ? CommHistory::RING_ACCOUNT : localUid,
+                     ::minimizeRemoteUid(remoteUid, usesPhoneNumberComparison));
+}
+
 }
 
 bool recipient_initialized = initializeTypes();
@@ -135,7 +144,7 @@ RecipientPrivate::RecipientPrivate(const QString &local, const QString &remote)
 RecipientPrivate::~RecipientPrivate()
 {
     if (!recipientInstances.isDestroyed()) {
-        recipientInstances->remove(qMakePair(localUid, remoteUid.toLower()));
+        recipientInstances->remove(makeUidPair(localUid, remoteUid));
     }
 }
 
@@ -145,7 +154,7 @@ QSharedPointer<RecipientPrivate> RecipientPrivate::get(const QString &localUid, 
         return *sharedNullRecipient;
     }
 
-    const QPair<QString,QString> uids = qMakePair(localUid, remoteUid.toLower());
+    const QPair<QString, QString> uids = makeUidPair(localUid, remoteUid);
     QSharedPointer<RecipientPrivate> instance = recipientInstances->value(uids);
     if (!instance) {
         instance = QSharedPointer<RecipientPrivate>(new RecipientPrivate(localUid, remoteUid));
