@@ -214,7 +214,7 @@ void GroupModelPerfTest::getGroups()
 
         fetchModel.setManager(&manager);
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
         bool result = fetchModel.getGroups();
         QVERIFY(result);

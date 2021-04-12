@@ -144,7 +144,7 @@ void ContactGroupModelPrivate::setManager(GroupManager *m)
             emit q->contactGroupCreated(items[index]);
         }
 
-        qSort(items.begin(), items.end(), contactGroupSort);
+        std::sort(items.begin(), items.end(), contactGroupSort);
     }
 
     q->endResetModel();

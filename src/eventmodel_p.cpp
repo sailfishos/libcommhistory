@@ -360,7 +360,7 @@ void EventModelPrivate::onDemandResolverFinished()
             resolvedRecipients.insert(*it);
     }
 
-    slotContactChanged(resolvedRecipients.toList());
+    slotContactChanged(resolvedRecipients.values());
 }
 
 void EventModelPrivate::modifyInModel(Event &event)

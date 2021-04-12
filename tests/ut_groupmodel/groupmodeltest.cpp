@@ -664,7 +664,7 @@ void GroupModelTest::streamingQuery()
 
     QList<int> idsOrig;
     QList<int> idsStream;
-    QTime timer;
+
     int count = 0;
     int chunkSize = firstChunkSize;
     while (count < total) {

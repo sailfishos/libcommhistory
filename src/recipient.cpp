@@ -470,7 +470,7 @@ QList<int> RecipientList::contactIds() const
         if (r.contactId() > 0)
             re.insert(r.contactId());
     }
-    return re.toList();
+    return re.values();
 }
 
 QStringList RecipientList::remoteUids() const

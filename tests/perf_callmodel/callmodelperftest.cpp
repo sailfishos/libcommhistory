@@ -201,7 +201,7 @@ void CallModelPerfTest::getEvents()
         fetchModel.setResolveContacts(resolve ? EventModel::ResolveImmediately : EventModel::DoNotResolve);
         fetchModel.setFilter(CallModel::SortByContact);
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
 
         bool result = fetchModel.getEvents();

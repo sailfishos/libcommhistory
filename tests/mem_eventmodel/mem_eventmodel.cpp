@@ -41,7 +41,7 @@ Group group;
 
 static void waitWithDeletes(int msec)
 {
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
     while (timer.elapsed() < msec) {
         QCoreApplication::sendPostedEvents();

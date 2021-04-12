@@ -71,7 +71,7 @@ void ConversationModelPrivate::groupsAddedSlot(const QList<Group> &/*groups*/)
         if (allGroups)
             q->getEvents();
         else
-            q->getEvents(filterGroupIds.toList());
+            q->getEvents(filterGroupIds.values());
     }
 }
 
@@ -93,7 +93,7 @@ void ConversationModelPrivate::groupsDeletedSlot(const QList<int> &groupIds)
         if (allGroups)
             q->getEvents();
         else
-            q->getEvents(filterGroupIds.toList());
+            q->getEvents(filterGroupIds.values());
     }
 }
 
@@ -126,7 +126,7 @@ bool ConversationModelPrivate::acceptsEvent(const Event &event) const
 
 QSqlQuery ConversationModelPrivate::buildQuery() const
 {
-    QList<int> groups = filterGroupIds.toList();
+    QList<int> groups = filterGroupIds.values();
     QString q;
     int unionCount = 0;
 
@@ -247,7 +247,7 @@ bool ConversationModel::setFilter(Event::EventType type,
     d->filterDirection = direction;
 
     if (!d->filterGroupIds.isEmpty()) {
-        return getEvents(d->filterGroupIds.toList());
+        return getEvents(d->filterGroupIds.values());
     } else if (d->allGroups) {
         return getEvents();
     }

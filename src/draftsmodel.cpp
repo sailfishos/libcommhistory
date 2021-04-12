@@ -55,7 +55,7 @@ DraftsModel::~DraftsModel()
 QList<int> DraftsModel::filterGroups() const
 {
     Q_D(const DraftsModel);
-    return d->filterGroups.toList();
+    return d->filterGroups.values();
 }
 
 void DraftsModel::setFilterGroups(const QList<int> &list)

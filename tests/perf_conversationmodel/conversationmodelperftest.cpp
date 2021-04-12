@@ -228,7 +228,7 @@ void ConversationModelPerfTest::getEvents()
             fetchModel.setChunkSize(limit);
         }
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
         bool result = fetchModel.getEvents(groupIds);
         QVERIFY(result);

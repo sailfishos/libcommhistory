@@ -102,8 +102,6 @@ void RecipientEventModelPrivate::fetchEvents()
 
 void RecipientEventModelPrivate::fetcherFinished()
 {
-    Q_Q(RecipientEventModel);
-
     // Our contact is now loaded in the cache
     if (m_contactId > 0) {
         m_recipients = RecipientList::fromContact(m_contactId);
@@ -151,8 +149,6 @@ RecipientEventModel::~RecipientEventModel()
 
 void RecipientEventModel::setRecipients(const Recipient &recipient)
 {
-    Q_D(RecipientEventModel);
-
     setRecipients(RecipientList() << recipient);
 }
 

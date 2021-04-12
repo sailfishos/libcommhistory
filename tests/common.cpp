@@ -519,7 +519,7 @@ bool waitSignal(QSignalSpy &spy, int msec)
     if (!spy.isEmpty()) {
         return true;
     }
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
     while (timer.elapsed() < msec && spy.isEmpty()) {
         QCoreApplication::sendPostedEvents();
@@ -539,7 +539,7 @@ void summarizeResults(const QString &className, QList<int> &times, QFile *logFil
         timeList.append(QString::number(time));
     }
 
-    qSort(times);
+    std::sort(times.begin(), times.end());
     float median = 0.0;
     const int iterations(times.count());
     if (iterations % 2 > 0) {

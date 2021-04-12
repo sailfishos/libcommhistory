@@ -203,7 +203,7 @@ void RecentContactsModelPerfTest::getEvents()
         if (limit)
             fetchModel.setLimit(limit);
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
 
         bool result = fetchModel.getEvents();

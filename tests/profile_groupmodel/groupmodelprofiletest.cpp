@@ -169,7 +169,7 @@ void GroupModelProfileTest::execute()
 
         fetchModel.setManager(&manager);
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
 
         bool result = fetchModel.getGroups();

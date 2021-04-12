@@ -94,7 +94,7 @@ void GroupModelPrivate::setManager(GroupManager *m)
         connect(manager, SIGNAL(groupsCommitted(QList<int>,bool)), q, SIGNAL(groupsCommitted(QList<int>,bool)));
 
         groups = manager->groups();
-        qSort(groups.begin(), groups.end(), groupObjectSort);
+        std::sort(groups.begin(), groups.end(), groupObjectSort);
     }
 
     q->endResetModel();

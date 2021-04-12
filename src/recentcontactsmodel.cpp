@@ -271,8 +271,8 @@ void RecentContactsModelPrivate::prependEvents(QList<Event> events, bool resolve
         }
 
         // Remove the rows that have been made obsolete
-        QList<int> removeIndices = removeSet.toList();
-        qSort(removeIndices);
+        QList<int> removeIndices = removeSet.values();
+        std::sort(removeIndices.begin(), removeIndices.end());
 
         int count;
         while ((count = removeIndices.count()) != 0) {
