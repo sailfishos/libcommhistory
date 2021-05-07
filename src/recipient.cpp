@@ -39,8 +39,12 @@ bool initializeTypes()
 
 QString minimizeRemoteUid(const QString &remoteUid, bool isPhoneNumber)
 {
-    // For non-standard localUid values, we still need a comparable value
-    return isPhoneNumber ? CommHistory::minimizePhoneNumber(remoteUid).toLower() : remoteUid.toLower();
+    // For non-standard localUid values, we still need a comparable value.
+    // For non-phone-number remoteUid values (e.g. non-replyable SMS senders), we still need a comparable value.
+    // In that case, even if isPhoneNumber is true (e.g. is from a SIM modem)
+    // the minimized form of the number might be empty (due to invalid phone number format).
+    const QString minimized = isPhoneNumber ? CommHistory::minimizePhoneNumber(remoteUid).toLower() : QString();
+    return minimized.isEmpty() ? remoteUid.toLower() : minimized;
 }
 
 quint32 addressFlagValues(quint64 statusFlags)
