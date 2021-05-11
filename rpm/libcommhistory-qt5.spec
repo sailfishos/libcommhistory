@@ -1,6 +1,6 @@
 Name:       libcommhistory-qt5
 Summary:    Communications event history database API
-Version:    1.11.5
+Version:    1.11.9
 Release:    1
 License:    LGPLv2
 URL:        https://git.sailfishos.org/mer-core/libcommhistory
