@@ -209,7 +209,7 @@ void addTestGroup(Group& grp, QString localUid, QString remoteUid)
     QSignalSpy ready(&groupModel, SIGNAL(groupsCommitted(QList<int>,bool)));
     QVERIFY(groupModel.addGroup(grp));
 
-    QVERIFY(waitSignal(ready));
+    QTRY_COMPARE(ready.count(), 1);
     QVERIFY(ready.first().at(1).toBool());
 }
 
@@ -511,22 +511,6 @@ QString randomMessage(int words)
         msgStream << msgWords[qrand() % numWords] << " ";
     }
     return msg;
-}
-
-bool waitSignal(QSignalSpy &spy, int msec)
-{
-    if (!spy.isEmpty()) {
-        return true;
-    }
-    QElapsedTimer timer;
-    timer.start();
-    while (timer.elapsed() < msec && spy.isEmpty()) {
-        QCoreApplication::sendPostedEvents();
-        QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
-        QCoreApplication::processEvents();
-    }
-
-    return !spy.isEmpty();
 }
 
 void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs)

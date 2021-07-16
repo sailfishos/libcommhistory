@@ -29,6 +29,7 @@ void SingleEventModelTest::getEventById()
 {
     SingleEventModel model;
 
+    QSignalSpy modelReady(&model, &SingleEventModel::modelReady);
     watcher.setModel(&model);
 
     Event event;
@@ -54,7 +55,7 @@ void SingleEventModelTest::getEventById()
 
     QVERIFY(event.id() != -1);
     QVERIFY(model.getEventById(event.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -71,6 +72,7 @@ void SingleEventModelTest::getEventByTokens()
     p.remove(Event::IsMissedCall);
     model.setPropertyMask(p);
 
+    QSignalSpy modelReady(&model, &SingleEventModel::modelReady);
     watcher.setModel(&model);
 
     Event event;
@@ -106,7 +108,7 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(mms2.id() != -1);
 
     QVERIFY(model.getEventByTokens("messageTokenB1", "", -1));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -114,7 +116,7 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(compareEvents(event, modelEvent));
 
     QVERIFY(model.getEventByTokens("messageTokenB1", "", group1.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -122,13 +124,13 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(compareEvents(event, modelEvent));
 
     QVERIFY(model.getEventByTokens("messageTokenB1", "", group1.id() + 1));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 0);
 
     // Can match either to token or mms id:
     QVERIFY(model.getEventByTokens("messageTokenB1", "nonExistingMmsId", group1.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -136,12 +138,12 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(compareEvents(event, modelEvent));
 
     QVERIFY(model.getEventByTokens("", "nonExistingMmsId", group1.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 0);
 
     QVERIFY(model.getEventByTokens("", "mmsId", group1.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -149,7 +151,7 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(compareEvents(mms, modelEvent));
 
     QVERIFY(model.getEventByTokens("", "mmsId", group2.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -157,7 +159,7 @@ void SingleEventModelTest::getEventByTokens()
     QVERIFY(compareEvents(mms2, modelEvent));
 
     QVERIFY(model.getEventByTokens("mmsMessageToken", "mmsId", group1.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -187,6 +189,7 @@ void SingleEventModelTest::contactMatching()
     QFETCH(int, eventType);
 
     SingleEventModel model;
+    QSignalSpy modelReady(&model, &SingleEventModel::modelReady);
     model.setResolveContacts(EventModel::ResolveImmediately);
 
     Event::PropertySet p;
@@ -202,7 +205,7 @@ void SingleEventModelTest::contactMatching()
     QVERIFY(eventId != -1);
 
     QVERIFY(model.getEventById(eventId));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     Event event = model.event();
     QCOMPARE(event.id(), eventId);
     QCOMPARE(event.contactId(), 0);
@@ -214,7 +217,7 @@ void SingleEventModelTest::contactMatching()
     QTest::qWait(1000);
 
     QVERIFY(model.getEventById(eventId));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     event = model.event();
     QCOMPARE(event.id(), eventId);
     QCOMPARE(event.contactId(), 0);
@@ -223,7 +226,7 @@ void SingleEventModelTest::contactMatching()
     QTest::qWait(1000);
 
     QVERIFY(model.getEventById(eventId));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     event = model.event();
     QCOMPARE(event.id(), eventId);
 
@@ -238,11 +241,11 @@ void SingleEventModelTest::contactMatching()
 void SingleEventModelTest::updateStatus()
 {
     SingleEventModel model;
+    QSignalSpy modelReady(&model, &SingleEventModel::modelReady);
     watcher.setModel(&model);
 
     SingleEventModel observer;
-    ModelWatcher watcherObserver;
-    watcherObserver.setModel(&observer);
+    QSignalSpy observerModelReady(&model, &SingleEventModel::modelReady);
 
     Event event;
     event.setType(Event::SMSEvent);
@@ -269,7 +272,7 @@ void SingleEventModelTest::updateStatus()
                                                       << CommHistory::Event::MmsId;
     model.setPropertyMask(props);
     QVERIFY(model.getEventById(event.id()));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
 
     QCOMPARE(model.rowCount(), 1);
 
@@ -284,7 +287,7 @@ void SingleEventModelTest::updateStatus()
 
     // init observer model with the same event and all properties
     QVERIFY(observer.getEventById(event.id()));
-    QVERIFY(watcherObserver.waitForModelReady());
+    QTRY_COMPARE(observerModelReady.count(), 1);
 
     QCOMPARE(observer.rowCount(), 1);
 

@@ -92,7 +92,6 @@ void cleanupTestEvents();
 bool compareEvents(Event &e1, Event &e2);
 void deleteAll();
 QString randomMessage(int words);
-bool waitSignal(QSignalSpy &spy, int msec = WAIT_SIGNAL_TIMEOUT);
 void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs);
 
 #endif
