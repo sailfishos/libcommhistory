@@ -411,6 +411,8 @@ void ConversationModelTest::contacts()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
+    ContactChangeListener contactChangeListener;
+
     Group group;
     addTestGroup(group, localId, remoteId);
 
@@ -435,32 +437,24 @@ void ConversationModelTest::contacts()
     event = model.event(model.index(0, 0));
     QCOMPARE(event.contactId(), 0);
 
-    int contactId1 = addTestContact("Really1Funny", remoteId + "123", localId);
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
-
+    // Add a non-matching contact and check the contact does not resolve in the model.
+    int contactId1 = addTestContact("Really1Funny", remoteId + "123", localId, &contactChangeListener);
     QVERIFY(model.getEvents(group.id()));
     QTRY_COMPARE(modelReady.count(), 1);
     modelReady.clear();
-
     event = model.event(model.index(0, 0));
     QCOMPARE(event.contactId(), 0);
 
-    int contactId = addTestContact("ReallyUFunny", remoteId, localId);
-    QTest::qWait(1000);
-
+    // Add a matching contact and check the contact is resolved in the model.
+    int contactId = addTestContact("ReallyUFunny", remoteId, localId, &contactChangeListener);
     QVERIFY(model.getEvents(group.id()));
     QTRY_COMPARE(modelReady.count(), 1);
     modelReady.clear();
-
     QTRY_COMPARE(model.event(model.index(0, 0)).contactId(), contactId);
     QCOMPARE(model.event(model.index(0, 0)).contactName(), QString("ReallyUFunny"));
 
-    deleteTestContact(contactId1);
-    deleteTestContact(contactId);
-    QTest::qWait(1000);
+    deleteTestContact(contactId1, &contactChangeListener);
+    deleteTestContact(contactId, &contactChangeListener);
 }
 
 void ConversationModelTest::reset()
@@ -494,7 +488,6 @@ void ConversationModelTest::reset()
 void ConversationModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(ConversationModelTest)

@@ -188,6 +188,8 @@ void SingleEventModelTest::contactMatching()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
+    ContactChangeListener contactChangeListener;
+
     SingleEventModel model;
     QSignalSpy modelReady(&model, &SingleEventModel::modelReady);
     model.setResolveContacts(EventModel::ResolveImmediately);
@@ -210,32 +212,25 @@ void SingleEventModelTest::contactMatching()
     QCOMPARE(event.id(), eventId);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId1 = addTestContact("Really1Bad", remoteId + "123", localId);
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
-
+    // Add a non-matching contact and check the contact does not resolve in the model.
+    int contactId1 = addTestContact("Really1Bad", remoteId + "123", localId, &contactChangeListener);
     QVERIFY(model.getEventById(eventId));
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     event = model.event();
     QCOMPARE(event.id(), eventId);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId = addTestContact("Really Bad", remoteId, localId);
-    QTest::qWait(1000);
+    // Add a matching contact and check the contact is resolved in the model.
+    int contactId = addTestContact("Really Bad", remoteId, localId, &contactChangeListener);
 
     QVERIFY(model.getEventById(eventId));
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
-    event = model.event();
     QCOMPARE(event.id(), eventId);
-
     QCOMPARE(event.contactId(), contactId);
     QCOMPARE(event.contactName(), QString("Really Bad"));
 
-    deleteTestContact(contactId1);
-    deleteTestContact(contactId);
-    QTest::qWait(1000);
+    deleteTestContact(contactId1, &contactChangeListener);
+    deleteTestContact(contactId, &contactChangeListener);
 }
 
 void SingleEventModelTest::updateStatus()
@@ -301,17 +296,13 @@ void SingleEventModelTest::updateStatus()
     QVERIFY(watcher.waitForUpdated());
 
     //check observer model
-    QTest::qWait(100);
-    observedEvent = observer.event();
-
-    QCOMPARE(observedEvent.freeText(), event.freeText());
-    QCOMPARE(observedEvent.status(), Event::SentStatus);
+    QTRY_COMPARE(observer.event().freeText(), event.freeText());
+    QTRY_COMPARE(observer.event().status(), Event::SentStatus);
 }
 
 void SingleEventModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(SingleEventModelTest)

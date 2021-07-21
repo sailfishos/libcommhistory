@@ -6,6 +6,7 @@
 #include "adaptor.h"
 #include "event.h"
 #include "common.h"
+#include "databaseio.h"
 
 #include "modelwatcher.h"
 
@@ -38,33 +39,38 @@ static void addEvents(int from, int to)
     // by adjusting the start times for events with duration (CallEvent)
     // so that their end times are all in the expected order.
 
+    // Wait briefly after adding IM and SMS events, otherwise the additions are not seen by the model.
+
+    QDateTime dateTime = QDateTime::currentDateTime().addDays(-1);
+    auto nextTestDateTime = [&dateTime] () {
+        dateTime = dateTime.addSecs(1000);
+        return dateTime;
+    };
+
     if (to >= 1 && from <= 1) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, QDateTime::currentDateTime().addSecs(-TESTCALL_SECS), alicePhone1);
+        addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, nextTestDateTime().addSecs(-TESTCALL_SECS), alicePhone1);
     }
     if (to >= 2 && from <= 2) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::CallEvent, Event::Outbound, phoneAccount, -1, "", false, false, QDateTime::currentDateTime().addSecs(-TESTCALL_SECS), bobPhone);
+        addTestEvent(eventsModel, Event::CallEvent, Event::Outbound, phoneAccount, -1, "", false, false, nextTestDateTime().addSecs(-TESTCALL_SECS), bobPhone);
     }
     if (to >= 3 && from <= 3) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::IMEvent, Event::Inbound, charlieIm1.first, group1.id(), "", false, false, QDateTime::currentDateTime(), charlieIm1.second);
+        addTestEvent(eventsModel, Event::IMEvent, Event::Inbound, charlieIm1.first, group1.id(), "", false, false, nextTestDateTime(), charlieIm1.second);
+        QTest::qWait(100);
     }
     if (to >= 4 && from <= 4) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::SMSEvent, Event::Outbound, phoneAccount, group1.id(), "", false, false, QDateTime::currentDateTime(), alicePhone2);
+        addTestEvent(eventsModel, Event::SMSEvent, Event::Outbound, phoneAccount, group1.id(), "", false, false, nextTestDateTime(), alicePhone2);
+        QTest::qWait(100);
     }
     if (to >= 5 && from <= 5) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, QDateTime::currentDateTime().addSecs(-TESTCALL_SECS), bobPhone);
+        addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, nextTestDateTime().addSecs(-TESTCALL_SECS), bobPhone);
     }
     if (to >= 6 && from <= 6) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::IMEvent, Event::Outbound, charlieIm2.first, group1.id(), "", false, false, QDateTime::currentDateTime(), charlieIm2.second);
+        addTestEvent(eventsModel, Event::IMEvent, Event::Outbound, charlieIm2.first, group1.id(), "", false, false, nextTestDateTime(), charlieIm2.second);
+        QTest::qWait(100);
     }
     if (to >= 7 && from <= 7) {
-        QTest::qWait(1000);
-        addTestEvent(eventsModel, Event::IMEvent, Event::Outbound, bobIm.first, group1.id(), "", false, false, QDateTime::currentDateTime(), bobIm.second);
+        addTestEvent(eventsModel, Event::IMEvent, Event::Outbound, bobIm.first, group1.id(), "", false, false, nextTestDateTime(), bobIm.second);
+        QTest::qWait(100);
     }
 
     int count = to - from + 1;
@@ -128,21 +134,19 @@ void RecentContactsModelTest::initTestCase()
 {
     initTestDatabase();
     QVERIFY(QDBusConnection::sessionBus().isConnected());
+    ContactChangeListener contactChangeListener;
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 
     addTestGroups( group1, group2 );
 
-    aliceId = addTestContact(aliceName, alicePhone1, phoneAccount);
-    QVERIFY(aliceId != -1);
+    aliceId = addTestContact(aliceName, alicePhone1, phoneAccount, &contactChangeListener);
     QVERIFY(addTestContactAddress(aliceId, alicePhone2, phoneAccount));
 
-    bobId = addTestContact(bobName, bobPhone, phoneAccount);
-    QVERIFY(bobId != -1);
+    bobId = addTestContact(bobName, bobPhone, phoneAccount, &contactChangeListener);
     QVERIFY(addTestContactAddress(bobId, bobIm.second, bobIm.first));
 
-    charlieId = addTestContact(charlieName, charlieIm1.second, charlieIm1.first);
-    QVERIFY(charlieId != -1);
+    charlieId = addTestContact(charlieName, charlieIm1.second, charlieIm1.first, &contactChangeListener);
     QVERIFY(addTestContactAddress(charlieId, charlieIm2.second, charlieIm2.first));
 }
 
@@ -536,16 +540,14 @@ void RecentContactsModelTest::contactRemoved()
 {
     QString dougalName("Dougal");
     QString dougalPhone("5550000");
-    int dougalId = addTestContact(dougalName, dougalPhone, phoneAccount);
-    QVERIFY(dougalId != -1);
-    QTest::qWait(1000);
+    ContactChangeListener contactChangeListener;
+    int dougalId = addTestContact(dougalName, dougalPhone, phoneAccount, &contactChangeListener);
 
     addEvents(2);
 
     // Add an event for the new contact
     EventModel eventsModel;
     watcher.setModel(&eventsModel);
-    QTest::qWait(1000);
     addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, QDateTime::currentDateTime(), dougalPhone);
     QVERIFY(watcher.waitForAdded());
 
@@ -570,7 +572,7 @@ void RecentContactsModelTest::contactRemoved()
     QCOMPARE(e.contacts(), QList<ContactDetails>() << qMakePair(aliceId, aliceName));
 
     QCOMPARE(remove.count(), 0);
-    deleteTestContact(dougalId);
+    deleteTestContact(dougalId, &contactChangeListener);
 
     // The removed contact's event should be removed
     QTRY_COMPARE(remove.count(), 1);
@@ -597,16 +599,14 @@ void RecentContactsModelTest::favoritesExcluded()
 {
     QString dougalName("Dougal");
     QString dougalPhone("5550000");
-    int dougalId = addTestContact(dougalName, dougalPhone, phoneAccount);
-    QVERIFY(dougalId != -1);
-    QTest::qWait(1000);
+    ContactChangeListener contactChangeListener;
+    int dougalId = addTestContact(dougalName, dougalPhone, phoneAccount, &contactChangeListener);
 
     addEvents(2);
 
     // Add an event for the new contact
     EventModel eventsModel;
     watcher.setModel(&eventsModel);
-    QTest::qWait(1000);
     addTestEvent(eventsModel, Event::CallEvent, Event::Inbound, phoneAccount, -1, "", false, false, QDateTime::currentDateTime(), dougalPhone);
     QVERIFY(watcher.waitForAdded());
 
@@ -673,13 +673,11 @@ void RecentContactsModelTest::cleanup()
 {
     cleanupTestEvents();
     cleanupTestGroups();
-    QTest::qWait(100);
 }
 
 void RecentContactsModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(RecentContactsModelTest)

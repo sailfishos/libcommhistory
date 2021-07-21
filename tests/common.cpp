@@ -129,6 +129,70 @@ void waitForSignal(QObject *object, const char *signal)
     loop.exec();
 }
 
+ContactChangeListener::ContactChangeListener()
+{
+    m_loop = new QEventLoop;
+    m_timer = new QTimer;
+    SeasideCache::registerChangeListener(this);
+}
+
+ContactChangeListener::~ContactChangeListener()
+{
+    delete m_loop;
+    delete m_timer;
+    SeasideCache::unregisterChangeListener(this);
+}
+
+bool ContactChangeListener::waitForContactAdded(int contactId)
+{
+    return waitForChange(contactId, &m_waitForContactAddedId, &m_updatedContactIds);
+}
+
+bool ContactChangeListener::waitForContactDeleted(int contactId)
+{
+    return waitForChange(contactId, &m_waitForContactDeletedId, &m_deletedContactIds);
+}
+
+bool ContactChangeListener::waitForChange(quint32 contactId, QSet<quint32> *changeWaits, QSet<quint32> *changeRecords)
+{
+    if (changeRecords->contains(contactId)) {
+        qDebug() << "Change listener already contains target:" << contactId;
+        return true;
+    }
+
+    changeWaits->insert(contactId);
+
+    m_timer->start(10 * 1000);
+    QObject::connect(m_timer, &QTimer::timeout, m_loop, &QEventLoop::quit);
+    m_loop->exec();
+
+    const bool success = changeWaits->contains(contactId);
+    changeWaits->remove(contactId);
+    changeRecords->remove(contactId);
+
+    return success;
+}
+
+void ContactChangeListener::itemUpdated(SeasideCache::CacheItem *item)
+{
+    const quint32 contactId = SeasideCache::internalId(item->contact);
+    m_updatedContactIds.insert(contactId);
+
+    if (m_waitForContactAddedId.contains(contactId) && m_loop->isRunning()) {
+        m_loop->quit();
+    }
+}
+
+void ContactChangeListener::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
+{
+    const quint32 contactId = SeasideCache::internalId(item->contact);
+    m_deletedContactIds.insert(contactId);
+
+    if (m_waitForContactDeletedId.contains(contactId) && m_loop->isRunning()) {
+        m_loop->quit();
+    }
+}
+
 }
 
 using namespace CommHistory;
@@ -222,7 +286,7 @@ QContactId localContactForAggregate(const QContactId &aggregateId)
     return QContactId();
 }
 
-int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid)
+int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid, ContactChangeListener *listener)
 {
     QString contactUri = QString("<testcontact:%1>").arg(contactNumber++);
 
@@ -235,14 +299,25 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
         return -1;
     }
 
+    int retValue = -1;
     foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
         const QContactId &aggId = relationship.first();
         addedContactIds.insert(aggId);
-        return internalContactId(aggId);
+        retValue = internalContactId(aggId);
+        break;
     }
 
-    qWarning() << "Could not find aggregator";
-    return internalContactId(contact.id());
+    if (retValue < 0) {
+        qWarning() << "Could not find aggregator";
+        retValue = internalContactId(contact.id());
+    }
+
+    if (listener && !listener->waitForContactAdded(retValue)) {
+        qWarning() << "Test contact" << retValue << "was not added!";
+        return -1;
+    }
+
+    return retValue;
 }
 
 QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > > &details)
@@ -362,7 +437,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
     }
 }
 
-void deleteTestContact(int id)
+void deleteTestContact(int id, ContactChangeListener *listener)
 {
     const QContactId contactId = apiContactId(id, manager()->managerUri());
     const QContact contact = manager()->contact(contactId);
@@ -374,6 +449,10 @@ void deleteTestContact(int id)
         qWarning() << "error deleting contact:" << contactId.localId();
     }
     addedContactIds.remove(contactId);
+
+    if (listener && !listener->waitForContactDeleted(SeasideCache::internalId(contactId))) {
+        qWarning() << "Test contact" << contactId << "was not deleted!";
+    }
 }
 
 void cleanupTestGroups()

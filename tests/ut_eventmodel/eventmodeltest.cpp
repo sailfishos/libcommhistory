@@ -1439,6 +1439,8 @@ void EventModelTest::testContactMatching()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
+    ContactChangeListener contactChangeListener;
+
     EventModel model;
     model.setResolveContacts(EventModel::ResolveImmediately);
     model.setDefaultAccept(true);
@@ -1454,40 +1456,30 @@ void EventModelTest::testContactMatching()
     model.databaseIO().getEvent(eventId, event);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId1 = addTestContact("Really Bad", remoteId + "123", localId);
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
-
+    // Add a non-matching contact and check the contact does not resolve in the model.
+    int contactId1 = addTestContact("Really Bad", remoteId + "123", localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), 0);
     QCOMPARE(event.contactName(), QString());
 
-    int contactId = addTestContact("Really Bad", remoteId, localId);
-    QTest::qWait(1000);
-
+    int contactId = addTestContact("Really Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), contactId);
     QCOMPARE(event.contactName(), QString("Really Bad"));
 
     // If a new contact is added with the same address, it will replace the previous resolution
-    int replacementContactId = addTestContact("Moderately Bad", remoteId, localId);
-    QTest::qWait(1000);
-
+    int replacementContactId = addTestContact("Moderately Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), replacementContactId);
     QCOMPARE(event.contactName(), QString("Moderately Bad"));
 
     // After the contacts are removed, the events resolve to nothing
-    deleteTestContact(contactId1);
-    deleteTestContact(contactId);
-    deleteTestContact(replacementContactId);
-    QTest::qWait(1000);
+    deleteTestContact(contactId1, &contactChangeListener);
+    deleteTestContact(contactId, &contactChangeListener);
+    deleteTestContact(replacementContactId, &contactChangeListener);
 
-    event = model.event(model.findEvent(eventId));
-    QCOMPARE(event.contactId(), 0);
-    QCOMPARE(event.contactName(), QString());
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactId(), 0);
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactName(), QString());
 }
 
 void EventModelTest::testAddNonDigitRemoteId_data()
@@ -1610,8 +1602,6 @@ void EventModelTest::cleanupTestCase()
         // a QUICK FIX!
         QVERIFY(EventModel().deleteEvent(call));
     }
-
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(EventModelTest)

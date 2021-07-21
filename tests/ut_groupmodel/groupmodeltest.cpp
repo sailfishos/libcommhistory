@@ -88,8 +88,6 @@ void GroupModelTest::initTestCase()
 
     QVERIFY(QDBusConnection::sessionBus().isConnected());
 
-    EventModel model;
-
     QVERIFY(QDBusConnection::sessionBus().registerObject(
                 "/GroupModelTest", this));
     QVERIFY(QDBusConnection::sessionBus().connect(
@@ -411,7 +409,7 @@ void GroupModelTest::updateGroups()
             this, SLOT(dataChangedSlot(const QModelIndex &, const QModelIndex &)));
 
     // update last event of group
-    QTest::qWait(1000); // separate event from the rest
+    QTest::qWait(100); // separate event from the rest
     EventModel model;
     QSignalSpy eventsCommitted(&model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
     QSignalSpy groupMoved(&groupModel, SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)));
@@ -905,7 +903,7 @@ void GroupModelTest::deleteMmsContent()
     QVERIFY(groupsCommitted.first().at(1).toBool());
     groupsCommitted.clear();
     QVERIFY(content_dir.exists(mms_token3) == true);
-    QTest::qWait(1000); // folders deleted after transaction, wait a bit
+    QTest::qWait(100); // folders deleted after transaction, wait a bit
 
     groupsCommitted.clear();
     model.deleteGroups(QList<int>() << group1.id() << group2.id() << group3.id());
@@ -955,6 +953,8 @@ void GroupModelTest::markGroupAsRead()
 
 void GroupModelTest::resolveContact()
 {
+    ContactChangeListener contactChangeListener;
+
     GroupModel groupModel;
     groupModel.setResolveContacts(GroupManager::ResolveImmediately);
     groupModel.setQueryMode(EventModel::AsyncQuery);
@@ -964,12 +964,7 @@ void GroupModelTest::resolveContact()
 
     QString phoneNumber = QString().setNum(qrand() % 10000000);
     QString contactName = QString("Test Contact 123");
-    int contactId = addTestContact(contactName, phoneNumber, RING_ACCOUNT);
-    QVERIFY(contactId != -1);
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
+    int contactId = addTestContact(contactName, phoneNumber, RING_ACCOUNT, &contactChangeListener);
 
     Group grp;
     QStringList uids;
@@ -1020,7 +1015,7 @@ void GroupModelTest::resolveContact()
     QCOMPARE(group.recipients().displayNames().contains(newName), true);
     QCOMPARE(group.recipients().contactIds().contains(contactId), true);
 
-    deleteTestContact(contactId);
+    deleteTestContact(contactId, &contactChangeListener);
 
     // Waiting for dataChanged signal to indicate that contact name has been removed from the group.
     QTRY_COMPARE(groupDataChanged.count(), 1);
@@ -1037,8 +1032,8 @@ void GroupModelTest::resolveContact()
 
 void GroupModelTest::queryContacts()
 {
-    // Ensure all previous events have been processed
-    QTest::qWait(1000);
+    addInitialTestGroups();
+    ContactChangeListener contactChangeListener;
 
     GroupModel model;
     model.setResolveContacts(GroupManager::ResolveImmediately);
@@ -1060,8 +1055,7 @@ void GroupModelTest::queryContacts()
         QCOMPARE(g.recipients().at(0).contactId(), 0);
     }
 
-    int contactIdNoMatch = addTestContact("NoMatch", "nomatch", ACCOUNT1);
-    QTest::qWait(1000);
+    int contactIdNoMatch = addTestContact("NoMatch", "nomatch", ACCOUNT1, &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1074,8 +1068,7 @@ void GroupModelTest::queryContacts()
         QCOMPARE(g.recipients().at(0).contactId(), 0);
     }
 
-    int contactIdNoMatchPhone = addTestContact("PhoneNoMatch", "98765");
-    QTest::qWait(1000);
+    int contactIdNoMatchPhone = addTestContact("PhoneNoMatch", "98765", QString(), &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1088,8 +1081,7 @@ void GroupModelTest::queryContacts()
         QCOMPARE(g.recipients().at(0).contactId(), 0);
     }
 
-    int contactIdTD1 = addTestContact("TD1", "td@localhost", ACCOUNT1);
-    QTest::qWait(1000);
+    int contactIdTD1 = addTestContact("TD1", "td@localhost", ACCOUNT1, &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1109,8 +1101,7 @@ void GroupModelTest::queryContacts()
     }
     QCOMPARE(matchCount, 1);
 
-    int contactIdTD2 = addTestContact("TD2", "td2@localhost", ACCOUNT2);
-    QTest::qWait(1000);
+    int contactIdTD2 = addTestContact("TD2", "td2@localhost", ACCOUNT2, &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1133,8 +1124,7 @@ void GroupModelTest::queryContacts()
     }
     QCOMPARE(matchCount, 2);
 
-    int contactIdPhone1 = addTestContact("CodeRed", "445566");
-    QTest::qWait(1000);
+    int contactIdPhone1 = addTestContact("CodeRed", "445566", QString(), &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1160,8 +1150,7 @@ void GroupModelTest::queryContacts()
     }
     QCOMPARE(matchCount, 3);
 
-    int contactIdPhone2 = addTestContact("CodeBlue", "+3854892930");
-    QTest::qWait(1000);
+    int contactIdPhone2 = addTestContact("CodeBlue", "+3854892930", QString(), &contactChangeListener);
 
     modelReady.clear();
     QVERIFY(model.getGroups());
@@ -1190,13 +1179,12 @@ void GroupModelTest::queryContacts()
     }
     QCOMPARE(matchCount, 4);
 
-    deleteTestContact(contactIdNoMatchPhone);
-    deleteTestContact(contactIdNoMatch);
-    deleteTestContact(contactIdTD1);
-    deleteTestContact(contactIdTD2);
-    deleteTestContact(contactIdPhone1);
-    deleteTestContact(contactIdPhone2);
-    QTest::qWait(1000);
+    deleteTestContact(contactIdNoMatchPhone, &contactChangeListener);
+    deleteTestContact(contactIdNoMatch, &contactChangeListener);
+    deleteTestContact(contactIdTD1, &contactChangeListener);
+    deleteTestContact(contactIdTD2, &contactChangeListener);
+    deleteTestContact(contactIdPhone1, &contactChangeListener);
+    deleteTestContact(contactIdPhone2, &contactChangeListener);
 }
 
 void GroupModelTest::changeRemoteUid()
@@ -1205,9 +1193,9 @@ void GroupModelTest::changeRemoteUid()
     const QString newRemoteUid = "+2227654321";
 
     // Add two contacts with partially matching numbers
-    int oldContactId = addTestContact("OldContact", oldRemoteUid, RING_ACCOUNT);
-    int newContactId = addTestContact("NewContact", newRemoteUid, RING_ACCOUNT);
-    QTest::qWait(1000);
+    ContactChangeListener contactChangeListener;
+    int oldContactId = addTestContact("OldContact", oldRemoteUid, RING_ACCOUNT, &contactChangeListener);
+    int newContactId = addTestContact("NewContact", newRemoteUid, RING_ACCOUNT, &contactChangeListener);
 
     GroupModel groupModel;
     groupModel.setResolveContacts(GroupManager::DoNotResolve);
@@ -1260,9 +1248,8 @@ void GroupModelTest::changeRemoteUid()
     QEXPECT_FAIL("", "Group modifications are not currently stored to database", Continue);
     QCOMPARE(group.recipients().containsMatch(Recipient(RING_ACCOUNT, newRemoteUid)), true);
 
-    deleteTestContact(oldContactId);
-    deleteTestContact(newContactId);
-    QTest::qWait(1000);
+    deleteTestContact(oldContactId, &contactChangeListener);
+    deleteTestContact(newContactId, &contactChangeListener);
 }
 
 void GroupModelTest::noRemoteId()

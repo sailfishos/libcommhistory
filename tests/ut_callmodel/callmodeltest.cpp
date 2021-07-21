@@ -59,8 +59,6 @@ void CallModelTest::initTestCase()
     initTestDatabase();
     QVERIFY( QDBusConnection::sessionBus().isConnected() );
 
-    QTest::qWait(100);
-
     qsrand( QDateTime::currentDateTime().toTime_t() );
 
     Group group1, group2;
@@ -524,7 +522,6 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     QFETCH(bool, useThread);
 
     deleteAll();
-    QTest::qWait(100);
 
     QThread modelThread;
 
@@ -630,7 +627,6 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 void CallModelTest::testSortByContactUpdate()
 {
     deleteAll();
-    QTest::qWait(100);
 
     CallModel model;
     QSignalSpy modelReady(&model, &CallModel::modelReady);
@@ -723,7 +719,6 @@ void CallModelTest::testSortByContactUpdate()
 void CallModelTest::testSortByTimeUpdate()
 {
     deleteAll();
-    QTest::qWait(100);
 
     CallModel model;
     QSignalSpy modelReady(&model, &CallModel::modelReady);
@@ -790,8 +785,7 @@ void CallModelTest::testSortByTimeUpdate()
 void CallModelTest::testSIPAddress()
 {
     QSKIP("SIP address resolution is not currently supported");
-    deleteAll();
-    QTest::qWait(100);
+    ContactChangeListener contactChangeListener;
 
     CallModel model;
     model.setResolveContacts(EventModel::ResolveImmediately);
@@ -806,11 +800,10 @@ void CallModelTest::testSIPAddress()
     QString sipAddress2("sips:mario@voip.com");
 
     QDateTime when = QDateTime::currentDateTime();
-    int contactId = addTestContact(contactName, phoneNumber, account);
+    int contactId = addTestContact(contactName, phoneNumber, account, &contactChangeListener);
     QVERIFY(contactId != -1);
-    int contactId2 = addTestContact(contactName2, sipAddress2, account);
+    int contactId2 = addTestContact(contactName2, sipAddress2, account, &contactChangeListener);
     QVERIFY(contactId2 != -1);
-    QTest::qWait(1000);
 
     // normal phone call
     addTestEvent(model, Event::CallEvent, Event::Outbound, account, -1, "", false, false, when, phoneNumber);
@@ -866,9 +859,8 @@ void CallModelTest::testSIPAddress()
     QCOMPARE(e.contacts().first().first, contactId);
     QCOMPARE(e.contacts().first().second, contactName);
 
-    deleteTestContact(contactId);
-    deleteTestContact(contactId2);
-    QTest::qWait(1000);
+    deleteTestContact(contactId, &contactChangeListener);
+    deleteTestContact(contactId2, &contactChangeListener);
 }
 
 void CallModelTest::deleteAllCalls()
@@ -969,10 +961,10 @@ void CallModelTest::testModifyEvent()
      * user2, missed
      */
     QDateTime when = QDateTime::currentDateTime();
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when, REMOTEUID1);
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(1), REMOTEUID2);
-    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(2), REMOTEUID1);
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(3), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(1), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(2), REMOTEUID2);
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(3), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(4), REMOTEUID1);
     QVERIFY(watcher.waitForAdded(4));
 
     QVERIFY(model.setFilter(CallModel::SortByContact));
@@ -1031,7 +1023,8 @@ void CallModelTest::testModifyEvent()
 void CallModelTest::testMinimizedPhone()
 {
     deleteAll();
-    QTest::qWait(100);
+
+    ContactChangeListener contactChangeListener;
 
     const QString phone00("0011112222");
     const QString phone99("9911112222");
@@ -1041,9 +1034,8 @@ void CallModelTest::testMinimizedPhone()
     const QString user00("User00");
     const QString user99("User99");
 
-    int user00id = addTestContact(user00, phone00, RING_ACCOUNT);
-    int user99id = addTestContact(user99, phone99, RING_ACCOUNT);
-    QTest::qWait(1000);
+    int user00id = addTestContact(user00, phone00, RING_ACCOUNT, &contactChangeListener);
+    int user99id = addTestContact(user99, phone99, RING_ACCOUNT, &contactChangeListener);
 
     CallModel model;
     QSignalSpy modelReady(&model, &CallModel::modelReady);
@@ -1071,28 +1063,26 @@ void CallModelTest::testMinimizedPhone()
     }
 
     // If we delete one of these contacts the number should resolve to the other
-    deleteTestContact(user00id);
-    QTest::qWait(1000);
+    deleteTestContact(user00id, &contactChangeListener);
 
     QCOMPARE(model.rowCount(), 3);
     for (int i = 0; i < model.rowCount(); ++i) {
         Event e = model.event(model.index(i, 0));
         QCOMPARE(e.recipients().count(), 1);
         QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-        QCOMPARE(e.recipients().at(0).contactId(), user99id);
+        QTRY_COMPARE(e.recipients().at(0).contactId(), user99id);
         QCOMPARE(e.recipients().at(0).contactName(), user99);
     }
 
     // Delete the other contact, the numbers should no longer resolve to any contact
-    deleteTestContact(user99id);
-    QTest::qWait(1000);
+    deleteTestContact(user99id, &contactChangeListener);
 
     QCOMPARE(model.rowCount(), 3);
     for (int i = 0; i < model.rowCount(); ++i) {
         Event e = model.event(model.index(i, 0));
         QCOMPARE(e.recipients().count(), 1);
         QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-        QCOMPARE(e.recipients().at(0).contactId(), 0);
+        QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
         QCOMPARE(e.recipients().at(0).contactName(), QString());
     }
 }
@@ -1101,7 +1091,6 @@ void CallModelTest::testMinimizedPhone()
 void CallModelTest::testMinimizedEmpty()
 {
     deleteAll();
-    QTest::qWait(100);
 
     const QString phone1("The Palace");
     const QString phone2("The Police");
@@ -1143,7 +1132,8 @@ void CallModelTest::testMinimizedEmpty()
 void CallModelTest::testContactGrouping()
 {
     deleteAll();
-    QTest::qWait(100);
+
+    ContactChangeListener contactChangeListener;
 
     const QString phone1("11111111");
     const QString phone2("22222222");
@@ -1154,13 +1144,11 @@ void CallModelTest::testContactGrouping()
     const QString user1("User1");
     const QString user2("User2");
 
-    int user1Id = addTestContact(user1, phone1, RING_ACCOUNT);
-    QVERIFY(user1Id != -1);
-    int user2Id = addTestContact(user2, phone2, RING_ACCOUNT);
-    QVERIFY(user2Id != -1);
+    int user1Id = addTestContact(user1, phone1, RING_ACCOUNT, &contactChangeListener);
+    int user2Id = addTestContact(user2, phone2, RING_ACCOUNT, &contactChangeListener);
+
     QVERIFY(addTestContactAddress(user1Id, phone4, RING_ACCOUNT));
     QVERIFY(addTestContactAddress(user2Id, phone5, RING_ACCOUNT));
-    QTest::qWait(1000);
 
     CallModel model;
     model.setFilter(CallModel::SortByContact);
@@ -1182,7 +1170,6 @@ void CallModelTest::testContactGrouping()
     (void)model.data(model.index(2, 0), CallModel::ContactIdsRole);
     (void)model.data(model.index(3, 0), CallModel::ContactIdsRole);
 
-    QTest::qWait(100);
     QCOMPARE(model.rowCount(), 5);
 
     // Resolving this address will cause the event to be coalesced with a predecessor
@@ -1205,7 +1192,6 @@ void CallModelTest::testContactGrouping()
 void CallModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(CallModelTest)
