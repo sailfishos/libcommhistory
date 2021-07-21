@@ -1026,8 +1026,8 @@ void CallModelTest::testModifyEvent()
     QCOMPARE(e2.direction(), Event::Inbound);
 }
 
-// Make sure that phone numbers resolve to the right contacts even if they
-// minimize to the same number.
+// Test that phone numbers resolve to the same contact if they minimize
+// to the same number.
 void CallModelTest::testMinimizedPhone()
 {
     deleteAll();
@@ -1061,71 +1061,40 @@ void CallModelTest::testMinimizedPhone()
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     QCOMPARE(model.rowCount(), 3);
 
-    Event e;
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user99id);
-    QCOMPARE(e.recipients().at(0).contactName(), user99);
-
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
+        QCOMPARE(e.recipients().at(0).isContactResolved(), true);
+        QCOMPARE(e.recipients().at(0).contactId(), user00id);
+        QCOMPARE(e.recipients().at(0).contactName(), user00);
+    }
 
     // If we delete one of these contacts the number should resolve to the other
-    deleteTestContact(user99id);
-    QTest::qWait(1000);
-
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    // Delete the other contact, the numbers should no longer resolve to any contact
     deleteTestContact(user00id);
     QTest::qWait(1000);
 
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
+    QCOMPARE(model.rowCount(), 3);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QCOMPARE(e.recipients().at(0).contactId(), user99id);
+        QCOMPARE(e.recipients().at(0).contactName(), user99);
+    }
 
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
+    // Delete the other contact, the numbers should no longer resolve to any contact
+    deleteTestContact(user99id);
+    QTest::qWait(1000);
 
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
+    QCOMPARE(model.rowCount(), 3);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QCOMPARE(e.recipients().at(0).contactId(), 0);
+        QCOMPARE(e.recipients().at(0).contactName(), QString());
+    }
 }
 
 // Ensure that non-numeric phone numbers are not coalesced together
