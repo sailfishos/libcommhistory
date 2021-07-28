@@ -25,7 +25,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
-    mem_eventmodel \
     ut_eventmodel \
     ut_callmodel \
     ut_conversationmodel \
