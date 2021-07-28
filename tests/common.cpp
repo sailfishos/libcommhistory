@@ -145,9 +145,8 @@ QSet<int> addedEventIds;
 
 void initTestDatabase()
 {
-    deleteAll();
-
     CommHistoryDatabasePath::setRootDir(TEST_DATABASE_DIR);
+    deleteAll();
 }
 
 int addTestEvent(EventModel &model,
