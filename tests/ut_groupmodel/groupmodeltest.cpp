@@ -111,7 +111,7 @@ void GroupModelTest::initTestCase()
     qsrand(QDateTime::currentDateTime().toTime_t());
 }
 
-void GroupModelTest::init()
+void GroupModelTest::addInitialTestGroups()
 {
     EventModel eventModel;
 
@@ -212,6 +212,8 @@ void GroupModelTest::addGroups()
 
 void GroupModelTest::modifyGroup()
 {
+    addInitialTestGroups();
+
     GroupModel model;
     model.setResolveContacts(GroupManager::DoNotResolve);
     QSignalSpy groupsCommitted(&model, SIGNAL(groupsCommitted(QList<int>,bool)));
@@ -260,6 +262,8 @@ void GroupModelTest::getGroups_data()
 void GroupModelTest::getGroups()
 {
     QFETCH(bool, useThread);
+
+    addInitialTestGroups();
 
     GroupModel model;
     model.setResolveContacts(GroupManager::DoNotResolve);
@@ -401,6 +405,9 @@ void GroupModelTest::getGroups()
 
 void GroupModelTest::updateGroups()
 {
+    addInitialTestGroups();
+    QTest::qWait(100); // separate new events from the rest
+
     GroupModel groupModel;
     groupModel.setResolveContacts(GroupManager::DoNotResolve);
     groupModel.setQueryMode(EventModel::SyncQuery);
@@ -409,7 +416,6 @@ void GroupModelTest::updateGroups()
             this, SLOT(dataChangedSlot(const QModelIndex &, const QModelIndex &)));
 
     // update last event of group
-    QTest::qWait(100); // separate event from the rest
     EventModel model;
     QSignalSpy eventsCommitted(&model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
     QSignalSpy groupMoved(&groupModel, SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)));
@@ -520,6 +526,8 @@ void GroupModelTest::updateGroups()
 
 void GroupModelTest::deleteGroups()
 {
+    addInitialTestGroups();
+
     GroupModel groupModel;
     GroupModel deleterModel;
     EventModel model;
@@ -708,9 +716,6 @@ void GroupModelTest::streamingQuery()
 
 void GroupModelTest::addMultipleGroups()
 {
-    deleteAll();
-    QTest::qWait(100);
-
     QList<Group> groups;
     for (int i = 0; i < ADD_GROUPS_NUM; i++) {
         Group group;
@@ -746,6 +751,8 @@ void GroupModelTest::addMultipleGroups()
 
 void GroupModelTest::limitOffset()
 {
+    addInitialTestGroups();
+
     GroupModel model;
     model.setResolveContacts(GroupManager::DoNotResolve);
     QSignalSpy modelReady(&model, SIGNAL(modelReady(bool)));
