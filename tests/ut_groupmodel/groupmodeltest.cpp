@@ -149,7 +149,7 @@ void GroupModelTest::addInitialTestGroups()
 
 void GroupModelTest::cleanup()
 {
-    deleteAll();
+    deleteAll(false);
     QTest::qWait(100);
 
     QDir mms_content(QDir::homePath() + QDir::separator() + mms_content_path);

@@ -403,8 +403,6 @@ bool addTestContactAddress(int contactId, const QString &remoteUid, const QStrin
 
 void modifyTestContact(int id, const QString &name, bool favorite)
 {
-    qDebug() << Q_FUNC_INFO << id << name;
-
     QContact existingAggregate = manager()->contact(apiContactId(id, manager()->managerUri()));
     if (internalContactId(existingAggregate.id()) != (unsigned)id) {
         qWarning() << "Could not retrieve contact:" << id;
@@ -562,12 +560,14 @@ bool compareEvents(Event &e1, Event &e2)
     return true;
 }
 
-void deleteAll()
+void deleteAll(bool deleteDb)
 {
-    qDebug() << Q_FUNC_INFO << "- Deleting all";
-
     cleanupTestGroups();
     cleanupTestEvents();
+
+    if (!deleteDb) {
+        return;
+    }
 
     if (!QDir(TEST_DATABASE_DIR).removeRecursively()) {
         qWarning() << "Unable to remove test database directory:" << TEST_DATABASE_DIR;

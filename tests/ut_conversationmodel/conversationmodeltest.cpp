@@ -305,7 +305,6 @@ void ConversationModelTest::modifyEvent()
 
     int row = rand() % model.rowCount();
     event = model.event(model.index(row, 0));
-    qDebug() << row << event.id() << event.freeText();
     event.setFreeText("modified event");
     QDateTime modified = event.lastModified();
     watcher.reset();
@@ -333,7 +332,6 @@ void ConversationModelTest::deleteEvent()
     int rows = model.rowCount();
     int row = rand() % rows;
     event = model.event(model.index(row, 0));
-    qDebug() << row << event.id();
     watcher.reset();
     QVERIFY(model.deleteEvent(event.id()));
     QVERIFY(watcher.waitForDeleted());

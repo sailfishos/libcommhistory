@@ -115,7 +115,7 @@ QContactId localContactForAggregate(const QContactId &contactId);
 void cleanupTestGroups();
 void cleanupTestEvents();
 bool compareEvents(Event &e1, Event &e2);
-void deleteAll();
+void deleteAll(bool deleteDb = true);
 QString randomMessage(int words);
 void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs);
 

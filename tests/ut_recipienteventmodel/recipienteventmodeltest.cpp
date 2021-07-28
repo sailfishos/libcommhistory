@@ -147,7 +147,7 @@ void RecipientEventModelTest::testGetContactEvents()
     QFETCH(QString, readableRemoteId);
     QFETCH(int, eventType);
 
-    deleteAll();
+    deleteAll(false);
     ContactChangeListener contactChangeListener;
     addTestGroups(group1, group2);
 
@@ -248,7 +248,7 @@ void RecipientEventModelTest::testLimitOffset()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
-    deleteAll();
+    deleteAll(false);
     ContactChangeListener contactChangeListener;
     addTestGroups(group1, group2);
 

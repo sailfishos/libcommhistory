@@ -106,18 +106,15 @@ void CallModelTest::testGetEvents( CallModel::Sorting sorting, int row_count, QL
     CallModel model;
     model.setQueryMode(EventModel::SyncQuery);
 
-    qDebug() << Q_FUNC_INFO << "*** Sorting by " << (int)sorting;
     model.setFilter(  sorting  );
     QVERIFY( model.getEvents() );
 
-    qDebug() << "Top level event(s):" << row_count;
     QCOMPARE( model.rowCount(), row_count );
 
     QSet<QString> countedUids;
     for ( int i = 0; i < row_count; i++ )
     {
         Event e = model.event( model.index( i, 0 ) );
-        qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
         QCOMPARE( e.type(), Event::CallEvent );
         QCOMPARE( e.recipients().value(0).remoteUid(), calls.at( i ).remoteUid );
 
@@ -386,7 +383,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), false );
     QCOMPARE( e.recipients().value(0).remoteUid(), REMOTEUID2 );
@@ -431,20 +427,13 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), false );
     // delete it
     QVERIFY( model.deleteEvent( e.id() ) );
     QVERIFY( watcher.waitForDeleted(6) );
     // correct test helper lists to match current situation
-    foreach (TestCallItem item, testCalls) {
-        qDebug() << item.remoteUid << item.callType << item.eventCount;
-    }
     testCalls.takeFirst(); testCalls.takeFirst();
-    foreach (TestCallItem item, testCalls) {
-        qDebug() << item.remoteUid << item.callType << item.eventCount;
-    }
     // test if model contains what we want it does
     testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
 
@@ -469,7 +458,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 1, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), true );
     // delete it
@@ -497,7 +485,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Outbound );
     QCOMPARE( e.isMissedCall(), false );
     // delete it
@@ -521,7 +508,7 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 {
     QFETCH(bool, useThread);
 
-    deleteAll();
+    deleteAll(false);
 
     QThread modelThread;
 
@@ -618,15 +605,13 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     QVERIFY(model.rowCount() == 0);
 
-    qDebug() << "wait thread";
     modelThread.quit();
     modelThread.wait(3000);
-    qDebug() << "done";
 }
 
 void CallModelTest::testSortByContactUpdate()
 {
-    deleteAll();
+    deleteAll(false);
 
     CallModel model;
     QSignalSpy modelReady(&model, &CallModel::modelReady);
@@ -718,7 +703,7 @@ void CallModelTest::testSortByContactUpdate()
 
 void CallModelTest::testSortByTimeUpdate()
 {
-    deleteAll();
+    deleteAll(false);
 
     CallModel model;
     QSignalSpy modelReady(&model, &CallModel::modelReady);
@@ -944,7 +929,7 @@ void CallModelTest::testModifyEvent()
 {
     Event e1, e2, e3;
 
-    deleteAll();
+    deleteAll(false);
     QTest::qWait(100);
 
     CallModel model;
@@ -1022,7 +1007,7 @@ void CallModelTest::testModifyEvent()
 // to the same number.
 void CallModelTest::testMinimizedPhone()
 {
-    deleteAll();
+    deleteAll(false);
 
     ContactChangeListener contactChangeListener;
 
@@ -1090,7 +1075,7 @@ void CallModelTest::testMinimizedPhone()
 // Ensure that non-numeric phone numbers are not coalesced together
 void CallModelTest::testMinimizedEmpty()
 {
-    deleteAll();
+    deleteAll(false);
 
     const QString phone1("The Palace");
     const QString phone2("The Police");
@@ -1131,7 +1116,7 @@ void CallModelTest::testMinimizedEmpty()
 
 void CallModelTest::testContactGrouping()
 {
-    deleteAll();
+    deleteAll(false);
 
     ContactChangeListener contactChangeListener;
 

@@ -624,8 +624,7 @@ void RecentContactsModelTest::favoritesExcluded()
 
 void RecentContactsModelTest::cleanup()
 {
-    cleanupTestEvents();
-    cleanupTestGroups();
+    deleteAll(false);
 }
 
 void RecentContactsModelTest::cleanupTestCase()
