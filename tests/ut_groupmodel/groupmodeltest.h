@@ -64,10 +64,10 @@ private slots:
     void noRemoteId();
     void endTimeUpdate();
     void cleanupTestCase();
-    void init();
     void cleanup();
 
 private:
+    void addInitialTestGroups();
     void idle(int msec);
 };
 

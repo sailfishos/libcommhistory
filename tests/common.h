@@ -28,6 +28,9 @@
 #include "event.h"
 #include "group.h"
 
+#include <seasidecache.h>
+
+#include <QTimer>
 #include <QFile>
 #include <QSignalSpy>
 #include <QStandardPaths>
@@ -47,6 +50,28 @@ void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 }
 
 void waitForSignal(QObject *object, const char *signal);
+
+class ContactChangeListener : public SeasideCache::ChangeListener
+{
+public:
+    ContactChangeListener();
+    ~ContactChangeListener();
+
+    bool waitForContactAdded(int contactId);
+    bool waitForContactDeleted(int contactId);
+
+private:
+    bool waitForChange(quint32 contactId, QSet<quint32> *changeWaits, QSet<quint32> *changeRecords);
+    void itemUpdated(SeasideCache::CacheItem *item);
+    void itemAboutToBeRemoved(SeasideCache::CacheItem *item);
+
+    QSet<quint32> m_updatedContactIds;
+    QSet<quint32> m_deletedContactIds;
+    QSet<quint32> m_waitForContactAddedId;
+    QSet<quint32> m_waitForContactDeletedId;
+    QEventLoop *m_loop = nullptr;
+    QTimer *m_timer = nullptr;
+};
 
 }
 
@@ -81,18 +106,17 @@ int addTestEvent(EventModel &model,
 
 void addTestGroups(Group &group1, Group &group2);
 void addTestGroup(Group& grp, QString localUid, QString remoteUid);
-int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid=QString());
+int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid=QString(), ContactChangeListener *listener = nullptr);
 QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > > &details);
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid=QString());
 void modifyTestContact(int id, const QString &name, bool favorite = false);
-void deleteTestContact(int id);
+void deleteTestContact(int id, ContactChangeListener *listener = nullptr);
 QContactId localContactForAggregate(const QContactId &contactId);
 void cleanupTestGroups();
 void cleanupTestEvents();
 bool compareEvents(Event &e1, Event &e2);
-void deleteAll();
+void deleteAll(bool deleteDb = true);
 QString randomMessage(int words);
-bool waitSignal(QSignalSpy &spy, int msec = WAIT_SIGNAL_TIMEOUT);
 void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs);
 
 #endif

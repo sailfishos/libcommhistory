@@ -84,7 +84,7 @@ void MemEventModelTest::addEvent()
     QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
 
     QVERIFY(model->addEvent(e1));
-    QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     QTest::qWait(CALM_TIMEOUT);
 
@@ -118,8 +118,7 @@ void MemEventModelTest::addEvents()
 
         QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
         QVERIFY(model->addEvent(e1));
-
-        QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+        QTRY_COMPARE(eventsCommitted.count(), 1);
         waitWithDeletes(100);
 
         delete model;
@@ -158,8 +157,8 @@ void MemEventModelTest::modifyEvent()
 
     QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
     QVERIFY(model->addEvent(im));
-
-    QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
+    eventsCommitted.clear();
 
     im.resetModifiedProperties();
     im.setFreeText("imtest \"q\" modified\t tabs");
@@ -168,7 +167,7 @@ void MemEventModelTest::modifyEvent()
     im.setIsRead(false);
     // should we actually test more properties?
     QVERIFY(model->modifyEvent(im));
-    QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     QTest::qWait(CALM_TIMEOUT);
 
@@ -193,10 +192,11 @@ void MemEventModelTest::deleteEvent()
     QSignalSpy eventsCommitted(model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
 
     QVERIFY(model->addEvent(event));
-    QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
+    eventsCommitted.clear();
 
     QVERIFY(model->deleteEvent(event));
-    QVERIFY(waitSignal(eventsCommitted, WAIT_TIMEOUT));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     QTest::qWait(CALM_TIMEOUT);
 

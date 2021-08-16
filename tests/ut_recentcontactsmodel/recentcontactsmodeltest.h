@@ -18,6 +18,7 @@ private slots:
     void differentTypes();
     void categoryMask_data();
     void categoryMask();
+    void requiredProperty_data();
     void requiredProperty();
     void contactRemoved();
     void favoritesExcluded();

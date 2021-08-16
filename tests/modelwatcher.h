@@ -46,14 +46,12 @@ public:
     bool waitForAdded(int count = 1, int committed = -1);
     bool waitForUpdated(int count = 1);
     bool waitForDeleted(int count = 1);
-    bool waitForModelReady();
 
 public Q_SLOTS:
     void eventsAddedSlot(const QList<CommHistory::Event> &events);
     void eventsUpdatedSlot(const QList<CommHistory::Event> &events);
     void eventDeletedSlot(int eventId);
     void eventsCommittedSlot(const QList<CommHistory::Event> &events, bool successful);
-    void modelReadySlot(bool success);
 
 public:
     static int m_watcherId;
@@ -71,7 +69,6 @@ public:
     int m_lastDeleted;
     bool m_eventsCommitted;
     bool m_dbusSignalReceived;
-    bool m_modelReady;
     bool m_success;
 };
 

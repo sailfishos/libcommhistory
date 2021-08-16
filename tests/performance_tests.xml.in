@@ -1,35 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <testdefinition version="0.1">
-   <suite name="libcommhistory-qt5-tests" domain="mw">
+   <suite name="libcommhistory-qt5-tests-performance" domain="mw">
        <description>libcommhistory tests</description>
-
-       <set name="libcommhistory-qt5-tests-auto" feature="libcommhistory-qt5">
-           <description>libcommhistory-qt5 auto tests</description>
-           <case name="mem_eventmodel">
-               <step>@RUN_TEST@ auto mem_eventmodel</step>
-           </case>
-           <case name="ut_callmodel" level="Component" type="Functional">
-               <step>@RUN_TEST@ auto ut_callmodel</step>
-           </case>
-           <case name="ut_conversationmodel" level="Component" type="Functional">
-               <step>@RUN_TEST@ auto ut_conversationmodel</step>
-           </case>
-           <case name="ut_eventmodel" level="Component" type="Functional" insignificant="true">
-               <step>@RUN_TEST@ auto ut_eventmodel</step>
-           </case>
-           <case name="ut_groupmodel" level="Component" type="Functional" timeout="180">
-               <step>@RUN_TEST@ auto ut_groupmodel</step>
-           </case>
-           <case name="ut_recentcontactsmodel" level="Component" type="Functional" timeout="180">
-               <step>@RUN_TEST@ auto ut_recentcontactsmodel</step>
-           </case>
-           <case name="ut_recipienteventmodel" level="Component" type="Functional">
-               <step>@RUN_TEST@ auto ut_recipienteventmodel</step>
-           </case>
-           <case name="ut_singleeventmodel" level="Component" type="Functional">
-               <step>@RUN_TEST@ auto ut_singleeventmodel</step>
-           </case>
-       </set>
 
        <set name="libcommhistory-qt5-tests-performance" feature="libcommhistory-qt5">
            <description>libcommhistory-qt5 performance tests</description>
@@ -56,6 +28,9 @@
            </case>
            <case name="profile_recentcontactsmodel" level="Component" type="Performance">
                <step>@RUN_TEST@ performance profile_recentcontactsmodel</step>
+           </case>
+           <case name="mem_eventmodel">
+               <step>@RUN_TEST@ auto mem_eventmodel</step>
            </case>
        </set>
    </suite>

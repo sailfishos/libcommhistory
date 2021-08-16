@@ -39,8 +39,7 @@ ModelWatcher::ModelWatcher(QObject *parent)
       m_deletedCount(0),
       m_lastDeleted(0),
       m_eventsCommitted(false),
-      m_dbusSignalReceived(false),
-      m_modelReady(false)
+      m_dbusSignalReceived(false)
 {
 }
 
@@ -68,7 +67,6 @@ void ModelWatcher::setModel(CommHistory::EventModel *model)
     m_model = model;
     connect(m_model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)),
             this, SLOT(eventsCommittedSlot(const QList<CommHistory::Event>&, bool)));
-    connect(m_model, SIGNAL(modelReady(bool)), this, SLOT(modelReadySlot(bool)));
 
     reset();
 }
@@ -82,7 +80,6 @@ void ModelWatcher::reset()
 
     m_eventsCommitted = false;
     m_dbusSignalReceived = false;
-    m_modelReady = false;
     m_success = true;
 }
 
@@ -160,17 +157,6 @@ void ModelWatcher::waitForSignals(int minCommitted, int minAdded, int minDeleted
 }
 #endif
 
-bool ModelWatcher::waitForModelReady()
-{
-    if (!m_modelReady)
-        QTest::qWait(0);
-    for (int i = 0; i < 5000 && !m_modelReady; i += 50)
-        QTest::qWait(50);
-    bool re = m_modelReady;
-    reset();
-    return re;
-}
-
 void ModelWatcher::eventsCommittedSlot(const QList<CommHistory::Event> &events,
                                        bool successful)
 {
@@ -201,11 +187,4 @@ void ModelWatcher::eventDeletedSlot(int id)
     // qDebug() << "deleted event#" << id;
     m_deletedCount++;
     m_lastDeleted = id;
-}
-
-void ModelWatcher::modelReadySlot(bool success)
-{
-    // qDebug() << "success:" << success;
-    m_modelReady = true;
-    m_success = success;
 }

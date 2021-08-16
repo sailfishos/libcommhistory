@@ -30,10 +30,6 @@
 
 using namespace CommHistory;
 
-Group group1, group2;
-Event im, sms, call;
-int eventCounter;
-
 ModelWatcher watcher;
 
 typedef QPair<int, QString> ContactDetails;
@@ -63,10 +59,9 @@ void CallModelTest::initTestCase()
     initTestDatabase();
     QVERIFY( QDBusConnection::sessionBus().isConnected() );
 
-    QTest::qWait(100);
-
     qsrand( QDateTime::currentDateTime().toTime_t() );
 
+    Group group1, group2;
     addTestGroups( group1, group2 );
 
     // add 8 call events from user1
@@ -111,18 +106,15 @@ void CallModelTest::testGetEvents( CallModel::Sorting sorting, int row_count, QL
     CallModel model;
     model.setQueryMode(EventModel::SyncQuery);
 
-    qDebug() << Q_FUNC_INFO << "*** Sorting by " << (int)sorting;
     model.setFilter(  sorting  );
     QVERIFY( model.getEvents() );
 
-    qDebug() << "Top level event(s):" << row_count;
     QCOMPARE( model.rowCount(), row_count );
 
     QSet<QString> countedUids;
     for ( int i = 0; i < row_count; i++ )
     {
         Event e = model.event( model.index( i, 0 ) );
-        qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
         QCOMPARE( e.type(), Event::CallEvent );
         QCOMPARE( e.recipients().value(0).remoteUid(), calls.at( i ).remoteUid );
 
@@ -355,11 +347,12 @@ void CallModelTest::testAddEvent()
 void CallModelTest::testDeleteEvent()
 {
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     model.setTreeMode(false);
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
 
     // delete first event from hidden number
     Event e = model.event(model.index(0, 0));
@@ -376,10 +369,11 @@ void CallModelTest::testDeleteEvent()
     }
 
     // force change of sorting to SortByContact
+    modelReady.clear();
     model.setTreeMode(true);
     QVERIFY( model.setFilter( CallModel::SortByContact ) );
     QVERIFY( model.getEvents() );
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 2);  // setFilter() internally called getEvents(), triggers an additional modelReady()
 
     /* by contact:
      * -----------
@@ -390,7 +384,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), false );
     QCOMPARE( e.recipients().value(0).remoteUid(), REMOTEUID2 );
@@ -408,8 +401,9 @@ void CallModelTest::testDeleteEvent()
     testGetEvents( CallModel::SortByContact, 1, testCalls );
 
     // force change of sorting to SortByTime
+    modelReady.clear();
     QVERIFY( model.setFilter( CallModel::SortByTime ) );
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
 
     /* by time:
      * --------
@@ -435,20 +429,13 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), false );
     // delete it
     QVERIFY( model.deleteEvent( e.id() ) );
     QVERIFY( watcher.waitForDeleted(6) );
     // correct test helper lists to match current situation
-    foreach (TestCallItem item, testCalls) {
-        qDebug() << item.remoteUid << item.callType << item.eventCount;
-    }
     testCalls.takeFirst(); testCalls.takeFirst();
-    foreach (TestCallItem item, testCalls) {
-        qDebug() << item.remoteUid << item.callType << item.eventCount;
-    }
     // test if model contains what we want it does
     testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
 
@@ -473,7 +460,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 1, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Inbound );
     QCOMPARE( e.isMissedCall(), true );
     // delete it
@@ -486,8 +472,9 @@ void CallModelTest::testDeleteEvent()
 
 
     // force change of sorting to SortByContact
+    modelReady.clear();
     QVERIFY( model.setFilter( CallModel::SortByContact ) );
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     /* by contact:
      * -----------
      * user1, dialed (0)***
@@ -501,7 +488,6 @@ void CallModelTest::testDeleteEvent()
     e = model.event( model.index( 0, 0 ) );
     QVERIFY( e.isValid() );
     QCOMPARE( e.type(), Event::CallEvent );
-    qDebug() << "EVENT:" << e.id() << "|" << e.recipients() << "|" << e.direction() << "|" << e.isMissedCall() << "|" << e.eventCount();
     QCOMPARE( e.direction(), Event::Outbound );
     QCOMPARE( e.isMissedCall(), false );
     // delete it
@@ -525,13 +511,13 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 {
     QFETCH(bool, useThread);
 
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
 
     QThread modelThread;
 
     //initTestCase ==> 3 dialled calls, 2 Received calls, 3 Missed Calls already added
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
     if (useThread) {
         modelThread.start();
@@ -541,19 +527,22 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     QDateTime when = QDateTime::currentDateTime();
     model.setTreeMode(false);
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::DialedCallType, when));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     int outboundCallCount = model.rowCount();
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::MissedCallType, when));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 2);  // setFilter() internally called getEvents(), triggers an additional modelReady()
     int missedCallCount = model.rowCount();
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::ReceivedCallType, when));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 2);
     int receivedCallCount = model.rowCount();
 
     //3 dialled
@@ -575,9 +564,10 @@ void CallModelTest::testGetEventsTimeTypeFilter()
 
     QDateTime time = when;
     //model.setQueryMode(EventModel::SyncQuery);
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime,  CallEvent::DialedCallType, time));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 2);
 
     QCOMPARE(model.rowCount(), outboundCallCount + 3);
     Event e1 = model.event(model.index(0,0));
@@ -590,11 +580,13 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     QVERIFY(e2.direction() == Event::Outbound);
     QVERIFY(e3.direction() == Event::Outbound);
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::MissedCallType, time));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), missedCallCount + 3);
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::ReceivedCallType, time));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), receivedCallCount + 2);
 
     /**
@@ -618,22 +610,21 @@ void CallModelTest::testGetEventsTimeTypeFilter()
       */
     //Trying to get events after 5 minutes after the  first event was added
     time = when.addSecs(60*5);
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::ReceivedCallType, time));
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QVERIFY(model.rowCount() == 0);
 
-    qDebug() << "wait thread";
     modelThread.quit();
     modelThread.wait(3000);
-    qDebug() << "done";
 }
 
 void CallModelTest::testSortByContactUpdate()
 {
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
 
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     /*
@@ -648,9 +639,10 @@ void CallModelTest::testSortByContactUpdate()
     addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(3), REMOTEUID1);
     QVERIFY(watcher.waitForAdded(4));
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByContact));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), 1);
 
     Event e1 = model.event(model.index(0, 0));
@@ -722,10 +714,10 @@ void CallModelTest::testSortByContactUpdate()
 
 void CallModelTest::testSortByTimeUpdate()
 {
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
 
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     /*
@@ -740,9 +732,10 @@ void CallModelTest::testSortByTimeUpdate()
     addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(3), REMOTEUID1);
     QVERIFY(watcher.waitForAdded(4));
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::MissedCallType));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), 2);
 
     Event e1 = model.event(model.index(0, 0));
@@ -789,8 +782,7 @@ void CallModelTest::testSortByTimeUpdate()
 void CallModelTest::testSIPAddress()
 {
     QSKIP("SIP address resolution is not currently supported");
-    deleteAll();
-    QTest::qWait(100);
+    ContactChangeListener contactChangeListener;
 
     CallModel model;
     model.setResolveContacts(EventModel::ResolveImmediately);
@@ -805,11 +797,10 @@ void CallModelTest::testSIPAddress()
     QString sipAddress2("sips:mario@voip.com");
 
     QDateTime when = QDateTime::currentDateTime();
-    int contactId = addTestContact(contactName, phoneNumber, account);
+    int contactId = addTestContact(contactName, phoneNumber, account, &contactChangeListener);
     QVERIFY(contactId != -1);
-    int contactId2 = addTestContact(contactName2, sipAddress2, account);
+    int contactId2 = addTestContact(contactName2, sipAddress2, account, &contactChangeListener);
     QVERIFY(contactId2 != -1);
-    QTest::qWait(1000);
 
     // normal phone call
     addTestEvent(model, Event::CallEvent, Event::Outbound, account, -1, "", false, false, when, phoneNumber);
@@ -865,9 +856,8 @@ void CallModelTest::testSIPAddress()
     QCOMPARE(e.contacts().first().first, contactId);
     QCOMPARE(e.contacts().first().second, contactName);
 
-    deleteTestContact(contactId);
-    deleteTestContact(contactId2);
-    QTest::qWait(1000);
+    deleteTestContact(contactId, &contactChangeListener);
+    deleteTestContact(contactId2, &contactChangeListener);
 }
 
 void CallModelTest::deleteAllCalls()
@@ -883,7 +873,7 @@ void CallModelTest::deleteAllCalls()
     QVERIFY(model.rowCount() > 0);
     QSignalSpy eventsCommitted(&model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)));
     QVERIFY(model.deleteAll());
-    waitSignal(eventsCommitted);
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     QCOMPARE(model.rowCount(), 0);
 
@@ -901,17 +891,17 @@ void CallModelTest::testMarkAllRead()
     int eventId1 = addTestEvent(callModel, Event::CallEvent, Event::Inbound, ACCOUNT1, -1,
                                 "Mark all as read test 1", false, false,
                                 QDateTime::currentDateTime(), REMOTEUID1);
-    QVERIFY(waitSignal(eventsCommitted));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     eventsCommitted.clear();
     int eventId2 = addTestEvent(callModel, Event::CallEvent, Event::Inbound, ACCOUNT1, -1,
                                 "Mark all as read test 2", false, false,
                                 QDateTime::currentDateTime(), REMOTEUID2);
-    QVERIFY(waitSignal(eventsCommitted));
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     eventsCommitted.clear();
     QVERIFY(callModel.markAllRead());
-    waitSignal(eventsCommitted);
+    QTRY_COMPARE(eventsCommitted.count(), 1);
 
     Event e1, e2;
     QVERIFY(callModel.databaseIO().getEvent(eventId1, e1));
@@ -951,10 +941,11 @@ void CallModelTest::testModifyEvent()
 {
     Event e1, e2, e3;
 
-    deleteAll();
+    deleteAll(false);
     QTest::qWait(100);
 
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     /*
@@ -967,15 +958,16 @@ void CallModelTest::testModifyEvent()
      * user2, missed
      */
     QDateTime when = QDateTime::currentDateTime();
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when, REMOTEUID1);
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(1), REMOTEUID2);
-    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(2), REMOTEUID1);
-    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(3), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(1), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(2), REMOTEUID2);
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(3), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(4), REMOTEUID1);
     QVERIFY(watcher.waitForAdded(4));
 
+    modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByContact));
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), 2);
     e1 = model.event(model.index(0, 0));
     QCOMPARE(e1.recipients().value(0).remoteUid(), REMOTEUID1);
@@ -1024,12 +1016,13 @@ void CallModelTest::testModifyEvent()
     QCOMPARE(e2.direction(), Event::Inbound);
 }
 
-// Make sure that phone numbers resolve to the right contacts even if they
-// minimize to the same number.
+// Test that phone numbers resolve to the same contact if they minimize
+// to the same number.
 void CallModelTest::testMinimizedPhone()
 {
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
+
+    ContactChangeListener contactChangeListener;
 
     const QString phone00("0011112222");
     const QString phone99("9911112222");
@@ -1039,11 +1032,11 @@ void CallModelTest::testMinimizedPhone()
     const QString user00("User00");
     const QString user99("User99");
 
-    int user00id = addTestContact(user00, phone00, RING_ACCOUNT);
-    int user99id = addTestContact(user99, phone99, RING_ACCOUNT);
-    QTest::qWait(1000);
+    int user00id = addTestContact(user00, phone00, RING_ACCOUNT, &contactChangeListener);
+    int user99id = addTestContact(user99, phone99, RING_ACCOUNT, &contactChangeListener);
 
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     QDateTime when = QDateTime::currentDateTime();
@@ -1052,84 +1045,51 @@ void CallModelTest::testMinimizedPhone()
     addTestEvent(model, Event::CallEvent, Event::Outbound, RING_ACCOUNT, -1, "", false, false, when.addSecs(20), phone00);
     QVERIFY(watcher.waitForAdded(3));
 
+    modelReady.clear();
     model.setFilter(CallModel::SortByTime);
     model.setResolveContacts(EventModel::ResolveImmediately);
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), 3);
 
-    Event e;
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user99id);
-    QCOMPARE(e.recipients().at(0).contactName(), user99);
-
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QCOMPARE(e.recipients().at(0).isContactResolved(), true);
-    QCOMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
+        QCOMPARE(e.recipients().at(0).isContactResolved(), true);
+        QCOMPARE(e.recipients().at(0).contactId(), user00id);
+        QCOMPARE(e.recipients().at(0).contactName(), user00);
+    }
 
     // If we delete one of these contacts the number should resolve to the other
-    deleteTestContact(user99id);
-    QTest::qWait(1000);
+    deleteTestContact(user00id, &contactChangeListener);
 
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
-
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), user00id);
-    QCOMPARE(e.recipients().at(0).contactName(), user00);
+    QCOMPARE(model.rowCount(), 3);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QTRY_COMPARE(e.recipients().at(0).contactId(), user99id);
+        QCOMPARE(e.recipients().at(0).contactName(), user99);
+    }
 
     // Delete the other contact, the numbers should no longer resolve to any contact
-    deleteTestContact(user00id);
-    QTest::qWait(1000);
+    deleteTestContact(user99id, &contactChangeListener);
 
-    e = model.event(model.index(0, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
-
-    e = model.event(model.index(1, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
-
-    e = model.event(model.index(2, 0));
-    QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
-    QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
-    QCOMPARE(e.recipients().at(0).contactName(), QString());
+    QCOMPARE(model.rowCount(), 3);
+    for (int i = 0; i < model.rowCount(); ++i) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.recipients().count(), 1);
+        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
+        QCOMPARE(e.recipients().at(0).contactName(), QString());
+    }
 }
 
 // Ensure that non-numeric phone numbers are not coalesced together
 void CallModelTest::testMinimizedEmpty()
 {
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
 
     const QString phone1("The Palace");
     const QString phone2("The Police");
@@ -1138,6 +1098,7 @@ void CallModelTest::testMinimizedEmpty()
     QCOMPARE(minimizePhoneNumber(phone2), QString());
 
     CallModel model;
+    QSignalSpy modelReady(&model, &CallModel::modelReady);
     watcher.setModel(&model);
 
     QDateTime when = QDateTime::currentDateTime();
@@ -1147,10 +1108,11 @@ void CallModelTest::testMinimizedEmpty()
     addTestEvent(model, Event::CallEvent, Event::Inbound, RING_ACCOUNT, -1, "", false, false, when.addSecs(30), phone2);
     QVERIFY(watcher.waitForAdded(4));
 
+    modelReady.clear();
     model.setFilter(CallModel::SortByTime);
     model.setResolveContacts(EventModel::ResolveImmediately);
     QVERIFY(model.getEvents());
-    QVERIFY(watcher.waitForModelReady());
+    QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.rowCount(), 2);
 
     Event e;
@@ -1169,8 +1131,9 @@ void CallModelTest::testMinimizedEmpty()
 
 void CallModelTest::testContactGrouping()
 {
-    deleteAll();
-    QTest::qWait(100);
+    deleteAll(false);
+
+    ContactChangeListener contactChangeListener;
 
     const QString phone1("11111111");
     const QString phone2("22222222");
@@ -1181,13 +1144,11 @@ void CallModelTest::testContactGrouping()
     const QString user1("User1");
     const QString user2("User2");
 
-    int user1Id = addTestContact(user1, phone1, RING_ACCOUNT);
-    QVERIFY(user1Id != -1);
-    int user2Id = addTestContact(user2, phone2, RING_ACCOUNT);
-    QVERIFY(user2Id != -1);
+    int user1Id = addTestContact(user1, phone1, RING_ACCOUNT, &contactChangeListener);
+    int user2Id = addTestContact(user2, phone2, RING_ACCOUNT, &contactChangeListener);
+
     QVERIFY(addTestContactAddress(user1Id, phone4, RING_ACCOUNT));
     QVERIFY(addTestContactAddress(user2Id, phone5, RING_ACCOUNT));
-    QTest::qWait(1000);
 
     CallModel model;
     model.setFilter(CallModel::SortByContact);
@@ -1209,7 +1170,6 @@ void CallModelTest::testContactGrouping()
     (void)model.data(model.index(2, 0), CallModel::ContactIdsRole);
     (void)model.data(model.index(3, 0), CallModel::ContactIdsRole);
 
-    QTest::qWait(100);
     QCOMPARE(model.rowCount(), 5);
 
     // Resolving this address will cause the event to be coalesced with a predecessor
@@ -1232,7 +1192,6 @@ void CallModelTest::testContactGrouping()
 void CallModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(CallModelTest)

@@ -32,5 +32,6 @@ SUBDIRS = \
     profile_callmodel \
     profile_conversationmodel \
     profile_groupmodel \
-    profile_recentcontactsmodel
+    profile_recentcontactsmodel \
+    mem_eventmodel \
 

@@ -42,7 +42,6 @@ void RecipientEventModelTest::initTestCase()
 void RecipientEventModelTest::cleanupTestCase()
 {
     deleteAll();
-    QTest::qWait(100);
 }
 
 void RecipientEventModelTest::testGetRecipientEvents_data()
@@ -68,9 +67,6 @@ void RecipientEventModelTest::testGetRecipientEvents()
     QFETCH(QString, remoteId);
     QFETCH(QString, readableRemoteId);
     QFETCH(int, eventType);
-
-    deleteAll();
-    QTest::qWait(100);
 
     addTestGroups(group1, group2);
 
@@ -151,9 +147,8 @@ void RecipientEventModelTest::testGetContactEvents()
     QFETCH(QString, readableRemoteId);
     QFETCH(int, eventType);
 
-    deleteAll();
-    QTest::qWait(100);
-
+    deleteAll(false);
+    ContactChangeListener contactChangeListener;
     addTestGroups(group1, group2);
 
     RecipientEventModel model;
@@ -169,18 +164,12 @@ void RecipientEventModelTest::testGetContactEvents()
     model.databaseIO().getEvent(eventId, event);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId = addTestContact("Correspondent", readableRemoteId, localId);
-    QVERIFY(contactId != -1);
+    int contactId = addTestContact("Correspondent", readableRemoteId, localId, &contactChangeListener);
     QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
 
     model.setRecipients(contactId);
     QVERIFY(model.getEvents());
     QTRY_VERIFY(model.isReady());
-    QTest::qWait(1000);
     QCOMPARE(model.rowCount(), 1);
 
     event = model.event(model.index(0, 0));
@@ -259,9 +248,8 @@ void RecipientEventModelTest::testLimitOffset()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
-    deleteAll();
-    QTest::qWait(100);
-
+    deleteAll(false);
+    ContactChangeListener contactChangeListener;
     addTestGroups(group1, group2);
 
     RecipientEventModel model;
@@ -281,13 +269,7 @@ void RecipientEventModelTest::testLimitOffset()
 
     Event event;
 
-    int contactId = addTestContact("Correspondent", remoteId, localId);
-    QVERIFY(contactId != -1);
-    QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
+    int contactId = addTestContact("Correspondent", remoteId, localId, &contactChangeListener);
 
     model.setRecipients(contactId);
     QVERIFY(model.getEvents());

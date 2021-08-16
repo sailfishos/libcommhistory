@@ -46,14 +46,12 @@ ModelWatcher watcher;
 
 void EventModelTest::groupsUpdatedSlot(const QList<int> &groupIds)
 {
-    qDebug() << Q_FUNC_INFO << groupIds;
     if (!groupIds.isEmpty())
         groupUpdated = groupIds.first();
 }
 
 void EventModelTest::groupsDeletedSlot(const QList<int> &groupIds)
 {
-        qDebug() << Q_FUNC_INFO << groupIds;
     if (!groupIds.isEmpty())
         groupDeleted = groupIds.first();
 }
@@ -449,8 +447,7 @@ void EventModelTest::testDeleteEventVCard()
 
     if (deleteGroups) {
         groupModel.deleteGroups(QList<int>() << groupId1);
-        if (groupsCommitted.isEmpty())
-            QVERIFY(waitSignal(groupsCommitted));
+        QTRY_COMPARE(groupsCommitted.count(), 1);
         QVERIFY(groupsCommitted.first().at(1).toBool());
     } else {
         QVERIFY(model.deleteEvent(event1Id));
@@ -468,9 +465,9 @@ void EventModelTest::testDeleteEventVCard()
     if (deleteGroups) {
         groupsCommitted.clear();
         groupModel.deleteGroups(QList<int>() << groupId2);
-        if (groupsCommitted.isEmpty())
-            QVERIFY(waitSignal(groupsCommitted));
+        QTRY_COMPARE(groupsCommitted.count(), 1);
         QVERIFY(groupsCommitted.first().at(1).toBool());
+        groupsCommitted.clear();
     } else {
         QVERIFY(model.deleteEvent(event2Id));
         QVERIFY(watcher.waitForDeleted());
@@ -615,9 +612,9 @@ void EventModelTest::testDeleteEventMmsParts()
 
     if (deleteGroups) {
         groupModel.deleteGroups(QList<int>() << groupId1);
-        if (groupsCommitted.isEmpty())
-            QVERIFY(waitSignal(groupsCommitted));
+        QTRY_COMPARE(groupsCommitted.count(), 1);
         QVERIFY(groupsCommitted.first().at(1).toBool());
+        groupsCommitted.clear();
     } else {
         QVERIFY(model.deleteEvent(event1Id));
         QVERIFY(watcher.waitForDeleted());
@@ -642,9 +639,9 @@ void EventModelTest::testDeleteEventMmsParts()
     if (deleteGroups) {
         groupsCommitted.clear();
         groupModel.deleteGroups(QList<int>() << groupId2);
-        if (groupsCommitted.isEmpty())
-            QVERIFY(waitSignal(groupsCommitted));
+        QTRY_COMPARE(groupsCommitted.count(), 1);
         QVERIFY(groupsCommitted.first().at(1).toBool());
+        groupsCommitted.clear();
     } else {
         QVERIFY(model.deleteEvent(event2Id));
         QVERIFY(watcher.waitForDeleted());
@@ -1209,8 +1206,6 @@ void EventModelTest::testStreaming()
     int total;
     QVERIFY(groupModel.databaseIO().totalEventsInGroup(group1.id(), total));
 
-    qDebug() << "total msgs: " << total;
-
     ConversationModel model;
     model.setQueryMode(EventModel::SyncQuery);
     QVERIFY(model.getEvents(group1.id()));
@@ -1235,11 +1230,8 @@ void EventModelTest::testStreaming()
     int count = 0;
     int chunkSize = firstChunkSize;
     while (count < total) {
-        qDebug() << "count: " << count;
         if (count > 0)
             chunkSize = normalChunkSize;
-
-        qDebug() << "chunk size: " << chunkSize;
 
         int expectedEnd = count + chunkSize > total ? total - 1: count + chunkSize - 1;
 
@@ -1247,17 +1239,11 @@ void EventModelTest::testStreaming()
         int firstInserted = -1;
 
         while (expectedEnd != lastInserted) {
-            QVERIFY(waitSignal(rowsInserted));
+            QTRY_VERIFY(rowsInserted.count() > 0);
 
             if (firstInserted == -1)
                 firstInserted = rowsInserted.first().at(1).toInt();
             lastInserted = rowsInserted.last().at(2).toInt(); // end
-
-            qDebug() << "rows start in streaming model: " << firstInserted;
-            qDebug() << "rows start should be: " << count;
-            qDebug() << "rows end in streaming model: " << lastInserted;
-            qDebug() << "rows end should be: " << expectedEnd;
-
             rowsInserted.clear();
         }
 
@@ -1274,8 +1260,6 @@ void EventModelTest::testStreaming()
         {
             QVERIFY(streamModel.canFetchMore(QModelIndex()));
             QVERIFY(modelReady.isEmpty());
-
-            qDebug() << "Calling fetchMore from streaming model...";
             streamModel.fetchMore(QModelIndex());
         }
 
@@ -1285,7 +1269,7 @@ void EventModelTest::testStreaming()
     if (streamModel.canFetchMore(QModelIndex()))
         streamModel.fetchMore(QModelIndex());
 
-    QVERIFY(waitSignal(modelReady));
+    QTRY_COMPARE(modelReady.count(), 1);
     QVERIFY(!streamModel.canFetchMore(QModelIndex()));
     QCOMPARE(streamModel.rowCount(), total);
 
@@ -1455,6 +1439,8 @@ void EventModelTest::testContactMatching()
     QFETCH(QString, remoteId);
     QFETCH(int, eventType);
 
+    ContactChangeListener contactChangeListener;
+
     EventModel model;
     model.setResolveContacts(EventModel::ResolveImmediately);
     model.setDefaultAccept(true);
@@ -1470,40 +1456,30 @@ void EventModelTest::testContactMatching()
     model.databaseIO().getEvent(eventId, event);
     QCOMPARE(event.contactId(), 0);
 
-    int contactId1 = addTestContact("Really Bad", remoteId + "123", localId);
-
-    // We need to wait for libcontacts to process this contact addition, which involves
-    // various delays and event handling asynchronicities
-    QTest::qWait(1000);
-
+    // Add a non-matching contact and check the contact does not resolve in the model.
+    int contactId1 = addTestContact("Really Bad", remoteId + "123", localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), 0);
     QCOMPARE(event.contactName(), QString());
 
-    int contactId = addTestContact("Really Bad", remoteId, localId);
-    QTest::qWait(1000);
-
+    int contactId = addTestContact("Really Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), contactId);
     QCOMPARE(event.contactName(), QString("Really Bad"));
 
     // If a new contact is added with the same address, it will replace the previous resolution
-    int replacementContactId = addTestContact("Moderately Bad", remoteId, localId);
-    QTest::qWait(1000);
-
+    int replacementContactId = addTestContact("Moderately Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.contactId(), replacementContactId);
     QCOMPARE(event.contactName(), QString("Moderately Bad"));
 
     // After the contacts are removed, the events resolve to nothing
-    deleteTestContact(contactId1);
-    deleteTestContact(contactId);
-    deleteTestContact(replacementContactId);
-    QTest::qWait(1000);
+    deleteTestContact(contactId1, &contactChangeListener);
+    deleteTestContact(contactId, &contactChangeListener);
+    deleteTestContact(replacementContactId, &contactChangeListener);
 
-    event = model.event(model.findEvent(eventId));
-    QCOMPARE(event.contactId(), 0);
-    QCOMPARE(event.contactName(), QString());
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactId(), 0);
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactName(), QString());
 }
 
 void EventModelTest::testAddNonDigitRemoteId_data()
@@ -1574,7 +1550,7 @@ void EventModelTest::testBufferInsertions()
     QVERIFY(im.id() != -1);
 
     /* A row should have been inserted */
-    QVERIFY(waitSignal(rowsInserted));
+    QTRY_COMPARE(rowsInserted.count(), 1);
     QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
     rowsInserted.clear();
 
@@ -1592,17 +1568,15 @@ void EventModelTest::testBufferInsertions()
     QVERIFY(watcher.waitForAdded());
     QVERIFY(im.id() != -1);
 
-    /* No rows should have been added */
-    bool inserted = waitSignal(rowsInserted);
-    QCOMPARE(inserted, false);
-    QCOMPARE(rowsInserted.count(), 0);
+    /* No rows should have been added.
+      Do not clear rowsInserted count before the next test. */
 
     /* Turn off buffering so the event is added to the model */
     model.setBufferInsertions(false);
     QCOMPARE(model.bufferInsertions(), false);
 
     /* A row should now be reported as inserted */
-    QVERIFY(waitSignal(rowsInserted));
+    QTRY_COMPARE(rowsInserted.count(), 1);
     QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
     rowsInserted.clear();
 
@@ -1611,7 +1585,7 @@ void EventModelTest::testBufferInsertions()
     QVERIFY(model.addEvent(im));
     QVERIFY(watcher.waitForAdded());
     QVERIFY(im.id() != -1);
-    QVERIFY(waitSignal(rowsInserted));
+    QTRY_COMPARE(rowsInserted.count(), 1);
     QCOMPARE(rowsInserted.first().at(1).toInt(), 0);
     rowsInserted.clear();
 }
@@ -1628,8 +1602,6 @@ void EventModelTest::cleanupTestCase()
         // a QUICK FIX!
         QVERIFY(EventModel().deleteEvent(call));
     }
-
-    QTest::qWait(100);
 }
 
 QTEST_MAIN(EventModelTest)
