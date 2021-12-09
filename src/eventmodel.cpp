@@ -86,6 +86,7 @@ QHash<int, QByteArray> EventModel::roleNames() const
     roles[SubjectRole] = "subject";
     roles[AccountRole] = "account";
     roles[DateAndAccountGroupingRole] = "dateAndAccountGrouping";
+    roles[ContactNameRole] = "contactName";
     return roles;
 }
 
@@ -298,6 +299,9 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         case DateAndAccountGroupingRole: {
             return event.dateAndAccountGrouping();
         }
+        case ContactNameRole:
+            return QVariant::fromValue(event.contactName());
+            break;
         default:
             break;
     }

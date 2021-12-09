@@ -114,6 +114,7 @@ public:
         SubjectRole,
         AccountRole,
         DateAndAccountGroupingRole,
+        ContactNameRole,
         BaseRole = Qt::UserRole + 1000,
     };
 
