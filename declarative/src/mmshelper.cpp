@@ -38,6 +38,8 @@
 #include <QMimeDatabase>
 #include <QDebug>
 
+#include <unistd.h>
+
 struct MmsPart
 {
     QString fileName;
@@ -198,6 +200,24 @@ static QString createTemporaryTextFile(const QString &dir, const QMimeDatabase &
     return file.fileName();
 }
 
+static QString createTemporaryFile(const QString &dir, const QString &source)
+{
+    QFileInfo fileInfo(source);
+    QString targetFile(dir + '/' + fileInfo.fileName());
+    // try to create a hard link and if that fails fall back to file copy
+    int result = link(source.toUtf8().constData(), targetFile.toUtf8().constData());
+
+    if (result < 0) {
+        QFile file(source);
+        if (!file.copy(targetFile)) {
+            qWarning() << "Failed to copy file for MMS" << source;
+            return QString();
+        }
+    }
+
+    return targetFile;
+}
+
 bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts)
 {
     return sendMessage(QString(), to, cc, bcc, subject, parts);
@@ -262,7 +282,7 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
                 return NULL;
             }
         } else if (part.fileName.startsWith("file://")) {
-            part.fileName = QUrl(part.fileName).toLocalFile();
+            part.fileName = createTemporaryFile(tempDir.path(), QUrl(part.fileName).toLocalFile());
         }
 
         if (part.contentType.isEmpty()) {
@@ -283,6 +303,8 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
 
     params << to << cc << bcc << subject << QVariant::fromValue(outParts);
 
+    // TODO: ideally there would be sendMessageFd in the handler interface, as there is in mms-engine,
+    // to avoid some temporary files
     QDBusMessage call(QDBusMessage::createMethodCall(MMS_HANDLER_SERVICE,
         MMS_HANDLER_PATH, MMS_HANDLER_INTERFACE, "sendMessage"));
     call.setArguments(params);
