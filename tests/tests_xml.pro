@@ -9,8 +9,8 @@ run_test_install.files = $$PWD/run_test.sh
 run_test_install.path = /opt/tests/libcommhistory-qt5
 
 
-unit_xml.target = unit_tests.xml
-unit_xml.depends = $$PWD/unit_tests.xml.in
+unit_xml.target = tests.xml
+unit_xml.depends = $$PWD/tests.xml.in
 unit_xml.commands = sed -e "s:@RUN_TEST@:$${RUN_TEST}:g" $< > $@
 unit_xml.CONFIG += no_check_exist
 
