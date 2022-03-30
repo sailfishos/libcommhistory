@@ -166,9 +166,13 @@ bool ContactChangeListener::waitForChange(quint32 contactId, QSet<quint32> *chan
     QObject::connect(m_timer, &QTimer::timeout, m_loop, &QEventLoop::quit);
     m_loop->exec();
 
-    const bool success = changeWaits->contains(contactId);
-    changeWaits->remove(contactId);
-    changeRecords->remove(contactId);
+    const bool success = changeWaits->contains(contactId) && changeRecords->contains(contactId);
+
+    if (!changeWaits->remove(contactId))
+        qWarning() << "Failed to remove" << contactId << "from changeWaits";
+
+    if (!changeRecords->remove(contactId))
+        qWarning() << "Failed to remove" << contactId << "from changeRecords";
 
     return success;
 }
@@ -187,6 +191,8 @@ void ContactChangeListener::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
 {
     const quint32 contactId = SeasideCache::internalId(item->contact);
     m_deletedContactIds.insert(contactId);
+
+    qDebug() << "Adding" << contactId << "to be removed";
 
     if (m_waitForContactDeletedId.contains(contactId) && m_loop->isRunning()) {
         m_loop->quit();
@@ -439,6 +445,8 @@ void deleteTestContact(int id, ContactChangeListener *listener)
 {
     const QContactId contactId = apiContactId(id, manager()->managerUri());
     const QContact contact = manager()->contact(contactId);
+
+    qDebug() << "deleting" << id;
 
     const QContactId localId = localContactForAggregate(contactId);
     QContact localContact = manager()->contact(localId);
