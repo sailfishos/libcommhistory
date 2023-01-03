@@ -27,14 +27,3 @@
 CONFIG         += link_pkgconfig
 MOC_DIR         = .moc
 OBJECTS_DIR     = .obj
-RCC_DIR         = resources
-UI_DIR          = ui
-UI_HEADERS_DIR  = ui/include
-UI_SOURCES_DIR  = ui/src
-
-# we don't like warnings...
-QMAKE_CXXFLAGS *= -Werror -Wno-psabi
-
-
-# End of File
-

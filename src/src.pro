@@ -20,13 +20,13 @@
 #
 ###############################################################################
 
-# -----------------------------------------------------------------------------
-# libcommhistory/src/src.pro
-# -----------------------------------------------------------------------------
 !include( ../common-project-config.pri ) : \
     error( "Unable to include common-project-config.pri" )
 !include( ../common-vars.pri ) : \
     error( "Unable to include common-vars.pri" )
+!include( ../common-installs-config.pri ) : \
+    error( "Unable to include common-installs-config.pri" )
+
 
 # -----------------------------------------------------------------------------
 # target setup
@@ -72,7 +72,81 @@ QT_LIKE_HEADERS += \
                    headers/Models \
                    headers/DatabaseIO
 
-include(sources.pri)
+HEADERS += commonutils.h \
+           eventmodel.h \
+           eventmodel_p.h \
+           event.h \
+           messagepart.h \
+           callevent.h \
+           eventtreeitem.h \
+           conversationmodel.h \
+           callstatistics.h \
+           callstatistics_p.h \
+           smshistory.h \
+           smshistory_p.h \
+           callhistory.h \
+           callhistory_p.h \
+           callmodel.h \
+           groupmodel.h \
+           groupmodel_p.h \
+           group.h \
+           adaptor.h \
+           conversationmodel_p.h \
+           contactlistener.h \
+           libcommhistoryexport.h \
+           singleeventmodel.h \
+           recipienteventmodel.h \
+           recipienteventmodel_p.h \
+           recentcontactsmodel.h \
+           updatesemitter.h \
+           constants.h \
+           mmsconstants.h \
+           mmsreadreportmodel.h \
+           groupobject.h \
+           groupmanager.h \
+           contactgroupmodel.h \
+           contactgroup.h \
+           databaseio.h \
+           databaseio_p.h \
+           commhistorydatabase.h \
+           commhistorydatabasepath.h \
+           debug.h \
+           contactfetcher.h \
+           contactresolver.h \
+           draftsmodel.h \
+           draftsmodel_p.h \
+           recipient.h
+
+SOURCES += commonutils.cpp \
+           eventmodel.cpp \
+           eventmodel_p.cpp \
+           eventtreeitem.cpp \
+           conversationmodel.cpp \
+           callstatistics.cpp \
+           callhistory.cpp \
+           callmodel.cpp \
+           groupmodel.cpp \
+           group.cpp \
+           adaptor.cpp \
+           event.cpp \
+           messagepart.cpp \
+           mmsreadreportmodel.cpp \
+           contactlistener.cpp \
+           smshistory.cpp \
+           singleeventmodel.cpp \
+           recipienteventmodel.cpp \
+           recentcontactsmodel.cpp \
+           updatesemitter.cpp \
+           groupmanager.cpp \
+           groupobject.cpp \
+           contactgroupmodel.cpp \
+           contactgroup.cpp \
+           databaseio.cpp \
+           commhistorydatabase.cpp \
+           contactfetcher.cpp \
+           contactresolver.cpp \
+           draftsmodel.cpp \
+           recipient.cpp
 
 # -----------------------------------------------------------------------------
 # Installation target for API header files
@@ -80,13 +154,7 @@ include(sources.pri)
 headers.files = $$HEADERS \
                 $$QT_LIKE_HEADERS
 
-# -----------------------------------------------------------------------------
-# common installation setup
-# NOTE: remember to set headers.files before this include to have the headers
-# properly setup.
-# -----------------------------------------------------------------------------
-!include( ../common-installs-config.pri ) : \
-    error( "Unable to include common-installs-config.pri" )
+headers.path = $${INSTALL_PREFIX}/include/commhistory-qt5/CommHistory
 
 # -----------------------------------------------------------------------------
 # Installation target for .pc file
@@ -94,11 +162,7 @@ headers.files = $$HEADERS \
 QMAKE_SUBSTITUTES += $${TARGET}.pc.in
 pkgconfig.files = $${TARGET}.pc
 pkgconfig.path  = $$[QT_INSTALL_LIBS]/pkgconfig
-INSTALLS       += pkgconfig
 
-# -----------------------------------------------------------------------------
-# End of file
-# -----------------------------------------------------------------------------
+target.path  = $$[QT_INSTALL_LIBS]
 
-OTHER_FILES += \
-    sources.pri
+INSTALLS += pkgconfig target headers
