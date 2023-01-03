@@ -383,7 +383,7 @@ public:
      * Provide background thread for running database queries and blocking operations.
      * It allows to avoid blocking when the model used in the main GUI thread.
      * This function will cancel any outgoing requests. If thread is NULL,
-     * model's thread is used for quereis.
+     * model's thread is used for queries.
      *
      * The thread should be started before making any queries and it should not
      * be terminated before deleting the model. Client is responsible for thread
