@@ -33,6 +33,7 @@
 #include <QQmlParserStatus>
 
 #include "callmodel.h"
+#include "event.h"
 
 class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
 {
@@ -53,41 +54,44 @@ class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
 
 public:
     enum EventType {
-        UnknownType = 0,
-        IMEvent,
-        SMSEvent,
-        CallEvent,
-        VoicemailEvent,
-        StatusMessageEvent,
-        MMSEvent,
-        ClassZeroSMSEvent
+        UnknownType = CommHistory::Event::UnknownType,
+        IMEvent = CommHistory::Event::IMEvent,
+        SMSEvent = CommHistory::Event::SMSEvent,
+        CallEvent = CommHistory::Event::CallEvent,
+        VoicemailEvent = CommHistory::Event::VoicemailEvent,
+        StatusMessageEvent = CommHistory::Event::StatusMessageEvent,
+        MMSEvent = CommHistory::Event::MMSEvent,
+        ClassZeroSMSEvent = CommHistory::Event::ClassZeroSMSEvent
     };
 
     enum EventDirection {
-        UnknownDirection = 0,
-        Inbound,
-        Outbound
+        UnknownDirection = CommHistory::Event::UnknownDirection,
+        Inbound = CommHistory::Event::Inbound,
+        Outbound = CommHistory::Event::Outbound
     };
 
     enum EventStatus {
-        UnknownStatus = 0,
-        SendingStatus,
-        SentStatus,
-        DeliveredStatus,
-        FailedStatus,
-        TemporarilyFailedStatus = FailedStatus,
-        PermanentlyFailedStatus,
-        TemporarilyFailedOfflineStatus
+        ManualNotificationStatus = CommHistory::Event::ManualNotificationStatus,
+        WaitingStatus = CommHistory::Event::WaitingStatus,
+        DownloadingStatus = CommHistory::Event::DownloadingStatus,
+        ReceivedStatus = CommHistory::Event::ReceivedStatus,
+        UnknownStatus = CommHistory::Event::UnknownStatus,
+        SendingStatus = CommHistory::Event::SendingStatus,
+        SentStatus = CommHistory::Event::SentStatus,
+        DeliveredStatus = CommHistory::Event::DeliveredStatus,
+        FailedStatus = CommHistory::Event::FailedStatus,
+        TemporarilyFailedStatus = CommHistory::Event::TemporarilyFailedStatus,
+        PermanentlyFailedStatus = CommHistory::Event::PermanentlyFailedStatus,
+        TemporarilyFailedOfflineStatus = CommHistory::Event::TemporarilyFailedOfflineStatus
     };
 
     enum EventReadStatus {
-        UnknownReadStatus = 0,
-        ReadStatusRead,
-        ReadStatusDeleted
+        UnknownReadStatus = CommHistory::Event::UnknownReadStatus,
+        ReadStatusRead = CommHistory::Event::ReadStatusRead,
+        ReadStatusDeleted = CommHistory::Event::ReadStatusDeleted
     };
 
-    enum GroupBy
-    {
+    enum GroupBy {
         GroupByNone = CommHistory::CallModel::SortByTime,
         GroupByContact = CommHistory::CallModel::SortByContact,
         GroupByContactAndType = CommHistory::CallModel::SortByContactAndType
