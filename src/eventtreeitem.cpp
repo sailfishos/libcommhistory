@@ -30,7 +30,7 @@ using namespace CommHistory;
 EventTreeItem::EventTreeItem(const Event &event, EventTreeItem *parent)
 {
     parentItem = parent;
-    eventData = new Event( event );
+    eventData = new Event(event);
 }
 
 EventTreeItem::~EventTreeItem()
@@ -49,17 +49,16 @@ void EventTreeItem::prependChild(EventTreeItem *child)
     children.prepend(child);
 }
 
-void EventTreeItem::moveChild( int fromRow, int toRow )
+void EventTreeItem::moveChild(int fromRow, int toRow)
 {
     // if the given index is out of range or the two index are the same
-    if ( fromRow < 0 || childCount() - 1 < fromRow ||
-         toRow < 0 || childCount() -1 < toRow ||
-         fromRow == toRow )
-    {
+    if (fromRow < 0 || childCount() - 1 < fromRow
+            || toRow < 0 || childCount() -1 < toRow
+            || fromRow == toRow) {
         return;
     }
 
-    children.insert( toRow, children.takeAt( fromRow ) );
+    children.insert(toRow, children.takeAt(fromRow));
 }
 
 void EventTreeItem::insertChildAt(int row, EventTreeItem *child)
@@ -95,11 +94,8 @@ Event &EventTreeItem::event()
 
 void EventTreeItem::setEvent(const Event &event)
 {
-    if ( eventData )
-    {
-        delete eventData;
-    }
-    eventData = new Event( event );
+    delete eventData;
+    eventData = new Event(event);
 }
 
 EventTreeItem *EventTreeItem::parent()

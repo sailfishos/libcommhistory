@@ -53,11 +53,10 @@ class CallModelPrivate;
 class LIBCOMMHISTORY_EXPORT CallModel: public EventModel
 {
     Q_OBJECT
-    Q_ENUMS( Sorting )
+    Q_ENUMS(Sorting)
 
 public:
-    enum Sorting
-    {
+    enum Sorting {
         SortByContact = 0,
         SortByTime,
         SortByContactAndType
@@ -183,15 +182,11 @@ public:
     /* NOTE: With streamed queries, event counts might be incorrect at
      * chunk boundaries when sorting by time.
      */
-    virtual void setQueryMode( EventModel::QueryMode mode );
-
-    virtual bool addEvent( Event &event );
-
-    virtual bool modifyEvent( Event &event );
-
-    virtual bool deleteEvent( int id );
-
-    virtual bool deleteEvent( Event &event );
+    virtual void setQueryMode(EventModel::QueryMode mode);
+    virtual bool addEvent(Event &event);
+    virtual bool modifyEvent(Event &event);
+    virtual bool deleteEvent(int id);
+    virtual bool deleteEvent(Event &event);
 
 private:
     Q_DECLARE_PRIVATE(CallModel)

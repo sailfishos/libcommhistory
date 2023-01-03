@@ -224,11 +224,8 @@ public:
 
     //\\//\\// G E T - A C C E S S O R S //\\//\\//
     int id() const;
-
     QUrl url() const;
-
     Event::EventType type() const;
-
     Event::EventCategory category() const;
 
     /*!
@@ -246,23 +243,14 @@ public:
     QDateTime endTime() const;
 
     Event::EventDirection direction() const;
-
     bool isDraft() const;
-
     bool isRead() const;
-
     bool isMissedCall() const;
-
     bool isEmergencyCall() const;
-
     bool isVideoCall() const;
-
     Event::EventStatus status() const;
-
     int bytesReceived() const;
-
     QString localUid() const;
-
     QString dateAndAccountGrouping() const;
 
     const RecipientList &recipients() const;
@@ -275,16 +263,11 @@ public:
     QString contactName() const;
 
     QList<Event::Contact> contacts() const;
-
     QString subject() const;
-
     QString freeText() const;
-
     int groupId() const; /* communication channel */
-
     QString messageToken() const;
     QString mmsId() const;
-
     QDateTime lastModified() const;
 
     /*!
@@ -302,17 +285,11 @@ public:
     int eventCount() const;
 
     QString fromVCardFileName() const;
-
     QString fromVCardLabel() const;
-
     bool reportDelivery() const;
-
     bool reportRead() const;
-
     bool reportReadRequested() const;
-
     Event::EventReadStatus readStatus() const;
-
     int validityPeriod() const;
 
     // MMS content location URL, for MMS notifications
@@ -347,43 +324,24 @@ public:
 
     //\\//\\// S E T - A C C E S S O R S //\\//\\//
     void setId(int id);
-
     void setType(Event::EventType type);
-
     void setStartTime(const QDateTime &startTime);
-
     void setEndTime(const QDateTime &endTime);
-
     void setDirection(Event::EventDirection direction);
-
-    void setIsDraft( bool isDraft );
-
+    void setIsDraft(bool isDraft);
     void setIsRead(bool isRead);
-
-    void setIsMissedCall( bool isMissed );
-
-    void setIsEmergencyCall( bool isEmergency );
-
-    void setIsVideoCall( bool isVideo );
-
+    void setIsMissedCall(bool isMissed);
+    void setIsEmergencyCall(bool isEmergency);
+    void setIsVideoCall(bool isVideo);
     void setStatus(Event::EventStatus status);
-
     void setBytesReceived(int bytes);
-
     void setLocalUid(const QString &uid);
-
     void setRecipients(const RecipientList &recipients);
-
     void setSubject(const QString &subject);
-
     void setFreeText(const QString &text);
-
     void setGroupId(int id);
-
     void setMessageToken(const QString &token);
-
     void setMmsId(const QString &id);
-
     void setLastModified(const QDateTime &modified);
 
     /*!
@@ -394,43 +352,28 @@ public:
      *
      * \return The number of similar events in the same call event group.
      */
-    void setEventCount( int count );
-
-    void setFromVCard( const QString &fileName, const QString &label = QString() ); //fromvcard
-
+    void setEventCount(int count);
+    void setFromVCard(const QString &fileName, const QString &label = QString()); //fromvcard
     void setReportDelivery(bool reportDeliveryRequested);
-
     void setReportRead(bool reportRequested);
-
     void setReportReadRequested(bool reportShouldRequested);
-
     void setReadStatus(Event::EventReadStatus eventReadStatus);
-
     void setValidityPeriod(int validity);
-
     void setContentLocation(const QString &location);
-
     void setMessageParts(const QList<MessagePart> &parts);
-
     void addMessagePart(const MessagePart &part);
 
     // Convenience method for setting the "x-mms-to" header.
     void setToList(const QStringList &toList);
-
     void setCcList(const QStringList &ccList);
-
     void setBccList(const QStringList &bccList);
 
     void setIsAction(bool isAction);
-
     void setIsResolved(bool isResolved);
-
     void setHeaders(const QHash<QString, QString> &headers);
-
     void setStartTimeT(quint32 t);
     void setEndTimeT(quint32 t);
     void setLastModifiedT(quint32 t);
-
     void setSubscriberIdentity(const QString &id);
 
     QString toString() const;

@@ -35,8 +35,8 @@
 using namespace CommHistory;
 
 EventModel::EventModel(QObject *parent)
-        : QAbstractItemModel(parent)
-        , d_ptr(new EventModelPrivate(this))
+    : QAbstractItemModel(parent)
+    , d_ptr(new EventModelPrivate(this))
 {
     connect(d_ptr, SIGNAL(modelReady(bool)), this, SIGNAL(modelReady(bool)));
     connect(d_ptr, SIGNAL(eventsCommitted(QList<CommHistory::Event>,bool)),
@@ -44,7 +44,7 @@ EventModel::EventModel(QObject *parent)
 }
 
 EventModel::EventModel(EventModelPrivate &dd, QObject *parent)
-        : QAbstractItemModel(parent), d_ptr(&dd)
+    : QAbstractItemModel(parent), d_ptr(&dd)
 {
     connect(d_ptr, SIGNAL(modelReady(bool)), this, SIGNAL(modelReady(bool)));
     connect(d_ptr, SIGNAL(eventsCommitted(QList<CommHistory::Event>,bool)),
@@ -186,7 +186,7 @@ bool EventModel::hasChildren(const QModelIndex &parent) const
 }
 
 QModelIndex EventModel::index(int row, int column,
-                                        const QModelIndex &parent) const
+                              const QModelIndex &parent) const
 {
     Q_D(const EventModel);
     if (!hasIndex(row, column, parent)) {
@@ -723,8 +723,9 @@ bool EventModel::deleteEvent(Event &event)
                 return false;
             } else
                 groupDeleted = true;
-        } else
+        } else {
             groupUpdated = true;
+        }
     }
 
     if (!d->database()->commit())
@@ -781,8 +782,9 @@ bool EventModel::moveEvent(Event &event, int groupId)
                 qWarning() << Q_FUNC_INFO << "error deleting empty group" ;
                 d->database()->rollback();
                 return false;
-            } else
+            } else {
                 groupDeleted = oldGroupId;
+            }
         }
     }
 
@@ -843,7 +845,7 @@ bool EventModel::modifyEventsInGroup(QList<Event> &events, Group group)
             //text might be changed in case of MMS
             if (modified.contains(Event::FreeText)
                 || modified.contains(Event::Subject)) {
-                if(event.type() == Event::MMSEvent) {
+                if (event.type() == Event::MMSEvent) {
                     group.setLastMessageText(event.subject().isEmpty() ? event.freeText() : event.subject());
                 } else {
                     group.setLastMessageText(event.freeText());
