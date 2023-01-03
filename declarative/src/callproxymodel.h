@@ -39,7 +39,6 @@ class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
 
-    Q_ENUMS(EventRole)
     Q_ENUMS(EventType)
     Q_ENUMS(EventDirection)
     Q_ENUMS(EventStatus)
@@ -53,29 +52,6 @@ class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
     Q_PROPERTY(int _limit READ limit WRITE setLimit NOTIFY limitChanged)
 
 public:
-    enum EventRole {
-        EventIdRole = CommHistory::EventModel::BaseRole,
-        EventTypeRole,
-        StartTimeRole,
-        EndTimeRole,
-        DirectionRole,
-        IsDraftRole,
-        IsReadRole,
-        IsMissedCallRole,
-        StatusRole,
-        BytesReceivedRole,
-        LocalUidRole,
-        RemoteUidRole,
-        ContactsRole,
-        FreeTextRole,
-        GroupIdRole,
-        MessageTokenRole,
-        LastModifiedRole,
-        EventCountRole,
-        FromVCardFileNameRole,
-        FromVCardLabelRole
-    };
-
     enum EventType {
         UnknownType = 0,
         IMEvent,
