@@ -466,7 +466,7 @@ void GroupModelTest::updateGroups()
     // add new SMS event for second group, check for resorted list, correct contents and date
     QTest::qWait(1000);
     int id = groupModel.group(groupModel.index(1, 0)).id();
-    QDateTime modified = groupModel.index(1, GroupModel::EndTime).data().toDateTime();
+    QDateTime modified = groupModel.index(1).data(GroupModel::EndTimeRole).toDateTime();
     eventsCommitted.clear();
     groupMoved.clear();
     addTestEvent(model, Event::SMSEvent, Event::Outbound, ACCOUNT1, id, "sms");
@@ -485,7 +485,7 @@ void GroupModelTest::updateGroups()
     // add new IM event for second group, check for resorted list, correct contents and date
     QTest::qWait(1000);
     id = groupModel.group(groupModel.index(1, 0)).id();
-    modified = groupModel.index(1, GroupModel::EndTime).data().toDateTime();
+    modified = groupModel.index(1).data(GroupModel::EndTimeRole).toDateTime();
     eventsCommitted.clear();
     groupMoved.clear();
     addTestEvent(model, Event::IMEvent, Event::Outbound, ACCOUNT1, id, "sort",

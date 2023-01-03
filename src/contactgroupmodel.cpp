@@ -219,8 +219,7 @@ void ContactGroupModelPrivate::itemDataChanged(int index)
         q->endMoveRows();
     }
 
-    emit q->dataChanged(q->index(newIndex, 0, QModelIndex()),
-                        q->index(newIndex, ContactGroupModel::NumberOfColumns-1, QModelIndex()));
+    emit q->dataChanged(q->index(newIndex), q->index(newIndex));
 
     emit q->contactGroupChanged(items[newIndex]);
 }
@@ -314,7 +313,7 @@ void ContactGroupModelPrivate::groupDeleted(GroupObject *group)
 }
 
 ContactGroupModel::ContactGroupModel(QObject *parent)
-    : QAbstractTableModel(parent),
+    : QAbstractListModel(parent),
       d(new ContactGroupModelPrivate(this))
 {
 }
@@ -322,25 +321,25 @@ ContactGroupModel::ContactGroupModel(QObject *parent)
 QHash<int,QByteArray> ContactGroupModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
+    roles[ContactIdsRole] = "contactIds";
+    roles[ContactNamesRole] = "contactNames"; // TODO: Obsolete, remove
+    roles[EndTimeRole] = "endTime";
+    roles[UnreadMessagesRole] = "unreadMessages";
+    roles[LastEventGroupRole] = "lastEventGroup";
+    roles[LastEventIdRole] = "lastEventId";
+    roles[LastMessageTextRole] = "lastMessageText";
+    roles[LastVCardFileNameRole] = "lastVCardFileName";
+    roles[LastVCardLabelRole] = "lastVCardLabel";
+    roles[LastEventTypeRole] = "lastEventType";
+    roles[LastEventStatusRole] = "lastEventStatus";
+    roles[LastEventIsDraftRole] = "lastEventIsDraft";
+    roles[LastModifiedRole] = "lastModified";
+    roles[StartTimeRole] = "startTime";
+    roles[GroupsRole] = "groups";
+    roles[DisplayNamesRole] = "displayNames";
+    roles[SubscriberIdentityRole] = "subscriberIdentity";
     roles[ContactGroupRole] = "contactGroup";
     roles[TimeSectionRole] = "timeSection";
-    roles[BaseRole + ContactIds] = "contactIds";
-    roles[BaseRole + ContactNames] = "contactNames"; // TODO: Obsolete, remove
-    roles[BaseRole + EndTime] = "endTime";
-    roles[BaseRole + UnreadMessages] = "unreadMessages";
-    roles[BaseRole + LastEventGroup] = "lastEventGroup";
-    roles[BaseRole + LastEventId] = "lastEventId";
-    roles[BaseRole + LastMessageText] = "lastMessageText";
-    roles[BaseRole + LastVCardFileName] = "lastVCardFileName";
-    roles[BaseRole + LastVCardLabel] = "lastVCardLabel";
-    roles[BaseRole + LastEventType] = "lastEventType";
-    roles[BaseRole + LastEventStatus] = "lastEventStatus";
-    roles[BaseRole + LastEventIsDraft] = "lastEventIsDraft";
-    roles[BaseRole + LastModified] = "lastModified";
-    roles[BaseRole + StartTime] = "startTime";
-    roles[BaseRole + Groups] = "groups";
-    roles[BaseRole + DisplayNames] = "displayNames";
-    roles[BaseRole + SubscriberIdentity] = "subscriberIdentity";
     return roles;
 }
 
@@ -371,12 +370,6 @@ int ContactGroupModel::rowCount(const QModelIndex &parent) const
     return d->items.count();
 }
 
-int ContactGroupModel::columnCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-    return NumberOfColumns;
-}
-
 QVariant ContactGroupModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() >= d->items.count()) {
@@ -385,78 +378,48 @@ QVariant ContactGroupModel::data(const QModelIndex &index, int role) const
 
     ContactGroup *g = d->items.at(index.row());
 
-    int column = index.column();
-    if (role >= BaseRole) {
-        column = role - BaseRole;
-        role = Qt::DisplayRole;
-    }
-
-    if (role == ContactGroupRole) {
+    switch (role) {
+    case ContactGroupRole:
         return QVariant::fromValue<QObject*>(g);
-    } else if (role == TimeSectionRole) {
+    case TimeSectionRole:
         return g->endTime().toLocalTime().date();
-    }
-
-    if (role != Qt::DisplayRole)
+    case ContactIdsRole:
+        return QVariant::fromValue(g->contactIds());
+    case ContactNamesRole:
+    case DisplayNamesRole:
+        return QVariant::fromValue(g->displayNames());
+    case GroupsRole:
+        return QVariant::fromValue<QList<QObject*> >(g->groupObjects());
+    case EndTimeRole:
+        return g->endTime();
+    case UnreadMessagesRole:
+        return g->unreadMessages();
+    case LastEventGroupRole:
+        return QVariant::fromValue<QObject*>(g->lastEventGroup());
+    case LastEventIdRole:
+        return g->lastEventId();
+    case LastMessageTextRole:
+        return g->lastMessageText();
+    case LastVCardFileNameRole:
+        return g->lastVCardFileName();
+    case LastVCardLabelRole:
+        return g->lastVCardLabel();
+    case LastEventTypeRole:
+        return g->lastEventType();
+    case LastEventStatusRole:
+        return g->lastEventStatus();
+    case LastEventIsDraftRole:
+        return g->lastEventIsDraft();
+    case LastModifiedRole:
+        return g->lastModified();
+    case StartTimeRole:
+        return g->startTime();
+    case SubscriberIdentityRole:
+        return g->subscriberIdentity();
+    default:
+        DEBUG() << "ContactGroupModel::data: invalid role??" << role;
         return QVariant();
-
-    QVariant var;
-    switch (column) {
-        case ContactIds:
-            var = QVariant::fromValue(g->contactIds());
-            break;
-        case ContactNames:
-        case DisplayNames:
-            var = QVariant::fromValue(g->displayNames());
-            break;
-        case Groups:
-            var = QVariant::fromValue<QList<QObject*> >(g->groupObjects());
-            break;
-        case EndTime:
-            var = g->endTime();
-            break;
-        case UnreadMessages:
-            var = g->unreadMessages();
-            break;
-        case LastEventGroup:
-            var = QVariant::fromValue<QObject*>(g->lastEventGroup());
-            break;
-        case LastEventId:
-            var = g->lastEventId();
-            break;
-        case LastMessageText:
-            var = g->lastMessageText();
-            break;
-        case LastVCardFileName:
-            var = g->lastVCardFileName();
-            break;
-        case LastVCardLabel:
-            var = g->lastVCardLabel();
-            break;
-        case LastEventType:
-            var = g->lastEventType();
-            break;
-        case LastEventStatus:
-            var = g->lastEventStatus();
-            break;
-        case LastEventIsDraft:
-            var = g->lastEventIsDraft();
-            break;
-        case LastModified:
-            var = g->lastModified();
-            break;
-        case StartTime:
-            var = g->startTime();
-            break;
-        case SubscriberIdentity:
-            var = g->subscriberIdentity();
-            break;
-        default:
-            DEBUG() << "ContactGroupModel::data: invalid column id??" << column;
-            break;
     }
-
-    return var;
 }
 
 int ContactGroupModel::count() const

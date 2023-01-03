@@ -149,8 +149,7 @@ void GroupModelPrivate::groupUpdated(GroupObject *group)
         q->endMoveRows();
     }
 
-    emit q->dataChanged(q->index(newIndex, 0, QModelIndex()),
-                        q->index(newIndex, GroupModel::NumberOfColumns-1, QModelIndex()));
+    emit q->dataChanged(q->index(newIndex), q->index(newIndex));
 }
 
 void GroupModelPrivate::groupDeleted(GroupObject *group)
@@ -167,7 +166,7 @@ void GroupModelPrivate::groupDeleted(GroupObject *group)
 }
 
 GroupModel::GroupModel(QObject *parent)
-    : QAbstractTableModel(parent),
+    : QAbstractListModel(parent),
       d(new GroupModelPrivate(this))
 {
 }
@@ -175,22 +174,22 @@ GroupModel::GroupModel(QObject *parent)
 QHash<int, QByteArray> GroupModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
-    roles[BaseRole + GroupId] = "groupId";
-    roles[BaseRole + LocalUid] = "localUid";
-    roles[BaseRole + RemoteUids] = "remoteUids";
-    roles[BaseRole + ChatName] = "chatName";
-    roles[BaseRole + EndTime] = "endTime";
-    roles[BaseRole + UnreadMessages] = "unreadMessages";
-    roles[BaseRole + LastEventId] = "lastEventId";
-    roles[BaseRole + Contacts] = "contacts";
-    roles[BaseRole + LastMessageText] = "lastMessageText";
-    roles[BaseRole + LastVCardFileName] = "lastVCardFileName";
-    roles[BaseRole + LastVCardLabel] = "lastVCardLabel";
-    roles[BaseRole + LastEventType] = "lastEventType";
-    roles[BaseRole + LastEventStatus] = "lastEventStatus";
-    roles[BaseRole + IsPermanent] = "isPermanent";
-    roles[BaseRole + LastModified] = "lastModified";
-    roles[BaseRole + StartTime] = "startTime";
+    roles[GroupIdRole] = "groupId";
+    roles[LocalUidRole] = "localUid";
+    roles[RemoteUidsRole] = "remoteUids";
+    roles[ChatNameRole] = "chatName";
+    roles[EndTimeRole] = "endTime";
+    roles[UnreadMessagesRole] = "unreadMessages";
+    roles[LastEventIdRole] = "lastEventId";
+    roles[ContactsRole] = "contacts";
+    roles[LastMessageTextRole] = "lastMessageText";
+    roles[LastVCardFileNameRole] = "lastVCardFileName";
+    roles[LastVCardLabelRole] = "lastVCardLabel";
+    roles[LastEventTypeRole] = "lastEventType";
+    roles[LastEventStatusRole] = "lastEventStatus";
+    roles[LastModifiedRole] = "lastModified";
+    roles[StartTimeRole] = "startTime";
+    roles[GroupRole] = "group";
     roles[ContactIdsRole] = "contactIds";
     roles[GroupObjectRole] = "group";
     roles[TimeSectionRole] = "timeSection";
@@ -253,13 +252,6 @@ int GroupModel::rowCount(const QModelIndex &parent) const
     return d->groups.count();
 }
 
-int GroupModel::columnCount(const QModelIndex &parent) const
-{
-    if (parent.isValid())
-        return 0;
-    return NumberOfColumns;
-}
-
 QVariant GroupModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() >= d->groups.count()) {
@@ -270,79 +262,49 @@ QVariant GroupModel::data(const QModelIndex &index, int role) const
     if (!group)
         return QVariant();
 
-    if (role == GroupRole) {
+    switch (role) {
+    case GroupRole:
         return QVariant::fromValue(group->toGroup());
-    } else if (role == GroupObjectRole) {
+    case GroupObjectRole:
         return QVariant::fromValue<QObject*>(group);
-    } else if (role == ContactIdsRole) {
+    case ContactIdsRole:
         return QVariant::fromValue<QList<int> >(group->recipients().contactIds());
-    } else if (role == TimeSectionRole) {
+    case TimeSectionRole:
         return group->endTime().toLocalTime().date();
-    }
-
-    int column = index.column();
-    if (role >= BaseRole) {
-        column = role - BaseRole;
-        role = Qt::DisplayRole;
-    }
-    
-    if (role != Qt::DisplayRole) {
+    case GroupIdRole:
+        return QVariant::fromValue(group->id());
+    case LocalUidRole:
+        return QVariant::fromValue(group->localUid());
+    case RemoteUidsRole:
+        return QVariant::fromValue(group->recipients().remoteUids());
+    case ChatNameRole:
+        return QVariant::fromValue(group->chatName());
+    case EndTimeRole:
+        return QVariant::fromValue(group->endTime());
+    case UnreadMessagesRole:
+        return QVariant::fromValue(group->unreadMessages());
+    case LastEventIdRole:
+        return QVariant::fromValue(group->lastEventId());
+    case ContactsRole:
+        return QVariant::fromValue(group->recipients().contactIds());
+    case LastMessageTextRole:
+        return QVariant::fromValue(group->lastMessageText());
+    case LastVCardFileNameRole:
+        return QVariant::fromValue(group->lastVCardFileName());
+    case LastVCardLabelRole:
+        return QVariant::fromValue(group->lastVCardLabel());
+    case LastEventTypeRole:
+        return QVariant::fromValue((int) group->lastEventType());
+    case LastEventStatusRole:
+        return QVariant::fromValue((int) group->lastEventStatus());
+    case LastModifiedRole:
+        return QVariant::fromValue(group->lastModified());
+    case StartTimeRole:
+        return QVariant::fromValue(group->startTime());
+    default:
+        DEBUG() << "Group::data: invalid role??" << role;
         return QVariant();
     }
-
-    QVariant var;
-    switch (column) {
-        case GroupId:
-            var = QVariant::fromValue(group->id());
-            break;
-        case LocalUid:
-            var = QVariant::fromValue(group->localUid());
-            break;
-        case RemoteUids:
-            var = QVariant::fromValue(group->recipients().remoteUids());
-            break;
-        case ChatName:
-            var = QVariant::fromValue(group->chatName());
-            break;
-        case EndTime:
-            var = QVariant::fromValue(group->endTime());
-            break;
-        case UnreadMessages:
-            var = QVariant::fromValue(group->unreadMessages());
-            break;
-        case LastEventId:
-            var = QVariant::fromValue(group->lastEventId());
-            break;
-        case Contacts:
-            var = QVariant::fromValue(group->recipients().contactIds());
-            break;
-        case LastMessageText:
-            var = QVariant::fromValue(group->lastMessageText());
-            break;
-        case LastVCardFileName:
-            var = QVariant::fromValue(group->lastVCardFileName());
-            break;
-        case LastVCardLabel:
-            var = QVariant::fromValue(group->lastVCardLabel());
-            break;
-        case LastEventType:
-            var = QVariant::fromValue((int)group->lastEventType());
-            break;
-        case LastEventStatus:
-            var = QVariant::fromValue((int)group->lastEventStatus());
-            break;
-        case LastModified:
-            var = QVariant::fromValue(group->lastModified());
-            break;
-        case StartTime:
-            var = QVariant::fromValue(group->startTime());
-            break;
-        default:
-            DEBUG() << "Group::data: invalid column id??" << column;
-            break;
-    }
-
-    return var;
 }
 
 Group GroupModel::group(const QModelIndex &index) const
@@ -365,69 +327,6 @@ QModelIndex GroupModel::findGroup(int id) const
             return index(i, 0, QModelIndex());
     }
     return QModelIndex();
-}
-
-QVariant GroupModel::headerData(int section,
-                                Qt::Orientation orientation,
-                                int role) const
-{
-    QVariant var;
-
-    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        QString name;
-        switch (section) {
-            case GroupId:
-                name = QLatin1String("id");
-                break;
-            case LocalUid:
-                name = QLatin1String("local_uid");
-                break;
-            case RemoteUids:
-                name = QLatin1String("remote_uids");
-                break;
-            case ChatName:
-                name = QLatin1String("chat_name");
-                break;
-            case EndTime:
-                name = QLatin1String("end_time");
-                break;
-            case UnreadMessages:
-                name = QLatin1String("unread_messages");
-                break;
-            case LastEventId:
-                name = QLatin1String("last_event_id");
-                break;
-            case Contacts:
-                name = QLatin1String("contacts");
-                break;
-            case LastMessageText:
-                name = QLatin1String("last_message_text");
-                break;
-            case LastVCardFileName:
-                name = QLatin1String("last_vcard_filename");
-                break;
-            case LastVCardLabel:
-                name = QLatin1String("last_vcard_label");
-                break;
-            case LastEventType:
-                name = QLatin1String("last_event_type");
-                break;
-            case LastEventStatus:
-                name = QLatin1String("last_event_status");
-                break;
-            case LastModified:
-                name = QLatin1String("last_modified");
-                break;
-            case StartTime:
-                name = QLatin1String("start_time");
-                break;
-            default:
-                break;
-        }
-        var = QVariant::fromValue(name);
-    }
-
-    return var;
 }
 
 bool GroupModel::addGroup(Group &group)

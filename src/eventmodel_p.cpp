@@ -590,8 +590,7 @@ void EventModelPrivate::emitDataChanged(int row, void *data)
 {
     Q_Q(EventModel);
 
-    const QModelIndex left(q->createIndex(row, 0, data));
-    const QModelIndex right(q->createIndex(row, EventModel::NumberOfColumns - 1, data));
-    emit q->dataChanged(left, right);
+    const QModelIndex modelIndex(q->createIndex(row, 0, data));
+    emit q->dataChanged(modelIndex, modelIndex);
 }
 
