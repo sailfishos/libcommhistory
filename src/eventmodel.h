@@ -80,32 +80,6 @@ public:
         DoNotResolve
     };
 
-    enum ColumnId {
-        EventId = 0,
-        EventType,
-        StartTime,
-        EndTime,
-        Direction,
-        IsDraft,
-        IsRead,
-        IsMissedCall,
-        Status,
-        BytesReceived, // not implemented
-        LocalUid,
-        RemoteUid,
-        Contacts,
-        FreeText,
-        GroupId,
-        MessageToken,
-        LastModified,
-        EventCount,    // CallEvent related
-        FromVCardFileName,
-        FromVCardLabel,
-        ReadStatus,
-        SubscriberIdentity,
-        NumberOfColumns
-    };
-
     enum {
         EventRole = Qt::UserRole,
         ContactIdsRole,
@@ -115,7 +89,28 @@ public:
         AccountRole,
         DateAndAccountGroupingRole,
         ContactNameRole,
-        BaseRole = Qt::UserRole + 1000,
+        EventIdRole,
+        EventTypeRole,
+        StartTimeRole,
+        EndTimeRole,
+        DirectionRole,
+        IsDraftRole,
+        IsReadRole,
+        IsMissedCallRole,
+        StatusRole,
+        BytesReceivedRole, // not implemented
+        LocalUidRole,
+        RemoteUidRole,
+        ContactsRole,
+        FreeTextRole,
+        GroupIdRole,
+        MessageTokenRole,
+        LastModifiedRole,
+        EventCountRole,    // CallEvent related
+        FromVCardFileNameRole,
+        FromVCardLabelRole,
+        ReadStatusRole,
+        SubscriberIdentityRole
     };
 
     /*!
@@ -362,28 +357,18 @@ public:
 
     /*** reimp from QAbstractItemModel ***/
     virtual QModelIndex parent(const QModelIndex &index) const;
-
     virtual bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
-
-    virtual QModelIndex index(int row, int column,
-                              const QModelIndex &parent = QModelIndex()) const;
-
+    virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
-
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role) const;
-
     virtual QHash<int, QByteArray> roleNames() const;
 
     /*!
      * Provide background thread for running database queries and blocking operations.
      * It allows to avoid blocking when the model used in the main GUI thread.
      * This function will cancel any outgoing requests. If thread is NULL,
-     * model's thread is used for quereis.
+     * model's thread is used for queries.
      *
      * The thread should be started before making any queries and it should not
      * be terminated before deleting the model. Client is responsible for thread

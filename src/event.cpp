@@ -174,10 +174,10 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, Event &event)
     event.setStartTimeT(p.startTimeT);
     event.setEndTimeT(p.endTimeT);
     event.setDirection(static_cast<Event::EventDirection>(direction));
-    event.setIsDraft( isDraft );
+    event.setIsDraft(isDraft);
     event.setIsRead(isRead);
-    event.setIsMissedCall( isMissedCall );
-    event.setIsEmergencyCall( isEmergencyCall );
+    event.setIsMissedCall(isMissedCall);
+    event.setIsEmergencyCall(isEmergencyCall);
     event.setStatus(static_cast<Event::EventStatus>(status));
     event.setBytesReceived(p.bytesReceived);
     event.setLocalUid(p.localUid);
@@ -189,7 +189,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, Event &event)
     event.setMmsId(p.mmsId);
     event.setLastModifiedT(p.lastModifiedT);
     event.setEventCount(p.eventCount);
-    event.setFromVCard( p.fromVCardFileName, p.fromVCardLabel );
+    event.setFromVCard(p.fromVCardFileName, p.fromVCardLabel);
     event.setReportDelivery(reportDelivery);
     event.setValidityPeriod(p.validityPeriod);
     event.setContentLocation(p.contentLocation);
@@ -272,10 +272,10 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
     event.setStartTimeT(p.startTime.toTime_t());
     event.setEndTimeT(p.endTime.toTime_t());
     event.setDirection(static_cast<Event::EventDirection>(direction));
-    event.setIsDraft( isDraft );
+    event.setIsDraft(isDraft);
     event.setIsRead(isRead);
-    event.setIsMissedCall( isMissedCall );
-    event.setIsEmergencyCall( isEmergencyCall );
+    event.setIsMissedCall(isMissedCall);
+    event.setIsEmergencyCall(isEmergencyCall);
     event.setStatus(static_cast<Event::EventStatus>(status));
     event.setBytesReceived(p.bytesReceived);
     event.setLocalUid(localUid);
@@ -286,7 +286,7 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
     event.setMessageToken(p.messageToken);
     event.setMmsId(p.mmsId);
     event.setLastModifiedT(p.lastModified.toTime_t());
-    event.setFromVCard( p.fromVCardFileName, p.fromVCardLabel );
+    event.setFromVCard(p.fromVCardFileName, p.fromVCardLabel);
     event.setReportDelivery(reportDelivery);
     event.setValidityPeriod(p.validityPeriod);
     event.setContentLocation(p.contentLocation);
@@ -334,7 +334,7 @@ EventPrivate::EventPrivate(const EventPrivate &other)
         : QSharedData(other)
         , id(other.id)
         , groupId(other.groupId)
-        , eventCount( other.eventCount )
+        , eventCount(other.eventCount)
         , startTimeT(other.startTimeT)
         , endTimeT(other.endTimeT)
         , lastModifiedT(other.lastModifiedT)
@@ -343,8 +343,8 @@ EventPrivate::EventPrivate(const EventPrivate &other)
         , freeText(other.freeText)
         , messageToken(other.messageToken)
         , mmsId(other.mmsId)
-        , fromVCardFileName( other.fromVCardFileName )
-        , fromVCardLabel( other.fromVCardLabel )
+        , fromVCardFileName(other.fromVCardFileName)
+        , fromVCardLabel(other.fromVCardLabel)
         , validityPeriod(other.validityPeriod)
         , bytesReceived(other.bytesReceived)
         , contentLocation(other.contentLocation)
@@ -780,7 +780,7 @@ void Event::setDirection(Event::EventDirection direction)
     d->propertyChanged(Event::Direction);
 }
 
-void Event::setIsDraft( bool isDraft )
+void Event::setIsDraft(bool isDraft)
 {
     d->flags.isDraft = isDraft;
     d->propertyChanged(Event::IsDraft);
@@ -792,19 +792,19 @@ void Event::setIsRead(bool isRead)
     d->propertyChanged(Event::IsRead);
 }
 
-void Event::setIsMissedCall( bool isMissed )
+void Event::setIsMissedCall(bool isMissed)
 {
     d->flags.isMissedCall = isMissed;
     d->propertyChanged(Event::IsMissedCall);
 }
 
-void Event::setIsEmergencyCall( bool isEmergency )
+void Event::setIsEmergencyCall(bool isEmergency)
 {
     d->flags.isEmergencyCall = isEmergency;
     d->propertyChanged(Event::IsEmergencyCall);
 }
 
-void Event::setIsVideoCall( bool isVideo )
+void Event::setIsVideoCall(bool isVideo)
 {
     if (!isVideo) {
         d->headers.remove(VIDEO_CALL_HEADER);
@@ -816,7 +816,7 @@ void Event::setIsVideoCall( bool isVideo )
     d->propertyChanged(Event::Headers);
 }
 
-void Event::setStatus( Event::EventStatus status )
+void Event::setStatus(Event::EventStatus status)
 {
     d->flags.status = status;
     d->propertyChanged(Event::Status);
@@ -884,13 +884,13 @@ void Event::setLastModified(const QDateTime &modified)
     d->propertyChanged(Event::LastModified);
 }
 
-void Event::setEventCount( int count )
+void Event::setEventCount(int count)
 {
     d->eventCount = count;
     d->propertyChanged(Event::EventCount);
 }
 
-void Event::setFromVCard( const QString &filename, const QString &label )
+void Event::setFromVCard(const QString &filename, const QString &label)
 {
     d->fromVCardFileName = filename;
     d->fromVCardLabel = label.isEmpty() ? filename : label;

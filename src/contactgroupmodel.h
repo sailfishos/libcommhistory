@@ -23,7 +23,7 @@
 #ifndef COMMHISTORY_CONTACTGROUPMODEL_H
 #define COMMHISTORY_CONTACTGROUPMODEL_H
 
-#include <QAbstractItemModel>
+#include <QAbstractListModel>
 
 #include "libcommhistoryexport.h"
 #include "contactgroup.h"
@@ -44,40 +44,34 @@ class ContactGroupModelPrivate;
  * of those.
  *
  */
-class LIBCOMMHISTORY_EXPORT ContactGroupModel : public QAbstractTableModel
+class LIBCOMMHISTORY_EXPORT ContactGroupModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QObject* manager READ manager WRITE setManager NOTIFY managerChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QList<QObject*> contactGroups READ contactGroups)
-    Q_ENUMS(ColumnId)
 
 public:
-    enum ColumnId {
-        ContactIds,
-        ContactNames, // TODO: Obsolete
-        EndTime,
-        UnreadMessages,
-        LastEventGroup,
-        LastEventId,
-        LastMessageText,
-        LastVCardFileName,
-        LastVCardLabel,
-        LastEventType,
-        LastEventStatus,
-        LastEventIsDraft,
-        LastModified,
-        StartTime,
-        Groups,
-        DisplayNames,
-        SubscriberIdentity,
-        NumberOfColumns
-    };
-
     enum {
-        ContactGroupRole = Qt::UserRole,
-        TimeSectionRole,
-        BaseRole = Qt::UserRole + 2000
+        ContactIdsRole = Qt::UserRole,
+        ContactNamesRole, // TODO: Obsolete
+        EndTimeRole,
+        UnreadMessagesRole,
+        LastEventGroupRole,
+        LastEventIdRole,
+        LastMessageTextRole,
+        LastVCardFileNameRole,
+        LastVCardLabelRole,
+        LastEventTypeRole,
+        LastEventStatusRole,
+        LastEventIsDraftRole,
+        LastModifiedRole,
+        StartTimeRole,
+        GroupsRole,
+        DisplayNamesRole,
+        SubscriberIdentityRole,
+        ContactGroupRole,
+        TimeSectionRole
     };
 
     /*!
@@ -121,7 +115,6 @@ public:
     virtual bool canFetchMore(const QModelIndex &parent) const;
     virtual void fetchMore(const QModelIndex &parent);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QHash<int,QByteArray> roleNames() const;
     /***/

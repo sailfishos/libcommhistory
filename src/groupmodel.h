@@ -47,40 +47,32 @@ class DatabaseIO;
  * Use the Qt rowsInserted(), dataChanged() etc. signals to
  * monitor changes.
  */
-class LIBCOMMHISTORY_EXPORT GroupModel: public QAbstractTableModel
+class LIBCOMMHISTORY_EXPORT GroupModel: public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QObject* manager READ manager WRITE setManager)
 
-    Q_ENUMS(ColumnId)
-
 public:
-    enum ColumnId {
-        GroupId,
-        LocalUid,
-        RemoteUids,
-        ChatName,       // not implemented
-        EndTime,
-        UnreadMessages,
-        LastEventId,
-        Contacts,       // TODO: deprecated
-        LastMessageText,
-        LastVCardFileName,
-        LastVCardLabel,
-        LastEventType,
-        LastEventStatus,
-        IsPermanent,
-        LastModified,
-        StartTime,
-        NumberOfColumns
-    };
-
-    enum Role {
-        GroupRole = Qt::UserRole,
+    enum {
+        GroupIdRole,
+        LocalUidRole,
+        RemoteUidsRole,
+        ChatNameRole,       // not implemented
+        EndTimeRole,
+        UnreadMessagesRole,
+        LastEventIdRole,
+        ContactsRole,       // TODO: deprecated
+        LastMessageTextRole,
+        LastVCardFileNameRole,
+        LastVCardLabelRole,
+        LastEventTypeRole,
+        LastEventStatusRole,
+        LastModifiedRole,
+        StartTimeRole,
+        GroupRole,
         ContactIdsRole,
         GroupObjectRole,
-        TimeSectionRole,
-        BaseRole = Qt::UserRole + 1000
+        TimeSectionRole
     };
 
     /*!
@@ -244,7 +236,7 @@ public:
      * Provide background thread for running database queries and blocking operations.
      * It allows to avoid blocking when the model used in the main GUI thread.
      * This function will cancel any outgoing requests. If thread is NULL,
-     * model's thread is used for quereis.
+     * model's thread is used for queries.
      *
      * The thread should be started before making any queries and it should not
      * be terminated before deleting the model.
@@ -276,9 +268,7 @@ public:
     virtual bool canFetchMore(const QModelIndex &parent) const;
     virtual void fetchMore(const QModelIndex &parent);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     virtual QHash<int, QByteArray> roleNames() const;
     /***/
 

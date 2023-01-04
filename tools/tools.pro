@@ -39,3 +39,7 @@ HEADERS += catcher.h
 SOURCES += commhistory-tool.cpp
 
 include( ../common-installs-config.pri )
+
+target.path  = $${INSTALL_PREFIX}/bin
+
+INSTALLS += target

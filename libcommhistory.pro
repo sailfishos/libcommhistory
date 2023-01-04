@@ -42,4 +42,11 @@ OTHER_FILES += rpm/libcommhistory-qt5.spec
 
 include( doc/doc.pri )
 
-# End of File
+# default prefix can be overriden by defining PREFIX when running qmake
+isEmpty( PREFIX ) {
+    message("====")
+    message("==== NOTE: To override the installation path run: `qmake PREFIX=/custom/path'")
+    message("==== (current installation path is `$${INSTALL_PREFIX}')")
+} else {
+    message("Install prefix set to `$${INSTALL_PREFIX}'")
+}

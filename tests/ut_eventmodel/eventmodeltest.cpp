@@ -1055,83 +1055,60 @@ void EventModelTest::testFindEvent()
 
     // Test also EventModel's data-method for majority and most important event fields:
     int row = index.row();
-    QModelIndex index2 = model.index(row,EventModel::EventId);
-    QVariant var2 = model.data(index2);
-    QVariant header2 = model.headerData(EventModel::EventId,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("id"));
+    QModelIndex index2 = model.index(row);
+    QVariant var2 = model.data(index2, EventModel::EventIdRole);
     int eventId = var2.toInt();
-    QCOMPARE(eventId,im.id());
+    QCOMPARE(eventId, im.id());
 
-    index2 = model.index(row,EventModel::EventType);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::EventType,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("event_type"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::EventTypeRole);
     int eventType = var2.toInt();
-    QCOMPARE(eventType,(int)im.type());
+    QCOMPARE(eventType, (int) im.type());
 
-    index2 = model.index(row,EventModel::Direction);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::Direction,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("direction"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::DirectionRole);
     int direction = var2.toInt();
-    QCOMPARE(direction,(int)im.direction());
+    QCOMPARE(direction, (int) im.direction());
 
-    index2 = model.index(row,EventModel::IsRead);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::IsRead,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("is_read"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::IsReadRole);
     bool isRead = var2.toBool();
-    QCOMPARE(isRead,im.isRead());
+    QCOMPARE(isRead, im.isRead());
 
-    index2 = model.index(row,EventModel::Status);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::Status,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("status"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::StatusRole);
     int status = var2.toInt();
-    QCOMPARE(status,(int)im.status());
+    QCOMPARE(status, (int) im.status());
 
-    index2 = model.index(row,EventModel::LocalUid);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::LocalUid,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("local_uid"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::LocalUidRole);
     QString localUid = var2.toString();
-    QCOMPARE(localUid,im.localUid());
+    QCOMPARE(localUid, im.localUid());
 
-    index2 = model.index(row,EventModel::RemoteUid);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::RemoteUid,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("remote_uid"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::RemoteUidRole);
     QString remoteUid = var2.toString();
-    QCOMPARE(remoteUid,im.recipients().value(0).remoteUid());
+    QCOMPARE(remoteUid, im.recipients().value(0).remoteUid());
 
-    index2 = model.index(row,EventModel::FreeText);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::FreeText,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("free_text"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::FreeTextRole);
     QString freeText = var2.toString();
-    QCOMPARE(freeText,im.freeText());
+    QCOMPARE(freeText, im.freeText());
 
-    index2 = model.index(row,EventModel::GroupId);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::GroupId,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("group_id"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::GroupIdRole);
     int groupId = var2.toInt();
-    QCOMPARE(groupId,im.groupId());
+    QCOMPARE(groupId, im.groupId());
 
-    index2 = model.index(row,EventModel::MessageToken);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::MessageToken,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("message_token"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::MessageTokenRole);
     QString messageToken = var2.toString();
-    QCOMPARE(messageToken,im.messageToken());
+    QCOMPARE(messageToken, im.messageToken());
 
-    index2 = model.index(row,EventModel::StartTime);
-    var2 = model.data(index2);
-    header2 = model.headerData(EventModel::StartTime,Qt::Horizontal,Qt::DisplayRole);
-    QCOMPARE(header2.toString(),QString("start_time"));
+    index2 = model.index(row);
+    var2 = model.data(index2, EventModel::StartTimeRole);
     QDateTime startTime = var2.toDateTime();
-    QCOMPARE(startTime.toTime_t(),im.startTime().toTime_t());
-
+    QCOMPARE(startTime.toMSecsSinceEpoch() / 1000, im.startTime().toMSecsSinceEpoch() / 1000);
 
     index = model.findEvent(-1);
     QVERIFY(!index.isValid());
