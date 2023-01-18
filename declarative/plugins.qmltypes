@@ -14,31 +14,6 @@ Module {
         exports: ["org.nemomobile.commhistory/CommCallModel 1.0"]
         exportMetaObjectRevisions: [0]
         Enum {
-            name: "EventRole"
-            values: {
-                "EventIdRole": 1256,
-                "EventTypeRole": 1257,
-                "StartTimeRole": 1258,
-                "EndTimeRole": 1259,
-                "DirectionRole": 1260,
-                "IsDraftRole": 1261,
-                "IsReadRole": 1262,
-                "IsMissedCallRole": 1263,
-                "StatusRole": 1264,
-                "BytesReceivedRole": 1265,
-                "LocalUidRole": 1266,
-                "RemoteUidRole": 1267,
-                "ContactsRole": 1268,
-                "FreeTextRole": 1269,
-                "GroupIdRole": 1270,
-                "MessageTokenRole": 1271,
-                "LastModifiedRole": 1272,
-                "EventCountRole": 1273,
-                "FromVCardFileNameRole": 1274,
-                "FromVCardLabelRole": 1275
-            }
-        }
-        Enum {
             name: "EventType"
             values: {
                 "UnknownType": 0,
@@ -62,6 +37,10 @@ Module {
         Enum {
             name: "EventStatus"
             values: {
+                "ManualNotificationStatus": -4,
+                "WaitingStatus": -3,
+                "DownloadingStatus": -2,
+                "ReceivedStatus": -1,
                 "UnknownStatus": 0,
                 "SendingStatus": 1,
                 "SentStatus": 2,
@@ -174,32 +153,9 @@ Module {
     }
     Component {
         name: "CommHistory::ContactGroupModel"
-        prototype: "QAbstractTableModel"
+        prototype: "QAbstractListModel"
         exports: ["org.nemomobile.commhistory/CommContactGroupModel 1.0"]
         exportMetaObjectRevisions: [0]
-        Enum {
-            name: "ColumnId"
-            values: {
-                "ContactIds": 0,
-                "ContactNames": 1,
-                "EndTime": 2,
-                "UnreadMessages": 3,
-                "LastEventGroup": 4,
-                "LastEventId": 5,
-                "LastMessageText": 6,
-                "LastVCardFileName": 7,
-                "LastVCardLabel": 8,
-                "LastEventType": 9,
-                "LastEventStatus": 10,
-                "LastEventIsDraft": 11,
-                "LastModified": 12,
-                "StartTime": 13,
-                "Groups": 14,
-                "DisplayNames": 15,
-                "SubscriberIdentity": 16,
-                "NumberOfColumns": 17
-            }
-        }
         Property { name: "manager"; type: "QObject"; isPointer: true }
         Property { name: "count"; type: "int"; isReadonly: true }
         Property { name: "contactGroups"; type: "QList<QObject*>"; isReadonly: true }
@@ -336,31 +292,9 @@ Module {
     }
     Component {
         name: "CommHistory::GroupModel"
-        prototype: "QAbstractTableModel"
+        prototype: "QAbstractListModel"
         exports: ["org.nemomobile.commhistory/CommGroupModel 1.0"]
         exportMetaObjectRevisions: [0]
-        Enum {
-            name: "ColumnId"
-            values: {
-                "GroupId": 0,
-                "LocalUid": 1,
-                "RemoteUids": 2,
-                "ChatName": 3,
-                "EndTime": 4,
-                "UnreadMessages": 5,
-                "LastEventId": 6,
-                "Contacts": 7,
-                "LastMessageText": 8,
-                "LastVCardFileName": 9,
-                "LastVCardLabel": 10,
-                "LastEventType": 11,
-                "LastEventStatus": 12,
-                "IsPermanent": 13,
-                "LastModified": 14,
-                "StartTime": 15,
-                "NumberOfColumns": 16
-            }
-        }
         Property { name: "manager"; type: "QObject"; isPointer: true }
         Signal {
             name: "modelReady"
@@ -636,5 +570,4 @@ Module {
             Parameter { name: "id"; type: "int" }
         }
     }
-    Component { name: "QAbstractTableModel"; prototype: "QAbstractItemModel" }
 }
