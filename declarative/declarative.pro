@@ -33,8 +33,8 @@ CONFIG += qt plugin hide_symbols
 QT += qml contacts dbus
 QT -= gui
 
-LIBS += -L../src ../src/libcommhistory-qt5.so
-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
+LIBS += -L../src ../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
+PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
 
 target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
 INSTALLS += target

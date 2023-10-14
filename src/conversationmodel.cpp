@@ -262,8 +262,11 @@ bool ConversationModel::getEvents(int groupId)
 bool ConversationModel::getEvents(QList<int> groupIds)
 {
     Q_D(ConversationModel);
-
+#if (QT_VERSION > QT_VERSION_CHECK(5, 15, 0))
+    d->filterGroupIds = QSet<int>(groupIds.begin(), groupIds.end());
+#else
     d->filterGroupIds = QSet<int>::fromList(groupIds);
+#endif
     d->allGroups = false;
 
     beginResetModel();

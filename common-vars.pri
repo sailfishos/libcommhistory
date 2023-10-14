@@ -27,7 +27,7 @@
 #------------------------------------------------------------------------------
 # Project name (used e.g. in include file and doc install path).
 #------------------------------------------------------------------------------
-PROJECT_NAME = libcommhistory-qt5
+PROJECT_NAME = libcommhistory-qt$${QT_MAJOR_VERSION}
 
 #------------------------------------------------------------------------------
 # Project version

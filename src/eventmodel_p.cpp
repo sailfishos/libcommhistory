@@ -537,13 +537,21 @@ void EventModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, boo
 
 void EventModelPrivate::slotContactInfoChanged(const RecipientList &recipients)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
+#else
     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
+#endif
     recipientsUpdated(changed);
 }
 
 void EventModelPrivate::slotContactChanged(const RecipientList &recipients)
 {
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
+    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
+#else
     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
+#endif
     recipientsUpdated(changed, true);
 }
 

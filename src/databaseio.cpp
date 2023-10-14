@@ -864,7 +864,7 @@ bool DatabaseIO::modifyEvent(Event &event)
             if (part.id() >= 0) {
                 if (!idList.isEmpty())
                     idList.append(',');
-                idList.append(QString::number(part.id()));
+                idList.append(QString::number(part.id()).toUtf8());
             }
         }
 
@@ -1059,7 +1059,7 @@ bool DatabaseIO::getGroups(const QString &localUid, const QString &remoteUid, QL
         if (!remoteUid.isEmpty())
             q += "Groups.remoteUids = :remoteUid ";
     }
-    q += "GROUP BY Groups.id " + queryOrder;
+    q += QString("GROUP BY Groups.id " + queryOrder).toUtf8();
 
     QSqlQuery query = CommHistoryDatabase::prepare(q.data(), d->connection());
     if (!localUid.isEmpty())
