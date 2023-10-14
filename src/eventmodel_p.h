@@ -29,6 +29,7 @@
 
 #include "eventmodel.h"
 #include "event.h"
+#include "group.h"
 #include "eventtreeitem.h"
 #include "databaseio.h"
 #include "libcommhistoryexport.h"

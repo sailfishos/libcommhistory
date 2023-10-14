@@ -61,7 +61,11 @@ QList<int> DraftsModel::filterGroups() const
 void DraftsModel::setFilterGroups(const QList<int> &list)
 {
     Q_D(DraftsModel);
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
+    QSet<int> groupIds = QSet<int>(list.begin(), list.end());
+#else
     QSet<int> groupIds = list.toSet();
+#endif
     if (groupIds == d->filterGroups)
         return;
 
@@ -89,7 +93,11 @@ bool DraftsModel::getEvents()
 
     // As in ConversationModel, a UNION ALL is used to get better
     // optimization out of sqlite
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
+    QList<int> groups = QList<int>(d->filterGroups.begin(), d->filterGroups.end());
+#else
     QList<int> groups = d->filterGroups.toList();
+#endif
     int unionCount = 0;
     QString q;
     do {

@@ -39,7 +39,11 @@ void ConversationModelProfileTest::initTestCase()
 
     logFile = 0;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 }
 
 void ConversationModelProfileTest::init()
@@ -58,7 +62,9 @@ void ConversationModelProfileTest::prepare()
     qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
 
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     int ci = remoteUids.count();
     while(ci < contacts) {
         QString phoneNumber;

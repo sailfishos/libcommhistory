@@ -379,9 +379,11 @@ DatabaseIO* GroupManagerPrivate::database()
 void GroupManagerPrivate::slotContactInfoChanged(const RecipientList &recipients)
 {
     Q_Q(GroupManager);
-
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
+    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
+#else
     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
-
+#endif
     foreach (GroupObject *group, groups) {
         if (group->recipients().intersects(changed))
             emit q->groupUpdated(group);
@@ -391,9 +393,11 @@ void GroupManagerPrivate::slotContactInfoChanged(const RecipientList &recipients
 void GroupManagerPrivate::slotContactChanged(const RecipientList &recipients)
 {
     Q_Q(GroupManager);
-
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
+    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
+#else
     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
-
+#endif
     foreach (GroupObject *group, groups) {
         if (group->recipients().intersects(changed))
             emit q->groupUpdated(group);

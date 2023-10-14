@@ -58,8 +58,11 @@ void CallModelTest::initTestCase()
 {
     initTestDatabase();
     QVERIFY( QDBusConnection::sessionBus().isConnected() );
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 
     Group group1, group2;
     addTestGroups( group1, group2 );
