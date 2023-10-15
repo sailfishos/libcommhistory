@@ -33,7 +33,6 @@
 #include "mmsconstants.h"
 #include "singleeventmodel.h"
 #include <QtDBus>
-#include <QTextCodec>
 #include <QTemporaryDir>
 #include <QMimeDatabase>
 #include <QDebug>

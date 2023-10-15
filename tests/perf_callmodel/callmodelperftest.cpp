@@ -39,8 +39,11 @@ void CallModelPerfTest::initTestCase()
         qDebug() << "!!!! Failed to open log file !!!!";
         logFile = 0;
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 }
 
 void CallModelPerfTest::init()
@@ -82,6 +85,9 @@ void CallModelPerfTest::getEvents_data()
 
 void CallModelPerfTest::getEvents()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     QFETCH(int, events);
     QFETCH(int, contacts);
     QFETCH(int, selected);

@@ -136,7 +136,11 @@ void RecentContactsModelTest::initTestCase()
     QVERIFY(QDBusConnection::sessionBus().isConnected());
     ContactChangeListener contactChangeListener;
 
-    qsrand(QDateTime::currentDateTime().toTime_t());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
+    qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 
     addTestGroups( group1, group2 );
 

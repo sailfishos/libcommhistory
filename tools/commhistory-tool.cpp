@@ -25,6 +25,9 @@
 #include <QDebug>
 #include <QUuid>
 #include <QEventLoop>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 
 #include "../src/groupmodel.h"
 #include "../src/conversationmodel.h"
@@ -267,21 +270,30 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
         direction = Event::Inbound;
     if (options.contains("-out"))
         direction = Event::Outbound;
-
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
     qsrand(QDateTime::currentDateTime().toTime_t());
+#endif
     bool randomRemote = true;
     if (arguments.count() > 3) {
         remoteUid = arguments.at(3);
         randomRemote = false;
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     EventModel model;
     QList<Event> events;
     for (int i = 0; i < count; i++) {
         Event e;
 
         if (direction == Event::UnknownDirection)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            e.setDirection((Event::EventDirection)((qrand.generate() & 1) + 1));
+#else
             e.setDirection((Event::EventDirection)((qrand() & 1) + 1));
+#endif
         else
             e.setDirection(direction);
 
@@ -371,9 +383,11 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
 int doAddCall( const QStringList &arguments, const QVariantMap &options )
 {
     Q_UNUSED( options )
-
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
-
+#endif
     int count = 1;
     if (options.contains("-n")) {
         count = options.value("-n").toInt();
@@ -405,9 +419,15 @@ int doAddCall( const QStringList &arguments, const QVariantMap &options )
         } else if (arguments.last() == "received") {
             callType = 2;
         }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
         if (callType == -1)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            callType = qrand.generate() % 3;
+#else
             callType = qrand() % 3;
+#endif
 
         Event::EventDirection direction = Event::Inbound;
         bool isMissed = false;
@@ -487,14 +507,26 @@ int doAddClass0(const QStringList &arguments, const QVariantMap &options)
                 << "Class Zero SMS"
                 << "The Steelers has won the Superbowl. Party-time!";
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     // prepare class zero sms
     Event e;
 
     e.setLocalUid(RING_ACCOUNT);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    e.setRecipients(Recipient(e.localUid(), sosRemoteUids.at(qrand.generate() % sosRemoteUids.count())));
+#else
     e.setRecipients(Recipient(e.localUid(), sosRemoteUids.at(qrand() % sosRemoteUids.count())));
+#endif
     e.setDirection(Event::Inbound);
     e.setType(Event::ClassZeroSMSEvent);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    e.setFreeText(sosMessages.at(qrand.generate() % sosMessages.count()));
+#else
     e.setFreeText(sosMessages.at(qrand() % sosMessages.count()));
+#endif
+
     QDateTime now = QDateTime::currentDateTime();
     e.setStartTime(now);
     e.setEndTime(now);
@@ -1176,8 +1208,11 @@ int doJsonImport(const QStringList &arguments, const QVariantMap &options)
             qCritical() << "Invalid end time";
             return -1;
         }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        dateOffset = endTime.secsTo(QDateTime(QDate::currentDate().startOfDay()));
+#else
         dateOffset = endTime.secsTo(QDateTime(QDate::currentDate()));
+#endif
     }
 
     bool ok = true;

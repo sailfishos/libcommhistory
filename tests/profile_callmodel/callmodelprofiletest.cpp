@@ -38,7 +38,11 @@ void CallModelProfileTest::initTestCase()
 
     logFile = 0;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 }
 
 void CallModelProfileTest::init()
@@ -54,7 +58,9 @@ void CallModelProfileTest::prepare()
     deleteAll();
 
     int commitBatchSize = 100;
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     EventModel addModel;
     QDateTime when = QDateTime::currentDateTime();
 
