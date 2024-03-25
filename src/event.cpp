@@ -35,6 +35,8 @@
 #define MMS_CC_HEADER QLatin1String("x-mms-cc")
 #define MMS_BCC_HEADER QLatin1String("x-mms-bcc")
 #define VIDEO_CALL_HEADER QLatin1String("x-video")
+#define FILTER_TYPE_IGNORED QLatin1String("ignored")
+#define FILTER_TYPE_BLOCKED QLatin1String("blocked")
 
 namespace CommHistory {
 
@@ -538,6 +540,18 @@ bool Event::isVideoCall() const
 Event::EventStatus Event::status() const
 {
     return static_cast<Event::EventStatus>(d->flags.status);
+}
+
+Event::EventFilterType Event::filterType() const
+{
+    const QString type = extraProperty(EVENT_PROPERTY_FILTER_TYPE_ID).toString();
+    if (type == FILTER_TYPE_IGNORED) {
+        return Event::Ignored;
+    } else if (type == FILTER_TYPE_BLOCKED) {
+        return Event::Blocked;
+    } else {
+        return Event::NoFilter;
+    }
 }
 
 int Event::bytesReceived() const
@@ -1061,6 +1075,22 @@ void Event::setLastModifiedT(quint32 modified)
 void Event::setSubscriberIdentity(const QString &id)
 {
     setExtraProperty(EVENT_PROPERTY_SUBSCRIBER_ID, id);
+}
+
+void Event::setFilterType(Event::EventFilterType type)
+{
+    switch (type) {
+    case Event::Ignored:
+        setExtraProperty(EVENT_PROPERTY_FILTER_TYPE_ID,
+                         FILTER_TYPE_IGNORED);
+        break;
+    case Event::Blocked:
+        setExtraProperty(EVENT_PROPERTY_FILTER_TYPE_ID,
+                         FILTER_TYPE_BLOCKED);
+        break;
+    default:
+        removeExtraProperty(EVENT_PROPERTY_FILTER_TYPE_ID);
+    }
 }
 
 QString Event::toString() const

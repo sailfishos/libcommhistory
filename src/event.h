@@ -112,6 +112,13 @@ public:
         ReadStatusDeleted = 2
     };
 
+    enum EventFilterType {
+        NoFilter = 0,
+        Ignored,
+        Blocked
+    };
+    Q_ENUM(EventFilterType)
+
     enum Property {
         Id = 0,        // always valid
         Type,          // always valid
@@ -150,6 +157,7 @@ public:
         ExtraProperties,
         Recipients,
         IsResolved,
+        FilterType,
         //
         NumProperties
     };
@@ -252,6 +260,7 @@ public:
     int bytesReceived() const;
     QString localUid() const;
     QString dateAndAccountGrouping() const;
+    EventFilterType filterType() const;
 
     const RecipientList &recipients() const;
     RecipientList contactRecipients() const;
@@ -343,6 +352,7 @@ public:
     void setMessageToken(const QString &token);
     void setMmsId(const QString &id);
     void setLastModified(const QDateTime &modified);
+    void setFilterType(EventFilterType type);
 
     /*!
      * \brief Sets the value of how many similar call events are represented by the current event.

@@ -40,6 +40,7 @@ namespace CommHistory {
 #define GROUPS_DELETED_SIGNAL      QLatin1String("groupsDeleted")
 
 #define EVENT_PROPERTY_SUBSCRIBER_ID    QLatin1String("subscriberIdentity")
+#define EVENT_PROPERTY_FILTER_TYPE_ID   QLatin1String("filterType")
 
 } /* namespace CommHistory */
 
