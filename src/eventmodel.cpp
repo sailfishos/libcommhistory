@@ -89,6 +89,7 @@ QHash<int, QByteArray> EventModel::roleNames() const
     roles[FromVCardLabelRole] = "fromVCardLabel";
     roles[ReadStatusRole] = "readStatus";
     roles[SubscriberIdentityRole] = "subscriberIdentity";
+    roles[IncomingStatusRole] = "incomingStatus";
 
     return roles;
 }
@@ -346,6 +347,8 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue((int)event.readStatus());
     case SubscriberIdentityRole:
         return event.subscriberIdentity();
+    case IncomingStatusRole:
+        return event.incomingStatus();
     default:
         DEBUG() << Q_FUNC_INFO << ": invalid role??" << role;
         return QVariant();

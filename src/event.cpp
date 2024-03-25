@@ -35,8 +35,11 @@
 #define MMS_CC_HEADER QLatin1String("x-mms-cc")
 #define MMS_BCC_HEADER QLatin1String("x-mms-bcc")
 #define VIDEO_CALL_HEADER QLatin1String("x-video")
+#define INCOMING_STATUS_IGNORED QLatin1String("ignored")
+#define INCOMING_STATUS_REJECTED QLatin1String("rejected")
 
 #define EVENT_PROPERTY_SUBSCRIBER_ID QLatin1String("subscriberIdentity")
+#define EVENT_PROPERTY_INCOMING_STATUS_ID QLatin1String("incomingStatus")
 
 namespace CommHistory {
 
@@ -542,6 +545,20 @@ Event::EventStatus Event::status() const
     return static_cast<Event::EventStatus>(d->flags.status);
 }
 
+Event::EventIncomingStatus Event::incomingStatus() const
+{
+    const QString type = extraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID).toString();
+    if (type.isEmpty() && isMissedCall()) {
+        return Event::NotAnswered;
+    } else if (type == INCOMING_STATUS_IGNORED) {
+        return Event::Ignored;
+    } else if (type == INCOMING_STATUS_REJECTED) {
+        return Event::Rejected;
+    } else {
+        return Event::Received;
+    }
+}
+
 int Event::bytesReceived() const
 {
     return d->bytesReceived;
@@ -798,6 +815,9 @@ void Event::setIsMissedCall(bool isMissed)
 {
     d->flags.isMissedCall = isMissed;
     d->propertyChanged(Event::IsMissedCall);
+    if (isMissed) {
+        removeExtraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID);
+    }
 }
 
 void Event::setIsEmergencyCall(bool isEmergency)
@@ -1063,6 +1083,23 @@ void Event::setLastModifiedT(quint32 modified)
 void Event::setSubscriberIdentity(const QString &id)
 {
     setExtraProperty(EVENT_PROPERTY_SUBSCRIBER_ID, id);
+}
+
+void Event::setIncomingStatus(Event::EventIncomingStatus status)
+{
+    setIsMissedCall(status != Event::Received);
+    switch (status) {
+    case Event::Ignored:
+        setExtraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID,
+                         INCOMING_STATUS_IGNORED);
+        break;
+    case Event::Rejected:
+        setExtraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID,
+                         INCOMING_STATUS_REJECTED);
+        break;
+    default:
+        removeExtraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID);
+    }
 }
 
 QString Event::toString() const

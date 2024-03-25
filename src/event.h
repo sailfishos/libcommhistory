@@ -110,6 +110,14 @@ public:
         ReadStatusDeleted = 2
     };
 
+    enum EventIncomingStatus {
+        Received = 0,
+        NotAnswered,  // Set the IsMissedCall property
+        Ignored,      // Set the IsMissedCall property
+        Rejected      // Set the IsMissedCall property
+    };
+    Q_ENUM(EventIncomingStatus)
+
     enum Property {
         Id = 0,        // always valid
         Type,          // always valid
@@ -250,6 +258,7 @@ public:
     int bytesReceived() const;
     QString localUid() const;
     QString dateAndAccountGrouping() const;
+    EventIncomingStatus incomingStatus() const;
 
     const RecipientList &recipients() const;
     RecipientList contactRecipients() const;
@@ -341,6 +350,7 @@ public:
     void setMessageToken(const QString &token);
     void setMmsId(const QString &id);
     void setLastModified(const QDateTime &modified);
+    void setIncomingStatus(EventIncomingStatus status);
 
     /*!
      * \brief Sets the value of how many similar call events are represented by the current event.
