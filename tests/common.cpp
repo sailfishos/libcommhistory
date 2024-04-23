@@ -438,8 +438,6 @@ void modifyTestContact(int id, const QString &name, bool favorite)
 void deleteTestContact(int id, ContactChangeListener *listener)
 {
     const QContactId contactId = apiContactId(id, manager()->managerUri());
-    const QContact contact = manager()->contact(contactId);
-
     const QContactId localId = localContactForAggregate(contactId);
     QContact localContact = manager()->contact(localId);
 
