@@ -66,41 +66,33 @@ unset LD_AS_NEEDED
 %qtc_make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
 %qmake_install
 
 mkdir -p %{buildroot}%{_datadir}/mapplauncherd/privileges.d
 install -m 644 -p %{SOURCE1} %{buildroot}%{_datadir}/mapplauncherd/privileges.d
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-%{_libdir}/libcommhistory-qt5.so*
+%{_libdir}/libcommhistory-qt5.so.*
 %license COPYING
 
 %files tools
-%defattr(-,root,root,-)
 %{_bindir}/commhistory-tool
 %{_datadir}/mapplauncherd/privileges.d/*
 
 %files declarative
-%defattr(-,root,root,-)
 %{_libdir}/qt5/qml/org/nemomobile/commhistory
 
 %files tests
-%defattr(-,root,root,-)
 /opt/tests/libcommhistory-qt5
 
 %files devel
-%defattr(-,root,root,-)
+%{_libdir}/libcommhistory-qt5.so
 %{_libdir}/pkgconfig/commhistory-qt5.pc
 %{_includedir}/commhistory-qt5
 
 %files doc
-%defattr(-,root,root,-)
 %{_datadir}/doc/libcommhistory-qt5
