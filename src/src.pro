@@ -72,33 +72,25 @@ QT_LIKE_HEADERS += \
                    headers/Models \
                    headers/DatabaseIO
 
-HEADERS += commonutils.h \
+PUBLIC_HEADERS += \
+           commonutils.h \
            eventmodel.h \
-           eventmodel_p.h \
            event.h \
            messagepart.h \
            callevent.h \
-           eventtreeitem.h \
            conversationmodel.h \
            callstatistics.h \
-           callstatistics_p.h \
            smshistory.h \
-           smshistory_p.h \
            callhistory.h \
-           callhistory_p.h \
            callmodel.h \
            groupmodel.h \
-           groupmodel_p.h \
            group.h \
            adaptor.h \
-           conversationmodel_p.h \
            contactlistener.h \
            libcommhistoryexport.h \
            singleeventmodel.h \
            recipienteventmodel.h \
-           recipienteventmodel_p.h \
            recentcontactsmodel.h \
-           updatesemitter.h \
            constants.h \
            mmsconstants.h \
            mmsreadreportmodel.h \
@@ -107,15 +99,27 @@ HEADERS += commonutils.h \
            contactgroupmodel.h \
            contactgroup.h \
            databaseio.h \
-           databaseio_p.h \
-           commhistorydatabase.h \
            commhistorydatabasepath.h \
-           debug.h \
            contactfetcher.h \
            contactresolver.h \
            draftsmodel.h \
-           draftsmodel_p.h \
            recipient.h
+
+HEADERS += \
+           $$PUBLIC_HEADERS \
+           commhistorydatabase.h \
+           debug.h \
+           eventmodel_p.h \
+           eventtreeitem.h \
+           callstatistics_p.h \
+           smshistory_p.h \
+           callhistory_p.h \
+           groupmodel_p.h \
+           conversationmodel_p.h \
+           recipienteventmodel_p.h \
+           updatesemitter.h \
+           databaseio_p.h \
+           draftsmodel_p.h \
 
 SOURCES += commonutils.cpp \
            eventmodel.cpp \
@@ -151,7 +155,7 @@ SOURCES += commonutils.cpp \
 # -----------------------------------------------------------------------------
 # Installation target for API header files
 # -----------------------------------------------------------------------------
-headers.files = $$HEADERS \
+headers.files = $$PUBLIC_HEADERS \
                 $$QT_LIKE_HEADERS
 
 headers.path = $${INSTALL_PREFIX}/include/commhistory-qt5/CommHistory

@@ -41,17 +41,11 @@ public:
 
 Q_SIGNALS:
     void eventsAdded(const QList<CommHistory::Event> &events);
-
     void eventsUpdated(const QList<CommHistory::Event> &events);
-
     void eventDeleted(int id);
-
     void groupsAdded(const QList<CommHistory::Group> &groups);
-
     void groupsUpdated(const QList<int> &groupIds);
-
     void groupsUpdatedFull(const QList<CommHistory::Group> &groups);
-
     void groupsDeleted(const QList<int> &groupIds);
 };
 
