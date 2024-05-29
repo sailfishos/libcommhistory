@@ -36,8 +36,6 @@
 #include "group.h"
 #include "libcommhistoryexport.h"
 
-class QDBusArgument;
-
 namespace CommHistory {
 
 class GroupManager;

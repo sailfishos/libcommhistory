@@ -36,8 +36,6 @@
 #include "recipient.h"
 #include "libcommhistoryexport.h"
 
-class QDBusArgument;
-
 namespace CommHistory {
 
 class GroupPrivate;
@@ -263,9 +261,6 @@ private:
 };
 
 }
-
-QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Group &group);
-const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Group &group);
 
 LIBCOMMHISTORY_EXPORT QDataStream &operator<<(QDataStream &stream, const CommHistory::Group &group);
 LIBCOMMHISTORY_EXPORT QDataStream &operator>>(QDataStream &stream, CommHistory::Group &group);

@@ -25,6 +25,7 @@
 
 #include "group.h"
 #include "event.h"
+#include "dbus_p.h"
 
 namespace CommHistory {
 

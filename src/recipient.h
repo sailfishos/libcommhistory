@@ -28,7 +28,6 @@
 #include <seasidecache.h>
 
 #include <QObject>
-#include <QDBusArgument>
 #include <QSharedPointer>
 #include <QHash>
 #include <QDebug>
@@ -265,12 +264,6 @@ inline uint qHash(const CommHistory::Recipient &value, uint seed = 0)
 
 LIBCOMMHISTORY_EXPORT QDebug &operator<<(QDebug &debug, const CommHistory::Recipient &recipient);
 LIBCOMMHISTORY_EXPORT QDebug &operator<<(QDebug &debug, const CommHistory::RecipientList &recipientList);
-
-QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Recipient &recipient);
-const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Recipient &recipient);
-
-QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::RecipientList &recipients);
-const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::RecipientList &recipients);
 
 Q_DECLARE_METATYPE(CommHistory::Recipient)
 Q_DECLARE_METATYPE(CommHistory::RecipientList)

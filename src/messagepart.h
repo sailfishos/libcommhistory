@@ -32,15 +32,9 @@
 
 #include "libcommhistoryexport.h"
 
-class QDBusArgument;
-
 namespace CommHistory {
     class MessagePart;
 }
-
-LIBCOMMHISTORY_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::MessagePart &part);
-LIBCOMMHISTORY_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument,
-                                CommHistory::MessagePart &part);
 
 LIBCOMMHISTORY_EXPORT QDataStream &operator<<(QDataStream &stream, const CommHistory::MessagePart &part);
 LIBCOMMHISTORY_EXPORT QDataStream &operator>>(QDataStream &stream, CommHistory::MessagePart &part);
@@ -102,7 +96,6 @@ public:
 private:
     QSharedDataPointer<MessagePartPrivate> d;
 
-    friend const QDBusArgument &::operator>>(const QDBusArgument &argument, CommHistory::MessagePart &part);
     friend QDataStream &::operator>>(QDataStream &stream, CommHistory::MessagePart &part);
 };
 

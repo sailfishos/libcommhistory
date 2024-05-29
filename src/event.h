@@ -35,8 +35,6 @@
 #include "recipient.h"
 #include "libcommhistoryexport.h"
 
-class QDBusArgument;
-
 namespace CommHistory {
 
 class EventPrivate;
@@ -394,12 +392,6 @@ private:
 };
 
 }
-
-LIBCOMMHISTORY_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Event &event);
-LIBCOMMHISTORY_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Event &event);
-
-LIBCOMMHISTORY_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Event::Contact &contact);
-LIBCOMMHISTORY_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Event::Contact &contact);
 
 LIBCOMMHISTORY_EXPORT QDataStream &operator<<(QDataStream &stream, const CommHistory::Event &event);
 LIBCOMMHISTORY_EXPORT QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event);

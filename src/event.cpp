@@ -28,6 +28,7 @@
 #include "event.h"
 #include "messagepart.h"
 #include "constants.h"
+#include "dbus_p.h"
 
 #include <QStringBuilder>
 
