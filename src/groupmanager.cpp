@@ -149,35 +149,35 @@ GroupManagerPrivate::GroupManagerPrivate(GroupManager *manager)
     QDBusConnection::sessionBus().connect(
         QString(),
         QString(),
-        COMM_HISTORY_SERVICE_NAME,
+        COMM_HISTORY_INTERFACE,
         EVENTS_ADDED_SIGNAL,
         this,
         SLOT(eventsAddedSlot(const QList<CommHistory::Event> &)));
     QDBusConnection::sessionBus().connect(
         QString(),
         QString(),
-        COMM_HISTORY_SERVICE_NAME,
+        COMM_HISTORY_INTERFACE,
         GROUPS_ADDED_SIGNAL,
         this,
         SLOT(groupsAddedSlot(const QList<CommHistory::Group> &)));
     QDBusConnection::sessionBus().connect(
         QString(),
         QString(),
-        COMM_HISTORY_SERVICE_NAME,
+        COMM_HISTORY_INTERFACE,
         GROUPS_UPDATED_SIGNAL,
         this,
         SLOT(groupsUpdatedSlot(const QList<int> &)));
     QDBusConnection::sessionBus().connect(
         QString(),
         QString(),
-        COMM_HISTORY_SERVICE_NAME,
+        COMM_HISTORY_INTERFACE,
         GROUPS_UPDATED_FULL_SIGNAL,
         this,
         SLOT(groupsUpdatedFullSlot(const QList<CommHistory::Group> &)));
     QDBusConnection::sessionBus().connect(
         QString(),
         QString(),
-        COMM_HISTORY_SERVICE_NAME,
+        COMM_HISTORY_INTERFACE,
         GROUPS_DELETED_SIGNAL,
         this,
         SLOT(groupsDeletedSlot(const QList<int> &)));

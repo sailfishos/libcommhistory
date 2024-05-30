@@ -90,13 +90,13 @@ EventModelPrivate::EventModelPrivate(EventModel *model)
 
     // listen to dbus signals
     QDBusConnection::sessionBus().connect(
-        QString(), QString(), COMM_HISTORY_SERVICE_NAME, EVENTS_ADDED_SIGNAL,
+        QString(), QString(), COMM_HISTORY_INTERFACE, EVENTS_ADDED_SIGNAL,
         this, SLOT(eventsAddedSlot(const QList<CommHistory::Event> &)));
     QDBusConnection::sessionBus().connect(
-        QString(), QString(), COMM_HISTORY_SERVICE_NAME, EVENTS_UPDATED_SIGNAL,
+        QString(), QString(), COMM_HISTORY_INTERFACE, EVENTS_UPDATED_SIGNAL,
         this, SLOT(eventsUpdatedSlot(const QList<CommHistory::Event> &)));
     QDBusConnection::sessionBus().connect(
-        QString(), QString(), COMM_HISTORY_SERVICE_NAME, EVENT_DELETED_SIGNAL,
+        QString(), QString(), COMM_HISTORY_INTERFACE, EVENT_DELETED_SIGNAL,
         this, SLOT(eventDeletedSlot(int)));
 
     eventRootItem = new EventTreeItem(Event());
