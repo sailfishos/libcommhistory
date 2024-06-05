@@ -40,8 +40,11 @@ void GroupModelPerfTest::initTestCase()
         qDebug() << "!!!! Failed to open log file !!!!";
         logFile = 0;
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 }
 
 void GroupModelPerfTest::init()
@@ -89,6 +92,10 @@ void GroupModelPerfTest::getGroups()
     QFETCH(int, messages);
     QFETCH(int, contacts);
     QFETCH(bool, resolve);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
 
     QDateTime startTime = QDateTime::currentDateTime();
 

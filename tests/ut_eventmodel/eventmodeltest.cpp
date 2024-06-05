@@ -59,9 +59,11 @@ void EventModelTest::groupsDeletedSlot(const QList<int> &groupIds)
 void EventModelTest::initTestCase()
 {
     initTestDatabase();
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
     qsrand(QDateTime::currentDateTime().toTime_t());
-
+#endif
     new Adaptor(this);
     QVERIFY(QDBusConnection::sessionBus().registerObject(
                 "/EventModelTest", this));
@@ -997,10 +999,15 @@ void EventModelTest::testCcBcc()
     Event e;
     QVERIFY(model.databaseIO().getEvent(event.id(), e));
     QVERIFY(compareEvents(event, e));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QCOMPARE(QSet<QString>(e.ccList().begin(),e.ccList().end()) , QSet<QString>(ccList.begin(), ccList.end()));
+    QCOMPARE(QSet<QString>(e.bccList().begin(),e.bccList().end()) , QSet<QString>(bccList.begin(), bccList.end()));
+    QCOMPARE(QSet<QString>(e.toList().begin(),e.toList().end()) , QSet<QString>(toList.begin(), toList.end()));
+#else
     QCOMPARE(e.ccList().toSet(), ccList.toSet());
     QCOMPARE(e.bccList().toSet(), bccList.toSet());
     QCOMPARE(e.toList().toSet(), toList.toSet());
-
+#endif
     event.resetModifiedProperties();
     ccList.clear();
     ccList << "112" << "358" << "mcc@mms.com";
@@ -1020,9 +1027,15 @@ void EventModelTest::testCcBcc()
 
     QVERIFY(model.databaseIO().getEvent(event.id(), e));
     QVERIFY(compareEvents(event, e));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QCOMPARE(QSet<QString>(e.ccList().begin(),e.ccList().end()) , QSet<QString>(ccList.begin(), ccList.end()));
+    QCOMPARE(QSet<QString>(e.bccList().begin(),e.bccList().end()) , QSet<QString>(bccList.begin(), bccList.end()));
+    QCOMPARE(QSet<QString>(e.toList().begin(),e.toList().end()) , QSet<QString>(toList.begin(), toList.end()));
+#else
     QCOMPARE(e.ccList().toSet(), ccList.toSet());
     QCOMPARE(e.bccList().toSet(), bccList.toSet());
     QCOMPARE(e.toList().toSet(), toList.toSet());
+#endif
 
     event.resetModifiedProperties();
     ccList.clear();

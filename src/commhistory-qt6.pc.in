@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/$$PKGCONFIG_LIB/
+includedir=${prefix}/include/commhistory-qt6/
+
+Name: libcommhistory-qt6
+Description: Messaging/Call-History Library
+Version: $$PROJECT_VERSION
+Libs: -L${libdir} -lcommhistory-qt6
+Libs.private: -L/usr/lib
+Cflags:  -I${includedir}
+Requires: contactcache-qt6 qtcontacts-sqlite-qt6-extensions

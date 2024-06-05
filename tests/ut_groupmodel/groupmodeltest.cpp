@@ -107,8 +107,11 @@ void GroupModelTest::initTestCase()
                 this, SLOT(groupsDeletedSlot(const QList<int> &))));
 
     loop = new QEventLoop(this);
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
     qsrand(QDateTime::currentDateTime().toTime_t());
+#endif
 }
 
 void GroupModelTest::addInitialTestGroups()
@@ -435,14 +438,24 @@ void GroupModelTest::updateGroups()
     QVERIFY(model.databaseIO().getEvent(eventId, event));
     QCOMPARE(group.lastEventId(), eventId);
     QCOMPARE(group.lastMessageText(), QString("added to group"));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(group.startTime().toSecsSinceEpoch(), event.startTime().toSecsSinceEpoch());
+    QCOMPARE(group.endTime().toSecsSinceEpoch(), event.endTime().toSecsSinceEpoch());
+#else
     QCOMPARE(group.startTime().toTime_t(), event.startTime().toTime_t());
     QCOMPARE(group.endTime().toTime_t(), event.endTime().toTime_t());
+#endif
     QCOMPARE(group.subscriberIdentity(), event.subscriberIdentity());
 
     // add older event
     int lastEventId = eventId;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    uint lastStartTime = group.startTime().toSecsSinceEpoch();
+    uint lastEndTime = group.endTime().toSecsSinceEpoch();
+#else
     uint lastStartTime = group.startTime().toTime_t();
     uint lastEndTime = group.endTime().toTime_t();
+#endif
     QString lastSubscriberIdentity = group.subscriberIdentity();
     eventsCommitted.clear();
     groupMoved.clear();
@@ -459,8 +472,13 @@ void GroupModelTest::updateGroups()
     QVERIFY(model.databaseIO().getEvent(eventId, event));
     QCOMPARE(group.lastEventId(), lastEventId);
     QCOMPARE(group.lastMessageText(), QString("added to group"));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(group.startTime().toSecsSinceEpoch(), lastStartTime);
+    QCOMPARE(group.endTime().toSecsSinceEpoch(), lastEndTime);
+#else
     QCOMPARE(group.startTime().toTime_t(), lastStartTime);
     QCOMPARE(group.endTime().toTime_t(), lastEndTime);
+#endif
     QCOMPARE(group.subscriberIdentity(), lastSubscriberIdentity);
 
     // add new SMS event for second group, check for resorted list, correct contents and date
@@ -478,8 +496,13 @@ void GroupModelTest::updateGroups()
     QVERIFY(group.endTime() > modified);
     Group testGroup;
     QVERIFY(groupModel.databaseIO().getGroup(id, testGroup));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(testGroup.startTime().toSecsSinceEpoch(), group.startTime().toSecsSinceEpoch());
+    QCOMPARE(testGroup.endTime().toSecsSinceEpoch(), group.endTime().toSecsSinceEpoch());
+#else
     QCOMPARE(testGroup.startTime().toTime_t(), group.startTime().toTime_t());
     QCOMPARE(testGroup.endTime().toTime_t(), group.endTime().toTime_t());
+#endif
     QCOMPARE(testGroup.subscriberIdentity(), group.subscriberIdentity());
 
     // add new IM event for second group, check for resorted list, correct contents and date
@@ -499,8 +522,13 @@ void GroupModelTest::updateGroups()
     QVERIFY(group.endTime() > modified);
 
     QVERIFY(groupModel.databaseIO().getGroup(id, testGroup));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(testGroup.startTime().toSecsSinceEpoch(), group.startTime().toSecsSinceEpoch());
+    QCOMPARE(testGroup.endTime().toSecsSinceEpoch(), group.endTime().toSecsSinceEpoch());
+#else
     QCOMPARE(testGroup.startTime().toTime_t(), group.startTime().toTime_t());
     QCOMPARE(testGroup.endTime().toTime_t(), group.endTime().toTime_t());
+#endif
     QCOMPARE(testGroup.subscriberIdentity(), group.subscriberIdentity());
 
     // check if status message is really not added to the group
@@ -706,9 +734,15 @@ void GroupModelTest::streamingQuery()
 
     QTRY_COMPARE(modelReady.count(), 1);
     QVERIFY(!streamModel.canFetchMore(QModelIndex()));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QCOMPARE(QSet<int>(idsOrig.begin(), idsOrig.end()).size(), idsOrig.size());
+    QCOMPARE(QSet<int>(idsStream.begin(), idsStream.end()).size(), idsStream.size());
+    QVERIFY(QSet<int>(idsOrig.begin(), idsOrig.end()) == QSet<int>(idsStream.begin(), idsStream.end()));
+#else
     QCOMPARE(idsOrig.toSet().size(), idsOrig.size());
     QCOMPARE(idsStream.toSet().size(), idsStream.size());
     QVERIFY(idsOrig.toSet() == idsStream.toSet());
+#endif
 
     modelThread.quit();
     modelThread.wait(5000);
@@ -961,6 +995,10 @@ void GroupModelTest::markGroupAsRead()
 void GroupModelTest::resolveContact()
 {
     ContactChangeListener contactChangeListener;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
 
     GroupModel groupModel;
     groupModel.setResolveContacts(GroupManager::ResolveImmediately);
@@ -1303,16 +1341,24 @@ void GroupModelTest::endTimeUpdate()
     groupUpdated.clear();
 
     // verify run-time update
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
-
+#endif
     // and database update
     modelReady.clear();
     QVERIFY(model.getGroups("endTimeUpdate"));
     QTRY_COMPARE(modelReady.count(), 1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
-
+#endif
     // add an event to each group to get them to show up in getGroups()
     eventsCommitted.clear();
     addTestEvent(eventModel, Event::IMEvent, Event::Outbound, "endTimeUpdate",
@@ -1327,16 +1373,25 @@ void GroupModelTest::endTimeUpdate()
 
     // verify run-time update
     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
-
+#endif
     // and database update
     modelReady.clear();
     QVERIFY(model.getGroups("endTimeUpdate"));
     QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
+#endif
 
     // check group updates on modify event
     Event event;
@@ -1354,8 +1409,13 @@ void GroupModelTest::endTimeUpdate()
     QVERIFY(model.getGroups("endTimeUpdate"));
     QTRY_COMPARE(modelReady.count(), 1);
     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestestDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestestDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestestDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestestDate.toTime_t());
+#endif
 
     // check group updates on delete event
     eventsCommitted.clear();
@@ -1366,8 +1426,13 @@ void GroupModelTest::endTimeUpdate()
     modelReady.clear();
     QVERIFY(model.getGroups("endTimeUpdate"));
     QTRY_COMPARE(modelReady.count(), 1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), oldDate.toSecsSinceEpoch());
+    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), oldDate.toSecsSinceEpoch());
+#else
     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), oldDate.toTime_t());
     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), oldDate.toTime_t());
+#endif
 
     // add overlapping event with receive time older than oldDate but the newest sent time
     // the event should not be picked up as the last event because of the old receive time
@@ -1392,16 +1457,26 @@ void GroupModelTest::endTimeUpdate()
 
     // verify run-time update
     QVERIFY(model.group(model.index(0, 0)).lastEventId() != olEvent.id());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QVERIFY(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch() != olEvent.startTime().toSecsSinceEpoch());
+    QVERIFY(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch() != olEvent.endTime().toSecsSinceEpoch());
+#else
     QVERIFY(model.group(model.index(0, 0)).startTime().toTime_t() != olEvent.startTime().toTime_t());
     QVERIFY(model.group(model.index(0, 0)).endTime().toTime_t() != olEvent.endTime().toTime_t());
+#endif
 
     // and tracker update
     modelReady.clear();
     QVERIFY(model.getGroups("endTimeUpdate"));
     QTRY_COMPARE(modelReady.count(), 1);
     QVERIFY(model.group(model.index(0, 0)).lastEventId() != olEvent.id());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QVERIFY(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch() != olEvent.startTime().toSecsSinceEpoch());
+    QVERIFY(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch() != olEvent.endTime().toSecsSinceEpoch());
+#else
     QVERIFY(model.group(model.index(0, 0)).startTime().toTime_t() != olEvent.startTime().toTime_t());
     QVERIFY(model.group(model.index(0, 0)).endTime().toTime_t() != olEvent.endTime().toTime_t());
+#endif
 }
 
 QTEST_MAIN(GroupModelTest)
