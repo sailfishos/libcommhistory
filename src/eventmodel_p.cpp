@@ -30,9 +30,9 @@
 #include "eventmodel.h"
 #include "eventmodel_p.h"
 #include "updatesemitter.h"
+#include "dbus_p.h"
 #include "event.h"
 #include "eventtreeitem.h"
-#include "constants.h"
 #include "commonutils.h"
 #include "debug.h"
 

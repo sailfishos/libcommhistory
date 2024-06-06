@@ -29,7 +29,6 @@
 #include "conversationmodel.h"
 #include "singleeventmodel.h"
 #include "groupmodel.h"
-#include "adaptor.h"
 #include "event.h"
 #include "common.h"
 #include "databaseio.h"
@@ -62,16 +61,10 @@ void EventModelTest::initTestCase()
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 
-    new Adaptor(this);
-    QVERIFY(QDBusConnection::sessionBus().registerObject(
-                "/EventModelTest", this));
-
-    QDBusConnection::sessionBus().connect(
-        QString(), QString(), "com.nokia.commhistory", "groupsUpdated",
-        this, SLOT(groupsUpdatedSlot(const QList<int> &)));
-    QDBusConnection::sessionBus().connect(
-        QString(), QString(), "com.nokia.commhistory", "groupsDeleted",
-        this, SLOT(groupsDeletedSlot(const QList<int> &)));
+    connect(&watcher, &UpdatesListener::groupsUpdated,
+            this, &EventModelTest::groupsUpdatedSlot);
+    connect(&watcher, &UpdatesListener::groupsDeleted,
+            this, &EventModelTest::groupsDeletedSlot);
 
     addTestGroups(group1, group2);
 }

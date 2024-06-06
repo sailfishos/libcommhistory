@@ -21,15 +21,11 @@
 ******************************************************************************/
 
 #include <QtTest/QtTest>
-#include <QDBusConnection>
 
 #include "modelwatcher.h"
 
-int ModelWatcher::m_watcherId = 0;
-
 ModelWatcher::ModelWatcher(QObject *parent)
-    : QObject(parent),
-      m_signalsConnected(false),
+    : UpdatesListener(QString(), parent),
       m_model(0),
       m_minCommitCount(0),
       m_minAddCount(0),
@@ -41,6 +37,12 @@ ModelWatcher::ModelWatcher(QObject *parent)
       m_eventsCommitted(false),
       m_dbusSignalReceived(false)
 {
+    connect(this, &UpdatesListener::eventsAdded,
+            this, &ModelWatcher::eventsAddedSlot);
+    connect(this, &UpdatesListener::eventsUpdated,
+            this, &ModelWatcher::eventsUpdatedSlot);
+    connect(this, &UpdatesListener::eventDeleted,
+            this, &ModelWatcher::eventDeletedSlot);
 }
 
 ModelWatcher::~ModelWatcher()
@@ -49,21 +51,6 @@ ModelWatcher::~ModelWatcher()
 
 void ModelWatcher::setModel(CommHistory::EventModel *model)
 {
-    if (!m_signalsConnected) {
-        QString objectPath = QString("/ModelTestWatcher%0").arg(m_watcherId++);
-        QVERIFY(QDBusConnection::sessionBus().registerObject(objectPath, this));
-        QDBusConnection::sessionBus().connect(
-            QString(), QString(), "com.nokia.commhistory", "eventsAdded",
-            this, SLOT(eventsAddedSlot(const QList<CommHistory::Event> &)));
-        QDBusConnection::sessionBus().connect(
-            QString(), QString(), "com.nokia.commhistory", "eventsUpdated",
-            this, SLOT(eventsUpdatedSlot(const QList<CommHistory::Event> &)));
-        QDBusConnection::sessionBus().connect(
-            QString(), QString(), "com.nokia.commhistory", "eventDeleted",
-            this, SLOT(eventDeletedSlot(int)));
-        m_signalsConnected = true;
-    }
-
     m_model = model;
     connect(m_model, SIGNAL(eventsCommitted(const QList<CommHistory::Event>&, bool)),
             this, SLOT(eventsCommittedSlot(const QList<CommHistory::Event>&, bool)));

@@ -25,7 +25,7 @@
 #include "adaptor.h"
 
 #include "updatesemitter.h"
-#include "constants.h"
+#include "dbus_p.h"
 
 namespace CommHistory {
 

@@ -29,6 +29,18 @@
 #include "messagepart.h"
 #include "group.h"
 
+#define COMM_HISTORY_INTERFACE     QLatin1String("com.nokia.commhistory")
+#define COMM_HISTORY_OBJECT_PATH   QLatin1String("/CommHistoryModel")
+
+#define EVENTS_ADDED_SIGNAL        QLatin1String("eventsAdded")
+#define EVENTS_UPDATED_SIGNAL      QLatin1String("eventsUpdated")
+#define EVENT_DELETED_SIGNAL       QLatin1String("eventDeleted")
+
+#define GROUPS_ADDED_SIGNAL        QLatin1String("groupsAdded")
+#define GROUPS_UPDATED_SIGNAL      QLatin1String("groupsUpdated")
+#define GROUPS_UPDATED_FULL_SIGNAL QLatin1String("groupsUpdatedFull")
+#define GROUPS_DELETED_SIGNAL      QLatin1String("groupsDeleted")
+
 QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Recipient &recipient);
 const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Recipient &recipient);
 

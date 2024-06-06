@@ -2,8 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: Reto Zingg <reto.zingg@nokia.com>
+** Copyright (C) 2024 Damien Caliste <dcaliste@free.fr>
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU Lesser General Public License version 2.1 as
@@ -20,23 +19,24 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_ADAPTOR_H
-#define COMMHISTORY_ADAPTOR_H
+#ifndef UPDATESLISTENER_H
+#define UPDATESLISTENER_H
 
-#include <QtDBus/QtDBus>
+#include <QObject>
+
 #include "event.h"
 #include "group.h"
+#include "libcommhistoryexport.h"
 
 namespace CommHistory {
 
-class Adaptor : public QDBusAbstractAdaptor
+class LIBCOMMHISTORY_EXPORT UpdatesListener : public QObject
 {
     Q_OBJECT
 
-    Q_CLASSINFO("D-Bus Interface", "com.nokia.commhistory")
-
 public:
-    Adaptor(QObject *parent = 0);
+    UpdatesListener(QObject *parent = nullptr);
+    UpdatesListener(const QString &objectPath, QObject *parent = nullptr);
 
 Q_SIGNALS:
     void eventsAdded(const QList<CommHistory::Event> &events);
