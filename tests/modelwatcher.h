@@ -26,9 +26,10 @@
 #include "eventmodel.h"
 #include "event.h"
 #include "common.h"
+#include "updateslistener.h"
 #include <QList>
 
-class ModelWatcher : public QObject
+class ModelWatcher : public CommHistory::UpdatesListener
 {
     Q_OBJECT
 
@@ -54,8 +55,6 @@ public Q_SLOTS:
     void eventsCommittedSlot(const QList<CommHistory::Event> &events, bool successful);
 
 public:
-    static int m_watcherId;
-    bool m_signalsConnected;
     CommHistory::EventModel *m_model;
     int m_minCommitCount;
     int m_minAddCount;

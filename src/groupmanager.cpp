@@ -33,7 +33,7 @@
 #include "updatesemitter.h"
 #include "group.h"
 #include "event.h"
-#include "constants.h"
+#include "dbus_p.h"
 #include "contactlistener.h"
 #include "debug.h"
 

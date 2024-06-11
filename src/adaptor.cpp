@@ -24,6 +24,8 @@
 #include "messagepart.h"
 #include "recipient.h"
 
+#include "dbus_p.h"
+
 using namespace CommHistory;
 
 Adaptor::Adaptor(QObject *parent)

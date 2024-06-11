@@ -27,7 +27,7 @@
 #include <QDataStream>
 #include "event.h"
 #include "messagepart.h"
-#include "constants.h"
+#include "dbus_p.h"
 
 #include <QStringBuilder>
 
@@ -35,6 +35,8 @@
 #define MMS_CC_HEADER QLatin1String("x-mms-cc")
 #define MMS_BCC_HEADER QLatin1String("x-mms-bcc")
 #define VIDEO_CALL_HEADER QLatin1String("x-video")
+
+#define EVENT_PROPERTY_SUBSCRIBER_ID QLatin1String("subscriberIdentity")
 
 namespace CommHistory {
 

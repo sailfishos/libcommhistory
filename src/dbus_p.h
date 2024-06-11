@@ -2,8 +2,7 @@
 **
 ** This file is part of libcommhistory.
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: Reto Zingg <reto.zingg@nokia.com>
+** Copyright (C) 2024 Jolla Ltd.
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU Lesser General Public License version 2.1 as
@@ -20,11 +19,15 @@
 **
 ******************************************************************************/
 
-#ifndef COMMHISTORY_CONSTANTS_H
-#define COMMHISTORY_CONSTANTS_H
+#ifndef DBUS_P_H
+#define DBUS_P_H
 
-namespace CommHistory {
+#include <QDBusArgument>
 
+#include "recipient.h"
+#include "event.h"
+#include "messagepart.h"
+#include "group.h"
 
 #define COMM_HISTORY_INTERFACE     QLatin1String("com.nokia.commhistory")
 #define COMM_HISTORY_OBJECT_PATH   QLatin1String("/CommHistoryModel")
@@ -38,8 +41,23 @@ namespace CommHistory {
 #define GROUPS_UPDATED_FULL_SIGNAL QLatin1String("groupsUpdatedFull")
 #define GROUPS_DELETED_SIGNAL      QLatin1String("groupsDeleted")
 
-#define EVENT_PROPERTY_SUBSCRIBER_ID    QLatin1String("subscriberIdentity")
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Recipient &recipient);
+const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Recipient &recipient);
 
-} /* namespace CommHistory */
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::RecipientList &recipients);
+const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::RecipientList &recipients);
 
-#endif /* CONSTANTS_H */
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Event &event);
+const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Event &event);
+
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Event::Contact &contact);
+const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Event::Contact &contact);
+
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::MessagePart &part);
+const QDBusArgument &operator>>(const QDBusArgument &argument,
+                                CommHistory::MessagePart &part);
+
+QDBusArgument &operator<<(QDBusArgument &argument, const CommHistory::Group &group);
+const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Group &group);
+
+#endif

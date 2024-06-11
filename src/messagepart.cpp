@@ -60,9 +60,15 @@ QDBusArgument &operator<<(QDBusArgument &argument, const MessagePart &part)
 
 const QDBusArgument &operator>>(const QDBusArgument &argument, MessagePart &part)
 {
+    int id;
+    QString contentId, contentType, path;
     argument.beginStructure();
-    argument >> part.d->id >> part.d->contentId >> part.d->contentType >> part.d->path;
+    argument >> id >> contentId >> contentType >> path;
     argument.endStructure();
+    part.setId(id);
+    part.setContentId(contentId);
+    part.setContentType(contentType);
+    part.setPath(path);
     return argument;
 }
 

@@ -24,6 +24,7 @@
 #include "commonutils.h"
 #include <QSet>
 #include <QHash>
+#include <QDBusArgument>
 #include <QDebug>
 
 #include <phonenumbers/phonenumberutil.h>

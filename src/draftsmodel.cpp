@@ -21,7 +21,6 @@
 ******************************************************************************/
 
 #include "draftsmodel_p.h"
-#include "constants.h"
 #include "databaseio_p.h"
 #include "commhistorydatabase.h"
 #include "debug.h"

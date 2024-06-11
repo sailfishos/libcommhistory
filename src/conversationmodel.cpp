@@ -28,7 +28,7 @@
 #include "eventmodel_p.h"
 #include "conversationmodel.h"
 #include "conversationmodel_p.h"
-#include "constants.h"
+#include "dbus_p.h"
 #include "commhistorydatabase.h"
 #include "databaseio_p.h"
 #include "debug.h"

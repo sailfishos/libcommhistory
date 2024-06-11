@@ -85,13 +85,12 @@ PUBLIC_HEADERS += \
            callmodel.h \
            groupmodel.h \
            group.h \
-           adaptor.h \
+           updateslistener.h \
            contactlistener.h \
            libcommhistoryexport.h \
            singleeventmodel.h \
            recipienteventmodel.h \
            recentcontactsmodel.h \
-           constants.h \
            mmsconstants.h \
            mmsreadreportmodel.h \
            groupobject.h \
@@ -108,6 +107,8 @@ PUBLIC_HEADERS += \
 HEADERS += \
            $$PUBLIC_HEADERS \
            commhistorydatabase.h \
+           adaptor.h \
+           dbus_p.h \
            debug.h \
            eventmodel_p.h \
            eventtreeitem.h \
@@ -141,6 +142,7 @@ SOURCES += commonutils.cpp \
            recipienteventmodel.cpp \
            recentcontactsmodel.cpp \
            updatesemitter.cpp \
+           updateslistener.cpp \
            groupmanager.cpp \
            groupobject.cpp \
            contactgroupmodel.cpp \
