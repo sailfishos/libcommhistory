@@ -1444,9 +1444,9 @@ void EventModelTest::testContactMatching()
     QCOMPARE(event.contactName(), QString("Moderately Bad"));
 
     // After the contacts are removed, the events resolve to nothing
-    deleteTestContact(contactId1, &contactChangeListener);
-    deleteTestContact(contactId, &contactChangeListener);
-    deleteTestContact(replacementContactId, &contactChangeListener);
+    deleteTestContact(contactId1);
+    deleteTestContact(contactId);
+    deleteTestContact(replacementContactId);
 
     QTRY_COMPARE(model.event(model.findEvent(eventId)).contactId(), 0);
     QTRY_COMPARE(model.event(model.findEvent(eventId)).contactName(), QString());
