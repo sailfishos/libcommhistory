@@ -140,10 +140,12 @@ void ContactListenerPrivate::retryFinished()
     retryRecipients.clear();
 }
 
-static bool recipientMatchesDetails(const Recipient &recipient, const QList<Recipient> &addresses, const QList<Recipient::PhoneNumberMatchDetails> &phoneNumbers)
+static bool recipientMatchesDetails(const Recipient &recipient, const QList<Recipient> &addresses,
+                                    const QList<Recipient::PhoneNumberMatchDetails> &phoneNumbers)
 {
     if (recipient.isPhoneNumber()) {
-        for (QList<Recipient::PhoneNumberMatchDetails>::const_iterator it = phoneNumbers.begin(), end = phoneNumbers.end(); it != end; ++it) {
+        for (QList<Recipient::PhoneNumberMatchDetails>::const_iterator it = phoneNumbers.begin(), end = phoneNumbers.end();
+             it != end; ++it) {
             if (recipient.matchesPhoneNumber(*it))
                 return true;
         }
@@ -162,13 +164,15 @@ void ContactListenerPrivate::itemUpdated(SeasideCache::CacheItem *item)
     Q_Q(ContactListener);
 
     // Only aggregate contacts are relevant
-    if (item->contact.collectionId() != SeasideCache::aggregateCollectionId())
+    if (item->contact.collectionId() != SeasideCache::aggregateCollectionId()) {
         return;
+    }
 
     // Make a list of Recipient from the contacts addresses to compare against
     QList<Recipient> addresses;
     foreach (const QContactOnlineAccount &account, item->contact.details<QContactOnlineAccount>()) {
-        addresses.append(Recipient(account.value<QString>(QContactOnlineAccount__FieldAccountPath), account.accountUri()));
+        addresses.append(Recipient(account.value<QString>(QContactOnlineAccount__FieldAccountPath),
+                                   account.accountUri()));
     }
 
     QList<Recipient::PhoneNumberMatchDetails> phoneNumbers;
