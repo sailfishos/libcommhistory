@@ -44,6 +44,7 @@ class CallProxyModel : public CommHistory::CallModel, public QQmlParserStatus
     Q_ENUMS(EventDirection)
     Q_ENUMS(EventStatus)
     Q_ENUMS(EventReadStatus)
+    Q_ENUMS(EventIncomingStatus)
     Q_ENUMS(GroupBy)
 
     Q_PROPERTY(GroupBy groupBy READ groupBy WRITE setGroupBy NOTIFY groupByChanged)
@@ -89,6 +90,13 @@ public:
         UnknownReadStatus = CommHistory::Event::UnknownReadStatus,
         ReadStatusRead = CommHistory::Event::ReadStatusRead,
         ReadStatusDeleted = CommHistory::Event::ReadStatusDeleted
+    };
+
+    enum EventIncomingStatus {
+        Received = CommHistory::Event::Received,
+        NotAnswered = CommHistory::Event::NotAnswered,
+        Ignored = CommHistory::Event::Ignored,
+        Rejected = CommHistory::Event::Rejected
     };
 
     enum GroupBy {

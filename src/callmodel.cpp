@@ -272,8 +272,8 @@ int CallModelPrivate::calculateEventCount(EventTreeItem *item)
                 // the index number 0 is the same item as the top level
                 // one
                 for (int i = 1; i < item->childCount(); i++) {
-                    if (item->child(i - 1)->event().isMissedCall()
-                            && item->child(i)->event().isMissedCall()) {
+                    if (item->event().incomingStatus()
+                        == item->child(i)->event().incomingStatus()) {
                         count++;
                     } else {
                         break;
@@ -515,7 +515,7 @@ void CallModelPrivate::insertEvent(Event event)
 
                 const int groupEventCount(matchingItem->event().eventCount());
                 const bool increaseEventCount(matchingItem->event().direction() == event.direction() &&
-                                              matchingItem->event().isMissedCall() == event.isMissedCall());
+                                              matchingItem->event().incomingStatus() == event.incomingStatus());
 
                 matchingItem->prependChild(new EventTreeItem(event, matchingItem));
                 matchingItem->setEvent(event);
@@ -889,7 +889,7 @@ void CallModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, bool
 
                 const int groupEventCount(matchingItem->event().eventCount());
                 const bool increaseEventCount(matchingItem->event().direction() == event.direction() &&
-                                              matchingItem->event().isMissedCall() == event.isMissedCall());
+                                              matchingItem->event().incomingStatus() == event.incomingStatus());
 
                 int newChildIndex = 0;
                 for (; newChildIndex < matchingItem->childCount(); ++newChildIndex) {

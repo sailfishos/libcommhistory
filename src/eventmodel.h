@@ -110,7 +110,8 @@ public:
         FromVCardFileNameRole,
         FromVCardLabelRole,
         ReadStatusRole,
-        SubscriberIdentityRole
+        SubscriberIdentityRole,
+        IncomingStatusRole
     };
 
     /*!
