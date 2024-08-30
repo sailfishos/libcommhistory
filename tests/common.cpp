@@ -77,7 +77,8 @@ QContactManager *manager()
     return manager;
 }
 
-QContact createTestContact(const QString &name, const QString &remoteUid, const QString &localUid, const QString &contactUri)
+QContact createTestContact(const QString &name, const QString &remoteUid, const QString &localUid,
+                           const QString &contactUri)
 {
     QContact contact;
 
@@ -243,8 +244,8 @@ int addTestEvent(EventModel &model,
         event.setRecipients(Recipient(account, remoteUid));
     }
     event.setFreeText(text);
-    event.setIsDraft( isDraft );
-    event.setIsMissedCall( isMissedCall );
+    event.setIsDraft(isDraft);
+    event.setIsMissedCall(isMissedCall);
     event.setMessageToken(messageToken);
     event.setSubscriberIdentity(subscriberIdentity);
     if (model.addEvent(event, toModelOnly)) {
@@ -279,14 +280,17 @@ void addTestGroup(Group& grp, QString localUid, QString remoteUid)
 
 QContactId localContactForAggregate(const QContactId &aggregateId)
 {
-    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), aggregateId, QContactRelationship::First)) {
+    foreach (const QContactRelationship &relationship,
+             manager()->relationships(QContactRelationship::Aggregates(),
+                                      aggregateId, QContactRelationship::First)) {
         return relationship.second();
     }
     qWarning() << "error finding local contact for aggregate:" << aggregateId.localId();
     return QContactId();
 }
 
-int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid, ContactChangeListener *listener)
+int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid,
+                   ContactChangeListener *listener)
 {
     QString contactUri = QString("<testcontact:%1>").arg(contactNumber++);
 
@@ -300,7 +304,10 @@ int addTestContact(const QString &name, const QString &remoteUid, const QString 
     }
 
     int retValue = -1;
-    foreach (const QContactRelationship &relationship, manager()->relationships(QContactRelationship::Aggregates(), contact.id(), QContactRelationship::Second)) {
+    foreach (const QContactRelationship &relationship,
+             manager()->relationships(QContactRelationship::Aggregates(),
+                                      contact.id(),
+                                      QContactRelationship::Second)) {
         const QContactId &aggId = relationship.first();
         addedContactIds.insert(aggId);
         retValue = internalContactId(aggId);
@@ -609,7 +616,8 @@ void summarizeResults(const QString &className, QList<int> &times, QFile *logFil
     }
 
     const float mean = sum / (float)iterations;
-    qDebug("##### Mean: %.1f; Median: %.1f; Min: %d; Max: %d; Test time: %dsec", mean, median, times[0], times[iterations-1], testSecs);
+    qDebug("##### Mean: %.1f; Median: %.1f; Min: %d; Max: %d; Test time: %dsec", mean, median,
+           times[0], times[iterations-1], testSecs);
 
     if (logFile) {
         QString descriptor(className + "::" + QTest::currentTestFunction());
@@ -622,7 +630,8 @@ void summarizeResults(const QString &className, QList<int> &times, QFile *logFil
             << "\n"
             << timeList.join(" ")
             << "\n"
-            << "Median average: " << (int)median << " ms. Min: " << times[0] << "ms. Max: " << times[iterations-1] << " ms. Test time: ";
+            << "Median average: " << (int)median << " ms. Min: " << times[0] << "ms. Max: " << times[iterations-1]
+            << " ms. Test time: ";
         if (testSecs > 3600)
             out << (testSecs / 3600) << "h ";
         if (testSecs > 60)
