@@ -28,10 +28,13 @@
 
 #include <qtcontacts-extensions.h>
 
+#include <seasidecache.h>
+
 #include <QContactOnlineAccount>
 #include <QContactPhoneNumber>
 #include <QContactEmailAddress>
 
+#include "recipient_p.h"
 #include "commonutils.h"
 #include "contactresolver.h"
 #include "debug.h"
@@ -201,7 +204,7 @@ void ContactListenerPrivate::itemUpdated(SeasideCache::CacheItem *item)
     foreach (const Recipient &recipient, Recipient::recipientsForContact(0)) {
         if (recipientMatchesDetails(recipient, addresses, phoneNumbers)) {
             DEBUG() << "Recipient" << recipient << "now resolves to updated contact" << item->iid;
-            recipient.setResolved(item);
+            RecipientPrivate::setResolved(&recipient, item);
             contactChanged.append(recipient);
         }
     }

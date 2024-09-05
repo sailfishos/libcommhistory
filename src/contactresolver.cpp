@@ -24,8 +24,11 @@
 
 #include <QElapsedTimer>
 
+#include "recipient_p.h"
 #include "commonutils.h"
 #include "debug.h"
+
+#include <seasidecache.h>
 
 using namespace CommHistory;
 
@@ -123,7 +126,7 @@ void ContactResolverPrivate::resolve(Recipient recipient)
     Q_ASSERT(!recipient.localUid().isEmpty());
     if (recipient.localUid().isEmpty() || recipient.remoteUid().isEmpty()) {
         // Cannot match any contact. Set as resolved to nothing.
-        recipient.setResolved(0);
+        RecipientPrivate::setResolved(&recipient, nullptr);
         return;
     }
 
@@ -138,7 +141,7 @@ void ContactResolverPrivate::resolve(Recipient recipient)
     }
 
     if (item) {
-        recipient.setResolved(item);
+        RecipientPrivate::setResolved(&recipient, item);
     } else {
         pending.insert(recipient);
     }
@@ -180,7 +183,7 @@ void ContactResolverPrivate::addressResolved(const QString &first, const QString
         for (QSet<Recipient>::iterator it = pending.begin(); it != pending.end(); ) {
             if (it->matchesPhoneNumber(phoneNumber)) {
                 // Look up the best match for the full number
-                it->setResolved(SeasideCache::itemByPhoneNumber(it->remoteUid(), false));
+                RecipientPrivate::setResolved(&(*it), SeasideCache::itemByPhoneNumber(it->remoteUid(), false));
                 it = pending.erase(it);
             } else {
                 ++it;
@@ -189,7 +192,7 @@ void ContactResolverPrivate::addressResolved(const QString &first, const QString
     } else {
         QSet<Recipient>::iterator it = pending.find(Recipient(first, second));
         if (it != pending.end()) {
-            it->setResolved(item);
+            RecipientPrivate::setResolved(&(*it), item);
             pending.erase(it);
         }
     }

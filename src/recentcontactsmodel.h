@@ -24,7 +24,6 @@
 
 #include "eventmodel.h"
 #include "libcommhistoryexport.h"
-#include <seasidecache.h>
 
 namespace CommHistory {
 
@@ -65,11 +64,15 @@ public:
      */
     Q_INVOKABLE bool getEvents();
 
+    // The values here used to be assigned to seasidecache ones.
+    // There shouldn't be really need to match the values, the property type is handled
+    // here just internally, and feeding this with seaside values should be a type error,
+    // but no harm in keeping the literal values as they used to be
     enum RequiredPropertyType {
         NoPropertyRequired = 0,
-        AccountUriRequired = SeasideCache::FetchAccountUri,
-        PhoneNumberRequired = SeasideCache::FetchPhoneNumber,
-        EmailAddressRequired = SeasideCache::FetchEmailAddress
+        AccountUriRequired = 1 << 0, // SeasideCache::FetchAccountUri,
+        PhoneNumberRequired = 1 << 1, // SeasideCache::FetchPhoneNumber,
+        EmailAddressRequired = 1 << 2, // SeasideCache::FetchEmailAddress
     };
 
     /*!

@@ -44,7 +44,6 @@ public:
     explicit ContactFetcher(QObject *parent = 0);
 
     void add(int contactId);
-    void add(const QContactId &contactId);
     void add(const Recipient &recipient);
 
     bool isFetching() const;

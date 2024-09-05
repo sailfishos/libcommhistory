@@ -21,13 +21,18 @@
 ******************************************************************************/
 
 #include "recipient.h"
+#include "recipient_p.h"
+
 #include "commonutils.h"
+
 #include <QSet>
 #include <QHash>
 #include <QDBusArgument>
 #include <QDebug>
 
 #include <phonenumbers/phonenumberutil.h>
+
+#include <seasidecache.h>
 
 namespace {
 
@@ -67,30 +72,6 @@ QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remo
 }
 
 bool recipient_initialized = initializeTypes();
-
-namespace CommHistory {
-
-class RecipientPrivate
-{
-public:
-    QString localUid;
-    QString remoteUid;
-    SeasideCache::CacheItem* item;
-    bool isResolved;
-    bool isPhoneNumber;
-    QString minimizedRemoteUid;
-    quint32 localUidHash;
-    quint32 remoteUidHash;
-    quint32 contactNameHash;
-    quint32 addressFlags;
-
-    RecipientPrivate(const QString &localUid, const QString &remoteUid);
-    ~RecipientPrivate();
-
-    static QSharedPointer<RecipientPrivate> get(const QString &localUid, const QString &remoteUid);
-};
-
-}
 
 using namespace CommHistory;
 
@@ -315,20 +296,20 @@ bool Recipient::isContactResolved() const
     return d->isResolved;
 }
 
-bool Recipient::setResolved(SeasideCache::CacheItem *item) const
+bool RecipientPrivate::setResolved(const Recipient *q, SeasideCache::CacheItem *item)
 {
-    if (d->isResolved && item == d->item)
+    if (q->d->isResolved && item == q->d->item)
         return false;
 
-    if (d->isResolved && d->item)
-        recipientContactMap->remove(d->item->iid, d);
+    if (q->d->isResolved && q->d->item)
+        recipientContactMap->remove(q->d->item->iid, q->d);
 
-    recipientContactMap->insert(item ? item->iid : 0, d.toWeakRef());
+    recipientContactMap->insert(item ? item->iid : 0, q->d.toWeakRef());
 
-    d->isResolved = true;
-    d->item = item;
-    d->contactNameHash = item ? qHash(item->displayLabel) : 0;
-    d->addressFlags = item ? addressFlagValues(item->statusFlags) : 0;
+    q->d->isResolved = true;
+    q->d->item = item;
+    q->d->contactNameHash = item ? qHash(item->displayLabel) : 0;
+    q->d->addressFlags = item ? addressFlagValues(item->statusFlags) : 0;
     return true;
 }
 
@@ -425,15 +406,15 @@ RecipientList RecipientList::fromUids(const QString &localUid, const QStringList
 
 RecipientList RecipientList::fromContact(int contactId)
 {
-    return fromCacheItem(SeasideCache::itemById(contactId, false));
+    return RecipientPrivate::recipientListFromCacheItem(SeasideCache::itemById(contactId, false));
 }
 
-RecipientList RecipientList::fromContact(const QContactId &contactId)
+RecipientList RecipientPrivate::recipientListFromContact(const QContactId &contactId)
 {
-    return fromCacheItem(SeasideCache::itemById(contactId, false));
+    return recipientListFromCacheItem(SeasideCache::itemById(contactId, false));
 }
 
-RecipientList RecipientList::fromCacheItem(const SeasideCache::CacheItem *item)
+RecipientList RecipientPrivate::recipientListFromCacheItem(const SeasideCache::CacheItem *item)
 {
     RecipientList re;
     if (item && item->contactState == SeasideCache::ContactComplete) {

@@ -25,8 +25,6 @@
 
 #include "libcommhistoryexport.h"
 
-#include <seasidecache.h>
-
 #include <QObject>
 #include <QSharedPointer>
 #include <QHash>
@@ -99,19 +97,6 @@ public:
     QUrl contactAvatarUrl() const;
     bool isContactResolved() const;
 
-    /* Update the resolved contact for this recipient
-     *
-     * Generally, this is only called by the contact resolver, but it can be
-     * used to inject known contact matches. The change will apply to all
-     * Recipient instances that compare equal to this instance.
-     *
-     * A null item pointer is taken to mean that no contact matches. In this
-     * case, the contact is still considered resolved.
-     *
-     * Returns true if the receipient resolution was updated.
-     */
-    bool setResolved(SeasideCache::CacheItem *item) const;
-
     /* Removes the resolved contact from this recipient
      *
      * Generally, this is only called by the contact listener.
@@ -149,6 +134,7 @@ private:
     QSharedPointer<RecipientPrivate> d;
 
     friend uint qHash(const CommHistory::Recipient &value, uint seed);
+    friend RecipientPrivate;
 };
 
 class LIBCOMMHISTORY_EXPORT RecipientList
@@ -160,7 +146,6 @@ public:
 
     static RecipientList fromUids(const QString &localUid, const QStringList &remoteUids);
     static RecipientList fromContact(int contactId);
-    static RecipientList fromContact(const QContactId &contactId);
 
     bool isEmpty() const;
     int size() const;
@@ -250,8 +235,6 @@ public:
     RecipientList &operator<<(const Recipient &recipient);
 
 private:
-    static RecipientList fromCacheItem(const SeasideCache::CacheItem *item);
-
     QList<Recipient> m_recipients;
 };
 
