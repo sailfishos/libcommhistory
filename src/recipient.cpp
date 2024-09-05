@@ -50,7 +50,9 @@ QString minimizeRemoteUid(const QString &remoteUid, bool isPhoneNumber)
 
 quint32 addressFlagValues(quint64 statusFlags)
 {
-    return statusFlags & (QContactStatusFlags::HasPhoneNumber | QContactStatusFlags::HasEmailAddress | QContactStatusFlags::HasOnlineAccount);
+    return statusFlags & (QContactStatusFlags::HasPhoneNumber
+                          | QContactStatusFlags::HasEmailAddress
+                          | QContactStatusFlags::HasOnlineAccount);
 }
 
 QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remoteUid)
@@ -92,8 +94,8 @@ public:
 
 using namespace CommHistory;
 
-typedef QHash<QPair<QString,QString>,WeakRecipient> RecipientUidMap;
-typedef QMultiHash<int,WeakRecipient> RecipientContactMap;
+typedef QHash<QPair<QString, QString>, WeakRecipient> RecipientUidMap;
+typedef QMultiHash<int, WeakRecipient> RecipientContactMap;
 
 Q_GLOBAL_STATIC(RecipientUidMap, recipientInstances);
 Q_GLOBAL_STATIC(RecipientContactMap, recipientContactMap);
@@ -261,10 +263,15 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
         return false;
 
     // Matching the minimized phone number is necessary, but insufficient
-    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0 && d->remoteUidHash != phoneNumber.minimizedNumberHash)
+    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0
+            && d->remoteUidHash != phoneNumber.minimizedNumberHash) {
         return false;
-    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty() && d->minimizedRemoteUid != phoneNumber.minimizedNumber)
+    }
+
+    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty()
+            && d->minimizedRemoteUid != phoneNumber.minimizedNumber) {
         return false;
+    }
 
     // Full match of the full phone number is always sufficient
     if (d->remoteUid == phoneNumber.number)
@@ -272,8 +279,11 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
 
     // TODO: consider plumbing the region code here for potentially more accurate matching
     ::i18n::phonenumbers::PhoneNumberUtil *util = ::i18n::phonenumbers::PhoneNumberUtil::GetInstance();
-    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(), phoneNumber.number.toStdString());
-    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
+    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match
+            = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(),
+                                                phoneNumber.number.toStdString());
+    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH
+            || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
 }
 
 bool Recipient::matchesAddressFlags(quint64 flags) const
