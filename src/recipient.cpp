@@ -21,13 +21,18 @@
 ******************************************************************************/
 
 #include "recipient.h"
+#include "recipient_p.h"
+
 #include "commonutils.h"
+
 #include <QSet>
 #include <QHash>
 #include <QDBusArgument>
 #include <QDebug>
 
 #include <phonenumbers/phonenumberutil.h>
+
+#include <seasidecache.h>
 
 namespace {
 
@@ -50,7 +55,9 @@ QString minimizeRemoteUid(const QString &remoteUid, bool isPhoneNumber)
 
 quint32 addressFlagValues(quint64 statusFlags)
 {
-    return statusFlags & (QContactStatusFlags::HasPhoneNumber | QContactStatusFlags::HasEmailAddress | QContactStatusFlags::HasOnlineAccount);
+    return statusFlags & (QContactStatusFlags::HasPhoneNumber
+                          | QContactStatusFlags::HasEmailAddress
+                          | QContactStatusFlags::HasOnlineAccount);
 }
 
 QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remoteUid)
@@ -66,34 +73,10 @@ QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remo
 
 bool recipient_initialized = initializeTypes();
 
-namespace CommHistory {
-
-class RecipientPrivate
-{
-public:
-    QString localUid;
-    QString remoteUid;
-    SeasideCache::CacheItem* item;
-    bool isResolved;
-    bool isPhoneNumber;
-    QString minimizedRemoteUid;
-    quint32 localUidHash;
-    quint32 remoteUidHash;
-    quint32 contactNameHash;
-    quint32 addressFlags;
-
-    RecipientPrivate(const QString &localUid, const QString &remoteUid);
-    ~RecipientPrivate();
-
-    static QSharedPointer<RecipientPrivate> get(const QString &localUid, const QString &remoteUid);
-};
-
-}
-
 using namespace CommHistory;
 
-typedef QHash<QPair<QString,QString>,WeakRecipient> RecipientUidMap;
-typedef QMultiHash<int,WeakRecipient> RecipientContactMap;
+typedef QHash<QPair<QString, QString>, WeakRecipient> RecipientUidMap;
+typedef QMultiHash<int, WeakRecipient> RecipientContactMap;
 
 Q_GLOBAL_STATIC(RecipientUidMap, recipientInstances);
 Q_GLOBAL_STATIC(RecipientContactMap, recipientContactMap);
@@ -261,10 +244,15 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
         return false;
 
     // Matching the minimized phone number is necessary, but insufficient
-    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0 && d->remoteUidHash != phoneNumber.minimizedNumberHash)
+    if (d->remoteUidHash != 0 && phoneNumber.minimizedNumberHash != 0
+            && d->remoteUidHash != phoneNumber.minimizedNumberHash) {
         return false;
-    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty() && d->minimizedRemoteUid != phoneNumber.minimizedNumber)
+    }
+
+    if (!phoneNumber.minimizedNumber.isEmpty() && !d->minimizedRemoteUid.isEmpty()
+            && d->minimizedRemoteUid != phoneNumber.minimizedNumber) {
         return false;
+    }
 
     // Full match of the full phone number is always sufficient
     if (d->remoteUid == phoneNumber.number)
@@ -272,8 +260,11 @@ bool Recipient::matchesPhoneNumber(const PhoneNumberMatchDetails &phoneNumber) c
 
     // TODO: consider plumbing the region code here for potentially more accurate matching
     ::i18n::phonenumbers::PhoneNumberUtil *util = ::i18n::phonenumbers::PhoneNumberUtil::GetInstance();
-    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(), phoneNumber.number.toStdString());
-    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
+    ::i18n::phonenumbers::PhoneNumberUtil::MatchType match
+            = util->IsNumberMatchWithTwoStrings(d->remoteUid.toStdString(),
+                                                phoneNumber.number.toStdString());
+    return match == ::i18n::phonenumbers::PhoneNumberUtil::EXACT_MATCH
+            || match == ::i18n::phonenumbers::PhoneNumberUtil::NSN_MATCH;
 }
 
 bool Recipient::matchesAddressFlags(quint64 flags) const
@@ -305,20 +296,20 @@ bool Recipient::isContactResolved() const
     return d->isResolved;
 }
 
-bool Recipient::setResolved(SeasideCache::CacheItem *item) const
+bool RecipientPrivate::setResolved(const Recipient *q, SeasideCache::CacheItem *item)
 {
-    if (d->isResolved && item == d->item)
+    if (q->d->isResolved && item == q->d->item)
         return false;
 
-    if (d->isResolved && d->item)
-        recipientContactMap->remove(d->item->iid, d);
+    if (q->d->isResolved && q->d->item)
+        recipientContactMap->remove(q->d->item->iid, q->d);
 
-    recipientContactMap->insert(item ? item->iid : 0, d.toWeakRef());
+    recipientContactMap->insert(item ? item->iid : 0, q->d.toWeakRef());
 
-    d->isResolved = true;
-    d->item = item;
-    d->contactNameHash = item ? qHash(item->displayLabel) : 0;
-    d->addressFlags = item ? addressFlagValues(item->statusFlags) : 0;
+    q->d->isResolved = true;
+    q->d->item = item;
+    q->d->contactNameHash = item ? qHash(item->displayLabel) : 0;
+    q->d->addressFlags = item ? addressFlagValues(item->statusFlags) : 0;
     return true;
 }
 
@@ -415,15 +406,15 @@ RecipientList RecipientList::fromUids(const QString &localUid, const QStringList
 
 RecipientList RecipientList::fromContact(int contactId)
 {
-    return fromCacheItem(SeasideCache::itemById(contactId, false));
+    return RecipientPrivate::recipientListFromCacheItem(SeasideCache::itemById(contactId, false));
 }
 
-RecipientList RecipientList::fromContact(const QContactId &contactId)
+RecipientList RecipientPrivate::recipientListFromContact(const QContactId &contactId)
 {
-    return fromCacheItem(SeasideCache::itemById(contactId, false));
+    return recipientListFromCacheItem(SeasideCache::itemById(contactId, false));
 }
 
-RecipientList RecipientList::fromCacheItem(const SeasideCache::CacheItem *item)
+RecipientList RecipientPrivate::recipientListFromCacheItem(const SeasideCache::CacheItem *item)
 {
     RecipientList re;
     if (item && item->contactState == SeasideCache::ContactComplete) {

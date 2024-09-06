@@ -26,6 +26,8 @@
 #include "commonutils.h"
 #include "debug.h"
 
+#include <seasidecache.h>
+
 using namespace CommHistory;
 
 namespace CommHistory {
@@ -48,7 +50,6 @@ public:
     ~ContactFetcherPrivate();
 
     void fetch(int contactId);
-    void fetch(const QContactId &contactId);
     void fetch(const Recipient &recipient);
 
     void checkIfFinishedAsynchronously();
@@ -83,11 +84,6 @@ void ContactFetcherPrivate::fetch(int contactId)
             m_waiting.insert(contactId);
         }
     }
-}
-
-void ContactFetcherPrivate::fetch(const QContactId &contactId)
-{
-    fetch(SeasideCache::internalId(contactId));
 }
 
 void ContactFetcherPrivate::fetch(const Recipient &recipient)
@@ -154,13 +150,6 @@ ContactFetcher::ContactFetcher(QObject *parent)
 }
 
 void ContactFetcher::add(int contactId)
-{
-    Q_D(ContactFetcher);
-    d->fetch(contactId);
-    d->checkIfFinishedAsynchronously();
-}
-
-void ContactFetcher::add(const QContactId &contactId)
 {
     Q_D(ContactFetcher);
     d->fetch(contactId);

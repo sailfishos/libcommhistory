@@ -15,9 +15,6 @@ BuildRequires:  pkgconfig(qtcontacts-sqlite-qt5-extensions) >= 0.3.0
 BuildRequires:  pkgconfig(contactcache-qt5) >= 0.3.0
 BuildRequires:  libphonenumber-devel
 
-%{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
-%{!?qtc_make:%define qtc_make make}
-
 %description
 Library for accessing the communications (IM, SMS and call) history database.
 
@@ -61,9 +58,8 @@ Documentation for libcommhistory
 %setup -q -n %{name}-%{version}
 
 %build
-unset LD_AS_NEEDED
-%qtc_qmake5 "PROJECT_VERSION=%{version}" "PKGCONFIG_LIB=%{_lib}"
-%qtc_make %{?_smp_mflags}
+%qmake5
+%make_build
 
 %install
 %qmake_install

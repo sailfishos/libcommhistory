@@ -117,6 +117,7 @@ HEADERS += \
            callhistory_p.h \
            groupmodel_p.h \
            conversationmodel_p.h \
+           recipient_p.h \
            recipienteventmodel_p.h \
            updatesemitter.h \
            databaseio_p.h \
