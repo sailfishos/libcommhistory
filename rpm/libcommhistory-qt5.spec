@@ -58,7 +58,7 @@ Documentation for libcommhistory
 %setup -q -n %{name}-%{version}
 
 %build
-%qmake5
+%qmake5 "PROJECT_VERSION=%{version}" "PKGCONFIG_LIB=%{_lib}"
 %make_build
 
 %install
