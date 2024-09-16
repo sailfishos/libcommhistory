@@ -35,7 +35,6 @@
 #include <QContactEmailAddress>
 
 #include "recipient_p.h"
-#include "commonutils.h"
 #include "contactresolver.h"
 #include "debug.h"
 

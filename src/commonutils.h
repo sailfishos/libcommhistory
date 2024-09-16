@@ -27,18 +27,13 @@
 
 namespace CommHistory {
 
-const QString RING_ACCOUNT = QStringLiteral("/org/freedesktop/Telepathy/Account/ring/tel");
-
 /*!
- * Whether the given localUid needs phone number comparsions
+ * Whether the given localUid needs phone number comparisons
  *
  * \param localUid Local UID
  * \return true if remote UIDs will be compared as phone numbers
  */
-inline bool localUidComparesPhoneNumbers(const QString &localUid)
-{
-    return localUid.startsWith(RING_ACCOUNT);
-}
+bool localUidComparesPhoneNumbers(const QString &localUid);
 
 /*!
  * Validates and normalizes a phone number by removing extra characters:
@@ -60,19 +55,6 @@ QString normalizePhoneNumber(const QString &number, bool validate);
  * \return Last digits of the number.
  */
 QString minimizePhoneNumber(const QString &number);
-
-/*!
- * Compares the two remote ids. In case of phone numbers, last digits
- * are compared.
- *
- * \param localUid Local UID to determine comparison type
- * \param uid First remote id.
- * \param match Second remote id.
- * \param minimizedComparison Compare numbers in minimized form.
- * \return true if addresses match.
- */
-bool remoteAddressMatch(const QString &localUid, const QString &uid, const QString &match, bool minimizedComparison = false);
-bool remoteAddressMatch(const QString &localUid, const QStringList &uids, const QStringList &match, bool minimizedComparison = false);
 
 }
 

@@ -23,7 +23,6 @@
 #include "contactfetcher.h"
 #include "contactresolver.h"
 
-#include "commonutils.h"
 #include "debug.h"
 
 #include <seasidecache.h>

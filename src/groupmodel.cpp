@@ -22,7 +22,6 @@
 
 #include <QtDBus/QtDBus>
 
-#include "commonutils.h"
 #include "groupmodel.h"
 #include "groupmodel_p.h"
 #include "eventmodel.h"

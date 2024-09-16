@@ -108,6 +108,7 @@ HEADERS += \
            $$PUBLIC_HEADERS \
            commhistorydatabase.h \
            adaptor.h \
+           commonutils_p.h \
            dbus_p.h \
            debug.h \
            eventmodel_p.h \

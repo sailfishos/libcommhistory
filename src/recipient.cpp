@@ -24,6 +24,7 @@
 #include "recipient_p.h"
 
 #include "commonutils.h"
+#include "commonutils_p.h"
 
 #include <QSet>
 #include <QHash>
@@ -65,7 +66,7 @@ QPair<QString, QString> makeUidPair(const QString &localUid, const QString &remo
     // If localUid is for phone number, use prefix alone to find the RecipientPrivate
     // this avoids problems with different SIMs etc.
     const bool usesPhoneNumberComparison = CommHistory::localUidComparesPhoneNumbers(localUid);
-    return qMakePair(usesPhoneNumberComparison ? CommHistory::RING_ACCOUNT : localUid,
+    return qMakePair(usesPhoneNumberComparison ? RING_ACCOUNT : localUid,
                      ::minimizeRemoteUid(remoteUid, usesPhoneNumberComparison));
 }
 

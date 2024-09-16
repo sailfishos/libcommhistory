@@ -54,7 +54,6 @@
 #include "event.h"
 #include "recipient.h"
 #include "common.h"
-#include "commonutils.h"
 #include "contactlistener.h"
 #include "commhistorydatabasepath.h"
 
