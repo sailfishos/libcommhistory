@@ -92,7 +92,7 @@ void RecipientEventModelTest::testGetRecipientEvents()
     QCOMPARE(event.recipients().first(), testRecipient);
 
     // Reset to an unused recipient
-    model.setRecipients(Recipient(RING_ACCOUNT, "not-a-real-number"));
+    model.setRecipients(Recipient::fromPhoneNumber("not-a-real-number"));
     QVERIFY(model.getEvents());
     QTRY_VERIFY(model.isReady());
     QCOMPARE(model.rowCount(), 0);
@@ -178,7 +178,7 @@ void RecipientEventModelTest::testGetContactEvents()
     QCOMPARE(event.contactName(), QString("Correspondent"));
 
     // Reset to an unused recipient
-    model.setRecipients(Recipient(RING_ACCOUNT, "not-a-real-number"));
+    model.setRecipients(Recipient::fromPhoneNumber("not-a-real-number"));
     QVERIFY(model.getEvents());
     QTRY_VERIFY(model.isReady());
     QCOMPARE(model.rowCount(), 0);

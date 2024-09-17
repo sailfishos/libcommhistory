@@ -96,7 +96,7 @@ void GroupModelProfileTest::prepare()
     while(gi < groups) {
         Group grp;
         grp.setLocalUid(RING_ACCOUNT);
-        grp.setRecipients(RecipientList::fromUids(RING_ACCOUNT, QStringList() << remoteUids.at(contactIndices.at(gi))));
+        grp.setRecipients(RecipientList::fromPhoneNumbers(QStringList() << remoteUids.at(contactIndices.at(gi))));
 
         QVERIFY(addModel.addGroup(grp));
         groupList << grp;

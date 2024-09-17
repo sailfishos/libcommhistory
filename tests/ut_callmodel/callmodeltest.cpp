@@ -1055,7 +1055,7 @@ void CallModelTest::testMinimizedPhone()
     for (int i = 0; i < model.rowCount(); ++i) {
         Event e = model.event(model.index(i, 0));
         QCOMPARE(e.recipients().count(), 1);
-        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone00));
+        QCOMPARE(e.recipients().at(0), Recipient::fromPhoneNumber(phone00));
         QCOMPARE(e.recipients().at(0).isContactResolved(), true);
         QCOMPARE(e.recipients().at(0).contactId(), user00id);
         QCOMPARE(e.recipients().at(0).contactName(), user00);
@@ -1068,7 +1068,7 @@ void CallModelTest::testMinimizedPhone()
     for (int i = 0; i < model.rowCount(); ++i) {
         Event e = model.event(model.index(i, 0));
         QCOMPARE(e.recipients().count(), 1);
-        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QCOMPARE(e.recipients().at(0), Recipient::fromPhoneNumber(phone99));
         QTRY_COMPARE(e.recipients().at(0).contactId(), user99id);
         QCOMPARE(e.recipients().at(0).contactName(), user99);
     }
@@ -1080,7 +1080,7 @@ void CallModelTest::testMinimizedPhone()
     for (int i = 0; i < model.rowCount(); ++i) {
         Event e = model.event(model.index(i, 0));
         QCOMPARE(e.recipients().count(), 1);
-        QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone99));
+        QCOMPARE(e.recipients().at(0), Recipient::fromPhoneNumber(phone99));
         QTRY_COMPARE(e.recipients().at(0).contactId(), 0);
         QCOMPARE(e.recipients().at(0).contactName(), QString());
     }
@@ -1118,13 +1118,13 @@ void CallModelTest::testMinimizedEmpty()
     Event e;
     e = model.event(model.index(0, 0));
     QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone2));
+    QCOMPARE(e.recipients().at(0), Recipient::fromPhoneNumber(phone2));
     QCOMPARE(e.recipients().at(0).isContactResolved(), true);
     QCOMPARE(e.recipients().at(0).contactId(), 0);
 
     e = model.event(model.index(1, 0));
     QCOMPARE(e.recipients().count(), 1);
-    QCOMPARE(e.recipients().at(0), Recipient(RING_ACCOUNT, phone1));
+    QCOMPARE(e.recipients().at(0), Recipient::fromPhoneNumber(phone1));
     QCOMPARE(e.recipients().at(0).isContactResolved(), true);
     QCOMPARE(e.recipients().at(0).contactId(), 0);
 }

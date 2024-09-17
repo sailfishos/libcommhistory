@@ -977,7 +977,7 @@ void GroupModelTest::resolveContact()
     QStringList uids;
     uids << phoneNumber;
     grp.setLocalUid(RING_ACCOUNT);
-    grp.setRecipients(RecipientList::fromUids(RING_ACCOUNT, uids));
+    grp.setRecipients(RecipientList::fromPhoneNumbers(uids));
 
     int groupCount = groupModel.rowCount();
 
@@ -1224,7 +1224,7 @@ void GroupModelTest::changeRemoteUid()
         Group g = groupModel.group(groupModel.index(i, 0));
         if (g.id() == group.id()) {
             QCOMPARE(g.recipients().size(), 1);
-            QCOMPARE(g.recipients().containsMatch(Recipient(RING_ACCOUNT, oldRemoteUid)), true);
+            QCOMPARE(g.recipients().containsMatch(Recipient::fromPhoneNumber(oldRemoteUid)), true);
             groupsFound++;
         }
     }
@@ -1241,8 +1241,8 @@ void GroupModelTest::changeRemoteUid()
 
     group = groupModel.group(groupModel.index(0, 0));
     QCOMPARE(group.recipients().size(), 2);
-    QCOMPARE(group.recipients().containsMatch(Recipient(RING_ACCOUNT, newRemoteUid)), true);
-    QCOMPARE(group.recipients().containsMatch(Recipient(RING_ACCOUNT, oldRemoteUid)), true);
+    QCOMPARE(group.recipients().containsMatch(Recipient::fromPhoneNumber(newRemoteUid)), true);
+    QCOMPARE(group.recipients().containsMatch(Recipient::fromPhoneNumber(oldRemoteUid)), true);
 
     modelReady.clear();
     QVERIFY(groupModel.getGroups());
@@ -1251,9 +1251,9 @@ void GroupModelTest::changeRemoteUid()
     group = groupModel.group(groupModel.index(0, 0));
     QEXPECT_FAIL("", "Group modifications are not currently stored to database", Continue);
     QCOMPARE(group.recipients().size(), 2);
-    QCOMPARE(group.recipients().containsMatch(Recipient(RING_ACCOUNT, oldRemoteUid)), true);
+    QCOMPARE(group.recipients().containsMatch(Recipient::fromPhoneNumber(oldRemoteUid)), true);
     QEXPECT_FAIL("", "Group modifications are not currently stored to database", Continue);
-    QCOMPARE(group.recipients().containsMatch(Recipient(RING_ACCOUNT, newRemoteUid)), true);
+    QCOMPARE(group.recipients().containsMatch(Recipient::fromPhoneNumber(newRemoteUid)), true);
 
     deleteTestContact(oldContactId, &contactChangeListener);
     deleteTestContact(newContactId, &contactChangeListener);

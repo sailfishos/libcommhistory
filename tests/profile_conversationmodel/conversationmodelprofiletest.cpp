@@ -97,7 +97,7 @@ void ConversationModelProfileTest::prepare()
     while(gi < contacts) {
         Group grp;
         grp.setLocalUid(RING_ACCOUNT);
-        grp.setRecipients(RecipientList::fromUids(RING_ACCOUNT, QStringList() << remoteUids.at(contactIndices.at(gi))));
+        grp.setRecipients(RecipientList::fromPhoneNumbers(QStringList() << remoteUids.at(contactIndices.at(gi))));
 
         QVERIFY(groupModel.addGroup(grp));
         groupList << grp;
@@ -134,7 +134,7 @@ void ConversationModelProfileTest::prepare()
         e.setStartTime(when.addSecs(ei));
         e.setEndTime(when.addSecs(ei));
         e.setLocalUid(RING_ACCOUNT);
-        e.setRecipients(Recipient(RING_ACCOUNT, remoteUids.at(index)));
+        e.setRecipients(Recipient::fromPhoneNumber(remoteUids.at(index)));
         e.setFreeText(randomMessage(qrand() % 49 + 1)); // Max 50 words / message
         e.setIsDraft(false);
         e.setIsMissedCall(false);

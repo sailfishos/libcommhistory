@@ -397,7 +397,7 @@ void EventModelTest::testDeleteEventVCard()
     event.setStartTime(QDateTime::currentDateTime());
     event.setEndTime(QDateTime::currentDateTime());
     event.setLocalUid(RING_ACCOUNT);
-    event.setRecipients(Recipient(RING_ACCOUNT, "555123456"));
+    event.setRecipients(Recipient::fromPhoneNumber("555123456"));
     event.setFreeText("vcard test");
     event.setFromVCard(VCARD_FILE_1, VCARD_LABEL_1);
 
@@ -504,7 +504,7 @@ void EventModelTest::testDeleteEventMmsParts()
     // test vcard resource deletion
     Event event;
     event.setLocalUid(RING_ACCOUNT);
-    event.setRecipients(Recipient(RING_ACCOUNT, "0506661234"));
+    event.setRecipients(Recipient::fromPhoneNumber("0506661234"));
     event.setType(Event::MMSEvent);
     event.setDirection(Event::Outbound);
     event.setStartTime(QDateTime::currentDateTime());

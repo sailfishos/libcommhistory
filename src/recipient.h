@@ -126,6 +126,10 @@ public:
      */
     static PhoneNumberMatchDetails phoneNumberMatchDetails(const QString &s);
 
+    /* Create a Recipient from a given phone number
+     */
+    static Recipient fromPhoneNumber(const QString &number);
+
     /* Represent the current recipient as suitable for phone number matching
      */
     PhoneNumberMatchDetails toPhoneNumberMatchDetails() const;
@@ -145,6 +149,7 @@ public:
     RecipientList(const QList<Recipient> &recipients);
 
     static RecipientList fromUids(const QString &localUid, const QStringList &remoteUids);
+    static RecipientList fromPhoneNumbers(const QStringList &phoneNumbers);
     static RecipientList fromContact(int contactId);
 
     bool isEmpty() const;

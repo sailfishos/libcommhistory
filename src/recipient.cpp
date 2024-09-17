@@ -105,6 +105,11 @@ Recipient::Recipient(const WeakRecipient &weak)
         d = *sharedNullRecipient;
 }
 
+Recipient Recipient::fromPhoneNumber(const QString &number)
+{
+    return Recipient(RING_ACCOUNT, number);
+}
+
 Recipient &Recipient::operator=(const Recipient &o)
 {
     d = o.d;
@@ -405,6 +410,11 @@ RecipientList RecipientList::fromUids(const QString &localUid, const QStringList
     return re;
 }
 
+RecipientList RecipientList::fromPhoneNumbers(const QStringList &phoneNumbers)
+{
+    return RecipientList::fromUids(RING_ACCOUNT, phoneNumbers);
+}
+
 RecipientList RecipientList::fromContact(int contactId)
 {
     return RecipientPrivate::recipientListFromCacheItem(SeasideCache::itemById(contactId, false));
@@ -424,7 +434,7 @@ RecipientList RecipientPrivate::recipientListFromCacheItem(const SeasideCache::C
         }
         foreach (const QContactPhoneNumber &phoneNumber, item->contact.details<QContactPhoneNumber>()) {
             // Match with recipients calling from any SIM
-            re << Recipient(RING_ACCOUNT, phoneNumber.number());
+            re << Recipient::fromPhoneNumber(phoneNumber.number());
         }
     }
     return re;

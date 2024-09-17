@@ -103,9 +103,7 @@ void DeclarativeRecipientEventModel::reload()
     if (m_contactId > 0) {
         setRecipients(m_contactId);
     } else if (!m_remoteUid.isEmpty()) {
-        // Use the generic RING_ACCOUNT because we don't care about which SIM
-        // the call was received on.
-        setRecipients(Recipient(RING_ACCOUNT, m_remoteUid));
+        setRecipients(Recipient::fromPhoneNumber(m_remoteUid));
     }
 
     getEvents();
