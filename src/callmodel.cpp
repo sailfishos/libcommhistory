@@ -31,7 +31,6 @@
 #include "eventmodel_p.h"
 #include "callmodel.h"
 #include "event.h"
-#include "commonutils.h"
 #include "debug.h"
 
 namespace {

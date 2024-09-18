@@ -31,7 +31,7 @@
  */
 
 #include "declarativerecipienteventmodel.h"
-#include "commonutils.h"
+#include "commonutils_p.h"
 
 #include <QQmlInfo>
 

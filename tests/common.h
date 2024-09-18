@@ -24,6 +24,7 @@
 #define COMMON_H
 
 #include "commonutils.h"
+#include "commonutils_p.h"
 #include "eventmodel.h"
 #include "event.h"
 #include "group.h"

@@ -26,6 +26,8 @@
 #include "databaseio_p.h"
 #include "eventmodel_p.h"
 #include "recipienteventmodel_p.h"
+#include "commonutils.h"
+#include "commonutils_p.h"
 
 #include <QSqlQuery>
 

@@ -27,7 +27,7 @@
 #include "eventmodel.h"
 #include "eventmodel_p.h"
 #include "adaptor.h"
-#include "commonutils.h"
+#include "commonutils_p.h"
 #include "event.h"
 #include "eventtreeitem.h"
 #include "debug.h"
@@ -293,8 +293,8 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(event.subject());
     case AccountRole: {
         QString localUid = event.localUid();
-        if (localUid.startsWith(CommHistory::RING_ACCOUNT)) {
-            return QVariant::fromValue(CommHistory::RING_ACCOUNT);
+        if (localUid.startsWith(RING_ACCOUNT)) {
+            return QVariant::fromValue(RING_ACCOUNT);
         }
         return QVariant::fromValue(localUid);
     }

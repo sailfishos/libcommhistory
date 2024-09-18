@@ -24,7 +24,6 @@
 #include <QtDBus/QtDBus>
 #include <QSqlQuery>
 
-#include "commonutils.h"
 #include "contactresolver.h"
 #include "databaseio.h"
 #include "databaseio_p.h"

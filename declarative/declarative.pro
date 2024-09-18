@@ -5,7 +5,7 @@ TARGET = commhistory-declarative
 PLUGIN_IMPORT_PATH = org/nemomobile/commhistory
 VERSION = $$PROJECT_VERSION
 
-INCLUDEPATH += ../src 
+INCLUDEPATH += ../src
 
 SOURCES += src/plugin.cpp \
     src/callproxymodel.cpp \
@@ -28,7 +28,7 @@ HEADERS += src/constants.h \
     src/draftevent.h
 
 TEMPLATE = lib
-CONFIG += qt plugin hide_symbols 
+CONFIG += qt plugin hide_symbols
 QT += qml contacts dbus
 QT -= gui
 

@@ -21,6 +21,7 @@
 ******************************************************************************/
 
 #include "commonutils.h"
+#include "commonutils_p.h"
 #include "libcommhistoryexport.h"
 
 #include <qtcontacts-extensions.h>
@@ -41,6 +42,10 @@ int phoneNumberMatchLength()
 }
 
 namespace CommHistory {
+LIBCOMMHISTORY_EXPORT bool localUidComparesPhoneNumbers(const QString &localUid)
+{
+    return localUid.startsWith(RING_ACCOUNT);
+}
 
 LIBCOMMHISTORY_EXPORT QString normalizePhoneNumber(const QString &number, bool validate)
 {
@@ -55,68 +60,6 @@ LIBCOMMHISTORY_EXPORT QString normalizePhoneNumber(const QString &number, bool v
 LIBCOMMHISTORY_EXPORT QString minimizePhoneNumber(const QString &number)
 {
     return QtContactsSqliteExtensions::minimizePhoneNumber(number, phoneNumberMatchLength());
-}
-
-LIBCOMMHISTORY_EXPORT bool remoteAddressMatch(const QString &localUid, const QString &uid, const QString &match, bool minimizedComparison)
-{
-    if (localUidComparesPhoneNumbers(localUid)) {
-        QString phone, phoneMatch;
-        if (minimizedComparison) {
-            phone = minimizePhoneNumber(uid);
-            phoneMatch = minimizePhoneNumber(match);
-        } else {
-            phone = normalizePhoneNumber(uid, false);
-            phoneMatch = normalizePhoneNumber(match, false);
-        }
-
-        // If normalization returned an empty number (no digits), compare the input instead
-        if (phone.isEmpty())
-            phone = uid;
-        if (phoneMatch.isEmpty())
-            phoneMatch = match;
-
-        return phoneMatch.compare(phone, Qt::CaseInsensitive) == 0;
-    } else {
-        return match.compare(uid, Qt::CaseInsensitive) == 0;
-    }
-}
-
-LIBCOMMHISTORY_EXPORT bool remoteAddressMatch(const QString &localUid, const QStringList &originalUids, const QStringList &originalMatches, bool minimizedComparison)
-{
-    if (originalUids.size() != originalMatches.size())
-        return false;
-
-    QStringList uids;
-    foreach (QString uid, originalUids) {
-        if (localUidComparesPhoneNumbers(localUid)) {
-            QString number = minimizedComparison ? minimizePhoneNumber(uid) : normalizePhoneNumber(uid, false);
-            if (!number.isEmpty())
-                uid = number;
-        }
-
-        uids.append(uid);
-    }
-
-    QStringList matches;
-    foreach (QString match, originalMatches) {
-        if (localUidComparesPhoneNumbers(localUid)) {
-            QString number = minimizedComparison ? minimizePhoneNumber(match) : normalizePhoneNumber(match, false);
-            if (!number.isEmpty())
-                match = number;
-        }
-
-        matches.append(match);
-    }
-
-    uids.sort(Qt::CaseInsensitive);
-    matches.sort(Qt::CaseInsensitive);
-
-    for (int i = 0; i < uids.size(); i++) {
-        if (uids[i].compare(matches[i], Qt::CaseInsensitive) != 0)
-            return false;
-    }
-
-    return true;
 }
 
 }

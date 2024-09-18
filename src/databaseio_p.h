@@ -34,7 +34,6 @@
 #include <QSqlDatabase>
 
 #include "event.h"
-#include "commonutils.h"
 
 namespace CommHistory {
 

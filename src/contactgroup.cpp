@@ -22,7 +22,6 @@
 
 #include "contactgroup.h"
 #include "updatesemitter.h"
-#include "commonutils.h"
 #include "databaseio.h"
 #include "debug.h"
 

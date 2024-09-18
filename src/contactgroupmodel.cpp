@@ -27,7 +27,6 @@
 #include "contactgroupmodel.h"
 #include "groupmanager.h"
 #include "contactgroup.h"
-#include "commonutils.h"
 #include "debug.h"
 
 using namespace CommHistory;
