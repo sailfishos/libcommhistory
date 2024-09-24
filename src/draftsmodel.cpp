@@ -23,7 +23,6 @@
 #include "draftsmodel_p.h"
 #include "databaseio_p.h"
 #include "commhistorydatabase.h"
-#include "debug.h"
 #include <QSqlQuery>
 
 namespace CommHistory {

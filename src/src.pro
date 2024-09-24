@@ -110,7 +110,7 @@ HEADERS += \
            adaptor.h \
            commonutils_p.h \
            dbus_p.h \
-           debug.h \
+           debug_p.h \
            eventmodel_p.h \
            eventtreeitem.h \
            callstatistics_p.h \
@@ -135,6 +135,7 @@ SOURCES += commonutils.cpp \
            groupmodel.cpp \
            group.cpp \
            adaptor.cpp \
+           debug.cpp \
            event.cpp \
            messagepart.cpp \
            mmsreadreportmodel.cpp \

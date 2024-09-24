@@ -21,7 +21,6 @@
 ******************************************************************************/
 
 #include <QtDBus/QtDBus>
-#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 
@@ -31,7 +30,7 @@
 #include "dbus_p.h"
 #include "commhistorydatabase.h"
 #include "databaseio_p.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace {
 static CommHistory::Event::PropertySet unusedProperties = CommHistory::Event::PropertySet()
@@ -99,7 +98,7 @@ void ConversationModelPrivate::groupsDeletedSlot(const QList<int> &groupIds)
 
 bool ConversationModelPrivate::acceptsEvent(const Event &event) const
 {
-    DEBUG() << Q_FUNC_INFO << event.id();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << event.id();
     if ((event.type() != Event::IMEvent
          && event.type() != Event::SMSEvent
          && event.type() != Event::MMSEvent
@@ -120,7 +119,7 @@ bool ConversationModelPrivate::acceptsEvent(const Event &event) const
 
     if (!allGroups && !filterGroupIds.contains(event.groupId())) return false;
 
-    DEBUG() << Q_FUNC_INFO << ": true";
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ": true";
     return true;
 }
 

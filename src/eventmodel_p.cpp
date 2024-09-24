@@ -34,7 +34,7 @@
 #include "event.h"
 #include "eventtreeitem.h"
 #include "commonutils.h"
-#include "debug.h"
+#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -104,7 +104,7 @@ EventModelPrivate::EventModelPrivate(EventModel *model)
 
 EventModelPrivate::~EventModelPrivate()
 {
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
 
     delete eventRootItem;
 }
@@ -154,7 +154,7 @@ QSqlQuery EventModelPrivate::prepareQuery(const QString &q, int limit, int offse
 
 bool EventModelPrivate::executeQuery(QSqlQuery &query)
 {
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
 
     isReady = false;
 
@@ -202,7 +202,7 @@ bool EventModelPrivate::fillModel(int start, int end, QList<CommHistory::Event> 
     }
 
     Q_Q(EventModel);
-    DEBUG() << Q_FUNC_INFO << ": read" << events.count() << "events";
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ": read" << events.count() << "events";
 
     q->beginInsertRows(QModelIndex(), q->rowCount(), q->rowCount() + events.count() - 1);
     foreach (const Event &event, events) {
@@ -241,7 +241,7 @@ bool EventModelPrivate::fillModel(QList<CommHistory::Event> events, bool resolve
 
 void EventModelPrivate::clearEvents()
 {
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
     delete eventRootItem;
     eventRootItem = new EventTreeItem(Event());
 }
@@ -261,7 +261,7 @@ void EventModelPrivate::setBufferInsertions(bool buffer)
 
 void EventModelPrivate::addToModel(const QList<Event> &events, bool sync)
 {
-    DEBUG() << Q_FUNC_INFO << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << events.count();
 
     if (bufferInsertions) {
         // Queue events for later processing
@@ -366,7 +366,7 @@ void EventModelPrivate::onDemandResolverFinished()
 void EventModelPrivate::modifyInModel(Event &event)
 {
     Q_Q(EventModel);
-    DEBUG() << Q_FUNC_INFO << event.id();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << event.id();
 
     QModelIndex index = findEvent(event.id());
     if (index.isValid()) {
@@ -401,7 +401,7 @@ void EventModelPrivate::modifyInModel(Event &event)
 void EventModelPrivate::deleteFromModel(int id)
 {
     Q_Q(EventModel);
-    DEBUG() << Q_FUNC_INFO << id;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << id;
     QModelIndex index = findEvent(id);
     if (index.isValid()) {
         q->beginRemoveRows(index.parent(), index.row(), index.row());
@@ -414,7 +414,7 @@ void EventModelPrivate::deleteFromModel(int id)
 
 void EventModelPrivate::eventsReceivedSlot(int start, int end, QList<Event> events)
 {
-    DEBUG() << Q_FUNC_INFO << ":" << start << end << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << start << end << events.count();
 
     if (events.isEmpty()) {
         // Empty results are still "ready"
@@ -453,7 +453,7 @@ void EventModelPrivate::receiveResolverFinished()
 
 void EventModelPrivate::modelUpdatedSlot(bool successful)
 {
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
 
     isReady = true;
     emit modelReady(successful);
@@ -461,7 +461,7 @@ void EventModelPrivate::modelUpdatedSlot(bool successful)
 
 void EventModelPrivate::eventsAddedSlot(const QList<Event> &events)
 {
-    DEBUG() << Q_FUNC_INFO << ":" << events.count() << "events";
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << events.count() << "events";
 
     foreach (const Event &event, events) {
         QModelIndex index = findEvent(event.id());
@@ -475,7 +475,7 @@ void EventModelPrivate::eventsAddedSlot(const QList<Event> &events)
 
 void EventModelPrivate::eventsUpdatedSlot(const QList<Event> &events)
 {
-    DEBUG() << Q_FUNC_INFO << ":" << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << events.count();
 
     foreach (const Event &event, events) {
         QModelIndex index = findEvent(event.id());
@@ -494,7 +494,7 @@ void EventModelPrivate::eventsUpdatedSlot(const QList<Event> &events)
 
 void EventModelPrivate::eventDeletedSlot(int id)
 {
-    DEBUG() << Q_FUNC_INFO << ":" << id;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << id;
 
     deleteFromModel(id);
 }

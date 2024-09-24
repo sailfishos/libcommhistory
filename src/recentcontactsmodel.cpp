@@ -25,7 +25,6 @@
 #include "commhistorydatabase.h"
 #include "eventmodel_p.h"
 #include "contactlistener.h"
-#include "debug.h"
 
 #include <seasidecache.h>
 

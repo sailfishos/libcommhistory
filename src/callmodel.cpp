@@ -21,7 +21,6 @@
 ******************************************************************************/
 
 #include <QtDBus/QtDBus>
-#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 
@@ -31,7 +30,7 @@
 #include "eventmodel_p.h"
 #include "callmodel.h"
 #include "event.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace {
 CommHistory::Event::PropertySet unusedProperties = CommHistory::Event::PropertySet()
@@ -135,7 +134,7 @@ bool CallModelPrivate::eventMatchesFilter(const Event &event) const
 
 bool CallModelPrivate::acceptsEvent(const Event &event) const
 {
-    DEBUG() << Q_FUNC_INFO << event.id();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << event.id();
     if (event.type() != Event::CallEvent || !eventMatchesFilter(event)) {
         return false;
     }
@@ -152,7 +151,7 @@ void CallModelPrivate::eventsReceivedSlot(int start, int end, QList<CommHistory:
 {
     Q_Q(CallModel);
 
-    DEBUG() << Q_FUNC_INFO << start << end << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << start << end << events.count();
 
     if ((sortBy != CallModel::SortByContact && sortBy != CallModel::SortByContactAndType)
             || updatedGroups.isEmpty())
@@ -172,7 +171,7 @@ void CallModelPrivate::eventsReceivedSlot(int start, int end, QList<CommHistory:
             const Event &rowEvent(eventRootItem->eventAt(row));
             if (rowEvent.id() == event.id()
                 || belongToSameGroup(rowEvent, event)) {
-                DEBUG() << "replacing row" << row;
+                qCDebug(lcCommHistory) << "replacing row" << row;
                 replaced = true;
                 eventRootItem->child(row)->setEvent(event);
                 emitDataChanged(row, eventRootItem->child(row));
@@ -185,7 +184,7 @@ void CallModelPrivate::eventsReceivedSlot(int start, int end, QList<CommHistory:
                 for (int dupe = row + 1; dupe < eventRootItem->childCount(); dupe++) {
                     const Event &e = eventRootItem->eventAt(dupe);
                     if (belongToSameGroup(e, event)) {
-                        DEBUG() << Q_FUNC_INFO << "remove" << dupe << e.toString();
+                        qCDebug(lcCommHistory) << Q_FUNC_INFO << "remove" << dupe << e.toString();
                         emit q->beginRemoveRows(QModelIndex(), dupe, dupe);
                         eventRootItem->removeAt(dupe);
                         emit q->endRemoveRows();
@@ -212,12 +211,12 @@ void CallModelPrivate::eventsReceivedSlot(int start, int end, QList<CommHistory:
     }
 
     if (!updatedGroups.isEmpty()) {
-        DEBUG() << Q_FUNC_INFO << "remaining call groups:" << updatedGroups;
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "remaining call groups:" << updatedGroups;
         // no results for call group means it has been emptied, remove from list
         foreach (QString group, updatedGroups.values()) {
             for (int row = 0; row < eventRootItem->childCount(); row++) {
                 if (DatabaseIOPrivate::makeCallGroupURI(eventRootItem->eventAt(row)) == group) {
-                    DEBUG() << Q_FUNC_INFO << "remove" << row << eventRootItem->eventAt(row).toString();
+                    qCDebug(lcCommHistory) << Q_FUNC_INFO << "remove" << row << eventRootItem->eventAt(row).toString();
                     emit q->beginRemoveRows(QModelIndex(), row, row);
                     eventRootItem->removeAt(row);
                     emit q->endRemoveRows();
@@ -494,7 +493,7 @@ void CallModelPrivate::prependEvents(QList<Event> events, bool resolved)
 void CallModelPrivate::insertEvent(Event event)
 {
     Q_Q(CallModel);
-    DEBUG() << Q_FUNC_INFO << event.toString();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << event.toString();
 
     switch (sortBy) {
         case CallModel::SortByContact:
@@ -599,7 +598,7 @@ void CallModelPrivate::insertEvent(Event event)
 
 void CallModelPrivate::eventsAddedSlot(const QList<Event> &events)
 {
-    DEBUG() << Q_FUNC_INFO << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << events.count();
     // TODO: sorting?
     EventModelPrivate::eventsAddedSlot(events);
 }
@@ -613,7 +612,7 @@ void CallModelPrivate::eventsUpdatedSlot(const QList<Event> &events)
     // reimp from EventModelPrivate, plus additional isVideoCall processing
     QList<Event> additions;
     foreach (const Event &event, events) {
-        DEBUG() << Q_FUNC_INFO << "updated" << event.toString();
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "updated" << event.toString();
         QModelIndex index = findEvent(event.id());
         Event e = event;
 
@@ -642,7 +641,7 @@ void CallModelPrivate::eventsUpdatedSlot(const QList<Event> &events)
     if (!additions.isEmpty())
         addToModel(additions);
 
-    DEBUG() << Q_FUNC_INFO << "updatedGroups" << updatedGroups;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << "updatedGroups" << updatedGroups;
 
     if (!updatedGroups.isEmpty()) {
         /*
@@ -699,7 +698,7 @@ void CallModelPrivate::deleteFromModel(int id)
 
     // if id was not found, do nothing
     if (!index.isValid()) {
-        DEBUG() << Q_FUNC_INFO << "*** Invalid";
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "*** Invalid";
         return;
     }
 
@@ -724,7 +723,7 @@ void CallModelPrivate::deleteFromModel(int id)
             }
         }
 
-        DEBUG() << Q_FUNC_INFO << "*** Top level" << row;
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "*** Top level" << row;
         // if there is no need to regroup the previous and following items,
         // then delete only one row
         if (!isRegroupingNeeded) {
@@ -1105,7 +1104,7 @@ bool CallModel::modifyEvent(Event &event)
         return false;
     }
 
-    DEBUG() << Q_FUNC_INFO << "setting isRead for call group";
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << "setting isRead for call group";
     // isRead has changed, modify the event and set isRead for nested events
     bool isRead = event.isRead();
 
@@ -1138,7 +1137,7 @@ bool CallModel::deleteEvent(int id)
         return EventModel::deleteEvent(id);
     }
 
-    DEBUG() << Q_FUNC_INFO << id;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << id;
     QModelIndex index = d->findEvent(id);
     if (!index.isValid())
         return false;

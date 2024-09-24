@@ -21,13 +21,12 @@
 ******************************************************************************/
 
 #include <QtDBus/QtDBus>
-#include <QDebug>
 #include <QStringList>
 
 #include "contactgroupmodel.h"
 #include "groupmanager.h"
 #include "contactgroup.h"
-#include "debug.h"
+#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -416,7 +415,7 @@ QVariant ContactGroupModel::data(const QModelIndex &index, int role) const
     case SubscriberIdentityRole:
         return g->subscriberIdentity();
     default:
-        DEBUG() << "ContactGroupModel::data: invalid role??" << role;
+        qCWarning(lcCommHistory) << "ContactGroupModel::data: invalid role??" << role;
         return QVariant();
     }
 }

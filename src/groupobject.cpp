@@ -26,7 +26,7 @@
 #include "groupobject.h"
 #include "groupmanager.h"
 #include "event.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace CommHistory {
 
@@ -439,7 +439,7 @@ void GroupObject::setLastModifiedT(quint32 modified)
 bool GroupObject::markAsRead()
 {
     if (!d->manager) {
-        DEBUG() << Q_FUNC_INFO << "No manager for object instance";
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "No manager for object instance";
         return false;
     }
 
@@ -449,7 +449,7 @@ bool GroupObject::markAsRead()
 bool GroupObject::deleteGroup()
 {
     if (!d->manager) {
-        DEBUG() << Q_FUNC_INFO << "No manager for object instance";
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "No manager for object instance";
         return false;
     }
 
