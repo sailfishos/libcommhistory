@@ -24,7 +24,6 @@
 #include "contactlistener.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 
 #include <qtcontacts-extensions.h>
 
@@ -36,7 +35,7 @@
 
 #include "recipient_p.h"
 #include "contactresolver.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace CommHistory {
 
@@ -187,7 +186,7 @@ void ContactListenerPrivate::itemUpdated(SeasideCache::CacheItem *item)
     // Check that all recipients resolved to this contact still match
     foreach (const Recipient &recipient, Recipient::recipientsForContact(item->iid)) {
         if (!recipientMatchesDetails(recipient, addresses, phoneNumbers)) {
-            DEBUG() << "Recipient" << recipient.remoteUid() << "no longer matches contact" << item->iid;
+            qCDebug(lcCommHistory) << "Recipient" << recipient.remoteUid() << "no longer matches contact" << item->iid;
             recipient.setUnresolved();
 
             // Try to resolve again to find a new match
@@ -202,7 +201,7 @@ void ContactListenerPrivate::itemUpdated(SeasideCache::CacheItem *item)
     // Check all recipients that resolved to no match against these addresses
     foreach (const Recipient &recipient, Recipient::recipientsForContact(0)) {
         if (recipientMatchesDetails(recipient, addresses, phoneNumbers)) {
-            DEBUG() << "Recipient" << recipient << "now resolves to updated contact" << item->iid;
+            qCDebug(lcCommHistory) << "Recipient" << recipient << "now resolves to updated contact" << item->iid;
             RecipientPrivate::setResolved(&recipient, item);
             contactChanged.append(recipient);
         }
@@ -221,7 +220,7 @@ void ContactListenerPrivate::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
     QList<Recipient> recipients = Recipient::recipientsForContact(item->iid);
     if (!recipients.isEmpty()) {
         foreach (const Recipient &recipient, recipients) {
-            DEBUG() << "Recipient" << recipient << "matched removed contact" << item->iid;
+            qCDebug(lcCommHistory) << "Recipient" << recipient << "matched removed contact" << item->iid;
         }
 
         const bool retryPending(!unresolvedRecipients.isEmpty());

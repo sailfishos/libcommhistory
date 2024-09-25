@@ -33,7 +33,7 @@
 #include "sharedbackgroundthread.h"
 #include "singleeventmodel.h"
 #include <QTimer>
-#include "debug.h"
+#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -147,7 +147,7 @@ int DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStri
         return -1;
     }
 
-    DEBUG() << Q_FUNC_INFO << groupId << localUid << remoteUids << text;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groupId << localUid << remoteUids << text;
     Event event(outgoingEvent(groupId, localUid, remoteUids, text));
     EventModel model;
     if (model.addEvent(event))
@@ -184,7 +184,7 @@ void DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStr
         return;
     }
 
-    DEBUG() << Q_FUNC_INFO << groupId << localUid << remoteUids << text;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groupId << localUid << remoteUids << text;
     if (QThread *thread = threadInstance.data()) {
         EventWriter *writer = new EventWriter(outgoingEvent(groupId, localUid, remoteUids, text), callback);
         writer->moveToThread(thread);
@@ -233,7 +233,7 @@ int DeclarativeGroupManager::ensureGroupExists(const QString &localUid, const QS
         g.setLocalUid(localUid);
         g.setRecipients(RecipientList::fromUids(localUid, remoteUids));
         g.setChatType(Group::ChatTypeP2P);
-        DEBUG() << Q_FUNC_INFO << "Creating group for" << localUid << remoteUids;
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "Creating group for" << localUid << remoteUids;
         if (!addGroup(g)) {
             qWarning() << Q_FUNC_INFO << "Failed creating group";
             return -1;

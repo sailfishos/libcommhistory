@@ -28,7 +28,7 @@
 #include "group.h"
 #include "groupmanager.h"
 #include "groupobject.h"
-#include "debug.h"
+#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -139,11 +139,11 @@ void GroupModelPrivate::groupUpdated(GroupObject *group)
             break;
     }
 
-    DEBUG() << Q_FUNC_INFO << index << newIndex;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << index << newIndex;
 
     if (newIndex != index) {
         q->beginMoveRows(QModelIndex(), index, index, QModelIndex(), newIndex > index ? newIndex + 1 : newIndex);
-        DEBUG() << Q_FUNC_INFO << "move" << index << newIndex;
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "move" << index << newIndex;
         groups.move(index, newIndex);
         q->endMoveRows();
     }
@@ -301,7 +301,7 @@ QVariant GroupModel::data(const QModelIndex &index, int role) const
     case StartTimeRole:
         return QVariant::fromValue(group->startTime());
     default:
-        DEBUG() << "Group::data: invalid role??" << role;
+        qCWarning(lcCommHistory) << "Group::data: invalid role??" << role;
         return QVariant();
     }
 }

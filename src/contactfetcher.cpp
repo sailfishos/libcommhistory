@@ -23,8 +23,6 @@
 #include "contactfetcher.h"
 #include "contactresolver.h"
 
-#include "debug.h"
-
 #include <seasidecache.h>
 
 using namespace CommHistory;

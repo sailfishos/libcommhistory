@@ -34,7 +34,7 @@
 #include "event.h"
 #include "dbus_p.h"
 #include "contactlistener.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace {
 
@@ -196,7 +196,7 @@ void GroupManagerPrivate::add(const Group &group)
 {
     Q_Q(GroupManager);
 
-    DEBUG() << Q_FUNC_INFO << ": added" << group.toString();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ": added" << group.toString();
 
     if (!groups.contains(group.id())) {
         GroupObject *go = new GroupObject(group, q);
@@ -248,7 +248,7 @@ void GroupManagerPrivate::modifyInModel(Group &group, bool query)
     }
 
     emit q->groupUpdated(go);
-    DEBUG() << Q_FUNC_INFO << ": updated" << go->toString();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << ": updated" << go->toString();
 }
 
 void GroupManagerPrivate::resolve(GroupObject &group)
@@ -272,7 +272,7 @@ ContactResolver *GroupManagerPrivate::resolver()
 void GroupManagerPrivate::eventsAddedSlot(const QList<Event> &events)
 {
     Q_Q(GroupManager);
-    DEBUG() << Q_FUNC_INFO << events.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << events.count();
 
     foreach (const Event &event, events) {
         // statusmessages are not shown in group model
@@ -286,7 +286,7 @@ void GroupManagerPrivate::eventsAddedSlot(const QList<Event> &events)
             continue;
 
         if (event.endTimeT() >= go->endTimeT()) {
-            DEBUG() << Q_FUNC_INFO << ": updating group" << go->id();
+            qCDebug(lcCommHistory) << Q_FUNC_INFO << ": updating group" << go->id();
             go->setLastEventId(event.id());
             if (event.type() == Event::MMSEvent) {
                 go->setLastMessageText(event.subject().isEmpty() ? event.freeText() : event.subject());
@@ -311,7 +311,7 @@ void GroupManagerPrivate::eventsAddedSlot(const QList<Event> &events)
 
 void GroupManagerPrivate::groupsAddedSlot(const QList<CommHistory::Group> &addedGroups)
 {
-    DEBUG() << Q_FUNC_INFO << addedGroups.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << addedGroups.count();
 
     QList<Group> newGroups;
 
@@ -328,7 +328,7 @@ void GroupManagerPrivate::groupsAddedSlot(const QList<CommHistory::Group> &added
 
 void GroupManagerPrivate::groupsUpdatedSlot(const QList<int> &groupIds)
 {
-    DEBUG() << Q_FUNC_INFO << groupIds.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groupIds.count();
 
     foreach (int id, groupIds) {
         Group g;
@@ -340,7 +340,7 @@ void GroupManagerPrivate::groupsUpdatedSlot(const QList<int> &groupIds)
 
 void GroupManagerPrivate::groupsUpdatedFullSlot(const QList<CommHistory::Group> &groups)
 {
-    DEBUG() << Q_FUNC_INFO << groups.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groups.count();
 
     foreach (Group g, groups) {
         modifyInModel(g, false);
@@ -351,7 +351,7 @@ void GroupManagerPrivate::groupsDeletedSlot(const QList<int> &groupIds)
 {
     Q_Q(GroupManager);
 
-    DEBUG() << Q_FUNC_INFO << groupIds.count();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groupIds.count();
 
     foreach (int id, groupIds) {
         GroupObject *go = groups.value(id);
@@ -516,7 +516,7 @@ bool GroupManager::addGroups(QList<Group> &groups)
 
 bool GroupManager::modifyGroup(Group &group)
 {
-    DEBUG() << Q_FUNC_INFO << group.id();
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << group.id();
 
     if (group.id() == -1) {
         qWarning() << Q_FUNC_INFO << "Group id not set";
@@ -580,11 +580,11 @@ void GroupManagerPrivate::contactResolveFinished()
     Q_Q(GroupManager);
 
     if (!pendingResolve.isEmpty()) {
-        DEBUG() << "Finished resolving" << pendingResolve.size() << "groups";
+        qCDebug(lcCommHistory) << "Finished resolving" << pendingResolve.size() << "groups";
 
         foreach (const Group &g, pendingResolve) {
             GroupObject *go = new GroupObject(g, q);
-            DEBUG() << g.id() << g.recipients().debugString();
+            qCDebug(lcCommHistory) << g.id() << g.recipients().debugString();
             groups.insert(g.id(), go);
             emit q->groupAdded(go);
         }
@@ -594,10 +594,10 @@ void GroupManagerPrivate::contactResolveFinished()
     }
 
     if (!pendingObjects.isEmpty()) {
-        DEBUG() << "Finished resolving" << pendingObjects.size() << "group objects";
+        qCDebug(lcCommHistory) << "Finished resolving" << pendingObjects.size() << "group objects";
 
         foreach (GroupObject *go, pendingObjects) {
-            DEBUG() << go->id() << go->recipients().debugString();
+            qCDebug(lcCommHistory) << go->id() << go->recipients().debugString();
             emit q->groupUpdated(go);
         }
 
@@ -612,7 +612,7 @@ void GroupManagerPrivate::contactResolveFinished()
 
 bool GroupManager::markAsReadGroup(int id)
 {
-    DEBUG() << Q_FUNC_INFO << id;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << id;
 
     if (!d->database()->transaction())
         return false;
@@ -652,7 +652,7 @@ void GroupManager::updateGroups(QList<Group> &groups)
 
 bool GroupManager::deleteGroups(const QList<int> &groupIds)
 {
-    DEBUG() << Q_FUNC_INFO << groupIds;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << groupIds;
 
     if (!d->database()->transaction())
         return false;
@@ -671,7 +671,7 @@ bool GroupManager::deleteGroups(const QList<int> &groupIds)
 
 bool GroupManager::deleteAll()
 {
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
 
     QList<int> ids;
     foreach (GroupObject *group, d->groups) {

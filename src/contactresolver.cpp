@@ -25,7 +25,6 @@
 #include <QElapsedTimer>
 
 #include "recipient_p.h"
-#include "debug.h"
 
 #include <seasidecache.h>
 

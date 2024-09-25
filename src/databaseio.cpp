@@ -27,7 +27,7 @@
 #include "group.h"
 #include <QSqlQuery>
 #include <QSqlError>
-#include "debug.h"
+#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -1235,7 +1235,7 @@ bool DatabaseIOPrivate::deleteEmptyGroups()
     }
 
     if (query.numRowsAffected() > 0)
-        DEBUG() << Q_FUNC_INFO << "Deleted" << query.numRowsAffected() << "empty groups";
+        qCDebug(lcCommHistory) << Q_FUNC_INFO << "Deleted" << query.numRowsAffected() << "empty groups";
 
     return true;
 }

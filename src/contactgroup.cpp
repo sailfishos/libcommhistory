@@ -23,7 +23,7 @@
 #include "contactgroup.h"
 #include "updatesemitter.h"
 #include "databaseio.h"
-#include "debug.h"
+#include "debug_p.h"
 
 namespace CommHistory {
 
@@ -388,7 +388,7 @@ bool ContactGroup::markAsRead()
 {
     Q_D(ContactGroup);
 
-    DEBUG() << Q_FUNC_INFO;
+    qCDebug(lcCommHistory) << Q_FUNC_INFO;
     if (d->groups.isEmpty() || !unreadMessages())
         return true;
 
