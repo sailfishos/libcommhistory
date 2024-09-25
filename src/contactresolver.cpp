@@ -25,6 +25,7 @@
 #include <QElapsedTimer>
 
 #include "recipient_p.h"
+#include "debug_p.h"
 
 #include <seasidecache.h>
 
@@ -172,7 +173,7 @@ bool ContactResolverPrivate::checkIfFinished()
 void ContactResolverPrivate::addressResolved(const QString &first, const QString &second, SeasideCache::CacheItem *item)
 {
     if (second.isEmpty()) {
-        qWarning() << "Got addressResolved with empty UIDs" << first << second << item;
+        qCWarning(lcCommHistory) << "Got addressResolved with empty UIDs" << first << second << item;
         return;
     } else if (first.isEmpty()) {
         // This resolution is for a phone number - we need to call back to libcontacts

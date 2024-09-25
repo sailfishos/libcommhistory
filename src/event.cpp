@@ -28,6 +28,7 @@
 #include "event.h"
 #include "messagepart.h"
 #include "dbus_p.h"
+#include "debug_p.h"
 
 #include <QStringBuilder>
 
@@ -1041,7 +1042,7 @@ void Event::setExtraProperty(const QString &key, const QVariant &value)
     }
 
     if (!value.canConvert<QString>())
-        qWarning() << "Event extra property" << key << "type cannot be converted to string:" << value;
+        qCWarning(lcCommHistory) << "Event extra property" << key << "type cannot be converted to string:" << value;
 
     d->extraProperties.insert(key, value);
     d->propertyChanged(Event::ExtraProperties);

@@ -159,9 +159,9 @@ bool EventModelPrivate::executeQuery(QSqlQuery &query)
     isReady = false;
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 

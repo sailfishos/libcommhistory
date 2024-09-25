@@ -32,6 +32,7 @@
 #include "mmshelper.h"
 #include "mmsconstants.h"
 #include "singleeventmodel.h"
+#include "debug.h"
 #include <QtDBus>
 #include <QTextCodec>
 #include <QTemporaryDir>
@@ -114,7 +115,7 @@ bool MmsHelper::receiveMessage(int id)
         event = model.event();
 
     if (!event.isValid()) {
-        qWarning() << "MmsHelper::receiveMessage called for unknown event id" << id;
+        qCWarning(lcCommHistory) << "MmsHelper::receiveMessage called for unknown event id" << id;
         return false;
     }
 
@@ -122,7 +123,7 @@ bool MmsHelper::receiveMessage(int id)
     QByteArray pushData = QByteArray::fromBase64(event.extraProperty(MMS_PROPERTY_PUSH_DATA).toByteArray());
 
     if (imsi.isEmpty() || pushData.isEmpty()) {
-        qWarning() << "MmsHelper::receivedMessage called for event" << id << "without notification data";
+        qCWarning(lcCommHistory) << "MmsHelper::receivedMessage called for event" << id << "without notification data";
         event.setStatus(Event::PermanentlyFailedStatus);
         model.modifyEvent(event);
         return false;
@@ -143,7 +144,7 @@ bool MmsHelper::cancel(int id)
         event = model.event();
 
     if (!event.isValid()) {
-        qWarning() << "MmsHelper::cancel called for unknown event id" << id;
+        qCWarning(lcCommHistory) << "MmsHelper::cancel called for unknown event id" << id;
         return false;
     }
 
@@ -187,12 +188,12 @@ static QString createTemporaryTextFile(const QString &dir, const QMimeDatabase &
 
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        qWarning() << "MmsHelper::sendMessage: failed to open" << qPrintable(path);
+        qCWarning(lcCommHistory) << "MmsHelper::sendMessage: failed to open" << qPrintable(path);
         return QString();
     }
 
     if (file.write(data) < data.size()) {
-        qWarning() << "MmsHelper::sendMessage: failed to write" << qPrintable(path);
+        qCWarning(lcCommHistory) << "MmsHelper::sendMessage: failed to write" << qPrintable(path);
         return QString();
     }
 
@@ -209,7 +210,7 @@ static QString createTemporaryFile(const QString &dir, const QString &source)
     if (result < 0) {
         QFile file(source);
         if (!file.copy(targetFile)) {
-            qWarning() << "Failed to copy file for MMS" << source;
+            qCWarning(lcCommHistory) << "Failed to copy file for MMS" << source;
             return QString();
         }
     }
@@ -256,7 +257,7 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
     QMimeDatabase mimeDb;
 
     if (!tempDir.isValid()) {
-        qWarning() << "MmsHelper::sendMessage: failed to create temporary dir";
+        qCWarning(lcCommHistory) << "MmsHelper::sendMessage: failed to create temporary dir";
         return NULL;
     }
 
@@ -266,7 +267,7 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
         part.contentId = p["contentId"].toString();
         part.contentType = p["contentType"].toString();
         if (part.contentId.isEmpty()) {
-            qWarning() << "MmsHelper::sendMessage: missing contentId";
+            qCWarning(lcCommHistory) << "MmsHelper::sendMessage: missing contentId";
             return NULL;
         }
 
@@ -277,7 +278,7 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
                 part.fileName = createTemporaryTextFile(tempDir.path(), mimeDb, freeText, part.contentId, part.contentType);
             }
             if (part.fileName.isEmpty()) {
-                qWarning() << "MmsHelper::sendMessage: can't create temporary file";
+                qCWarning(lcCommHistory) << "MmsHelper::sendMessage: can't create temporary file";
                 return NULL;
             }
         } else if (part.fileName.startsWith("file://")) {
@@ -287,7 +288,7 @@ QDBusPendingCallWatcher *MmsHelper::sendMessage(const TempDir &tempDir,
         if (part.contentType.isEmpty()) {
             QMimeType type = mimeDb.mimeTypeForFile(part.fileName);
             if (!type.isValid()) {
-                qWarning() << "MmsHelper::sendMessage: Can't determine MIME type for file" << part.fileName;
+                qCWarning(lcCommHistory) << "MmsHelper::sendMessage: Can't determine MIME type for file" << part.fileName;
                 return NULL;
             }
             part.contentType = type.name();

@@ -386,7 +386,7 @@ void EventModel::setQueryMode(QueryMode mode)
 
     d->queryMode = mode;
     if (d->queryMode == SyncQuery && d->resolveContacts == ResolveImmediately)
-        qWarning() << "EventMode does not support immediate contact resolution for synchronous models. Contacts will not be resolved.";
+        qCWarning(lcCommHistory) << "EventMode does not support immediate contact resolution for synchronous models. Contacts will not be resolved.";
 }
 
 void EventModel::setChunkSize(uint size)
@@ -447,7 +447,7 @@ void EventModel::setResolveContacts(ContactResolveType resolveType)
         return;
 
     if (d->queryMode == SyncQuery && resolveType == ResolveImmediately)
-        qWarning() << "EventMode does not support immediate contact resolution for synchronous models. Contacts will not be resolved.";
+        qCWarning(lcCommHistory) << "EventMode does not support immediate contact resolution for synchronous models. Contacts will not be resolved.";
 
     d->setResolveContacts(resolveType);
 }
@@ -525,7 +525,7 @@ bool EventModel::modifyEvents(QList<Event> &events)
     for (QList<Event>::Iterator it = events.begin(); it != events.end(); it++) {
         Event &event = *it;
         if (event.id() == -1) {
-            qWarning() << Q_FUNC_INFO << "Event id not set";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event id not set";
             d->database()->rollback();
             return false;
         }
@@ -578,7 +578,7 @@ bool EventModel::deleteEvent(Event &event)
     qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << event.id();
 
     if (!event.isValid()) {
-        qWarning() << Q_FUNC_INFO << "Invalid event";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Invalid event";
         return false;
     }
 
@@ -631,7 +631,7 @@ bool EventModel::moveEvent(Event &event, int groupId)
     qCDebug(lcCommHistory) << Q_FUNC_INFO << ":" << event.id();
 
     if (!event.isValid()) {
-        qWarning() << Q_FUNC_INFO << "Invalid event";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Invalid event";
         return false;
     }
 
@@ -661,7 +661,7 @@ bool EventModel::moveEvent(Event &event, int groupId)
         if (total == 0) {
             qCDebug(lcCommHistory) << Q_FUNC_INFO << ": deleting empty group";
             if (!d->database()->deleteGroup(oldGroupId)) {
-                qWarning() << Q_FUNC_INFO << "error deleting empty group" ;
+                qCWarning(lcCommHistory) << Q_FUNC_INFO << "error deleting empty group" ;
                 d->database()->rollback();
                 return false;
             } else {
@@ -699,7 +699,7 @@ bool EventModel::modifyEventsInGroup(QList<Event> &events, Group group)
     for (QList<Event>::Iterator it = events.begin(); it != events.end(); it++) {
         Event &event = *it;
         if (event.id() == -1) {
-            qWarning() << Q_FUNC_INFO << "Event id not set";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event id not set";
             d->database()->rollback();
             return false;
         }
