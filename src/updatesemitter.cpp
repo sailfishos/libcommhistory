@@ -21,6 +21,7 @@
 ******************************************************************************/
 
 #include <QtDBus/QtDBus>
+#include <QCoreApplication>
 
 #include "adaptor.h"
 
@@ -31,6 +32,7 @@
 namespace CommHistory {
 
 QWeakPointer<UpdatesEmitter> UpdatesEmitter::m_Instance;
+QString m_serviceName;
 
 UpdatesEmitter::UpdatesEmitter()
 {
@@ -39,11 +41,19 @@ UpdatesEmitter::UpdatesEmitter()
                                                       this)) {
         qCWarning(lcCommHistory) << Q_FUNC_INFO << ": error registering object";
     }
+    m_serviceName
+        = QString::fromLatin1("%1.p%2").arg(COMM_HISTORY_SERVICE_NAME_PREFIX,
+                                            QCoreApplication::applicationPid());
+    if (!QDBusConnection::sessionBus().registerService(m_serviceName)) {
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << ": error registering service"
+                                 << QDBusConnection::sessionBus().lastError();
+    }
 }
 
 UpdatesEmitter::~UpdatesEmitter()
 {
     QDBusConnection::sessionBus().unregisterObject(COMM_HISTORY_OBJECT_PATH);
+    QDBusConnection::sessionBus().unregisterService(m_serviceName);
 }
 
 QSharedPointer<UpdatesEmitter> UpdatesEmitter::instance()
