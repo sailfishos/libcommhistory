@@ -22,8 +22,8 @@
 #include "callhistory_p.h"
 #include "databaseio_p.h"
 #include "event.h"
+#include "debug_p.h"
 
-#include <QtDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlDatabase>
@@ -149,8 +149,8 @@ bool CallHistory::reload()
     d->results.clear();
 
     if (d->startTime.isValid() && d->endTime.isValid() && d->endTime <= d->startTime) {
-        qWarning() << "Error: end time" << d->endTime.toString()
-                   << "is not after start time" << d->startTime.toString();
+        qCWarning(lcCommHistory) << "Error: end time" << d->endTime.toString()
+                                 << "is not after start time" << d->startTime.toString();
         return false;
     }
 
@@ -158,8 +158,8 @@ bool CallHistory::reload()
 
     QSqlQuery query = DatabaseIOPrivate::prepareQuery(queryString);
     if (!query.exec()) {
-        qWarning() << "Failed to execute query:" << query.lastQuery();
-        qWarning() << "Error was:" << query.lastError();
+        qCWarning(lcCommHistory) << "Failed to execute query:" << query.lastQuery();
+        qCWarning(lcCommHistory) << "Error was:" << query.lastError();
         return false;
     }
 

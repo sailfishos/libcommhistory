@@ -590,7 +590,7 @@ void CallModelPrivate::insertEvent(Event event)
         }
         default:
         {
-            qWarning() << Q_FUNC_INFO << "Adding call events to model sorted by type or by service has not been implemented yet.";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Adding call events to model sorted by type or by service has not been implemented yet.";
             return;
         }
     }
@@ -796,7 +796,7 @@ void CallModelPrivate::slotAllCallsDeleted(int unused)
     Q_UNUSED(unused);
     Q_Q(CallModel);
 
-    qWarning() << Q_FUNC_INFO << "clearing model";
+    qCDebug(lcCommHistory) << Q_FUNC_INFO << "clearing model";
 
     q->beginResetModel();
     clearEvents();
@@ -1062,7 +1062,7 @@ bool CallModel::deleteAll()
     bool deleted;
     deleted = d->database()->deleteAllEvents(Event::CallEvent);
     if (!deleted) {
-        qWarning() << Q_FUNC_INFO << "Failed to delete events";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed to delete events";
         return false;
     }
 
@@ -1078,7 +1078,7 @@ bool CallModel::markAllRead()
     bool marked;
     marked = d->database()->markAsReadAll(Event::CallEvent);
     if (!marked) {
-        qWarning() << Q_FUNC_INFO << "Failed to mark events as read";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed to mark events as read";
         return false;
     }
 
@@ -1100,7 +1100,7 @@ bool CallModel::modifyEvent(Event &event)
     }
 
     if (event.id() == -1) {
-        qWarning() << Q_FUNC_INFO << "Event id not set";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event id not set";
         return false;
     }
 
@@ -1179,7 +1179,7 @@ bool CallModel::deleteEvent(int id)
         }
         default:
         {
-            qWarning() << Q_FUNC_INFO << "Deleting of call events from model sorted by type or by service has not been implemented yet.";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Deleting of call events from model sorted by type or by service has not been implemented yet.";
             return false;
         }
     }

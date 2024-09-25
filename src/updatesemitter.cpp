@@ -26,6 +26,7 @@
 
 #include "updatesemitter.h"
 #include "dbus_p.h"
+#include "debug_p.h"
 
 namespace CommHistory {
 
@@ -36,7 +37,7 @@ UpdatesEmitter::UpdatesEmitter()
     new Adaptor(this);
     if (!QDBusConnection::sessionBus().registerObject(COMM_HISTORY_OBJECT_PATH,
                                                       this)) {
-        qWarning() << Q_FUNC_INFO << ": error registering object";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << ": error registering object";
     }
 }
 

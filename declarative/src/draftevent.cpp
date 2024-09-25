@@ -32,7 +32,7 @@
 #include "draftevent.h"
 #include "singleeventmodel.h"
 #include "commonutils.h"
-#include <QDebug>
+#include "debug.h"
 
 using namespace CommHistory;
 
@@ -61,7 +61,7 @@ void DraftEvent::reset()
 void DraftEvent::save()
 {
     if (!isValid()) {
-        qWarning() << "DraftEvent cannot save invalid event:" << m_event.toString();
+        qCWarning(lcCommHistory) << "DraftEvent cannot save invalid event:" << m_event.toString();
         return;
     }
 
@@ -78,10 +78,10 @@ void DraftEvent::save()
 
     if (m_event.id() < 0) {
         if (!model.addEvent(m_event))
-            qWarning() << "DraftEvent add failed:" << m_event.toString();
+            qCWarning(lcCommHistory) << "DraftEvent add failed:" << m_event.toString();
     } else {
         if (!model.modifyEvent(m_event))
-            qWarning() << "DraftEvent modify failed:" << m_event.toString();
+            qCWarning(lcCommHistory) << "DraftEvent modify failed:" << m_event.toString();
     }
 }
 
@@ -89,7 +89,7 @@ void DraftEvent::deleteEvent()
 {
     SingleEventModel model;
     if (m_event.id() >= 0 && !model.deleteEvent(m_event))
-        qWarning() << "DraftEvent delete failed:" << m_event.toString();
+        qCWarning(lcCommHistory) << "DraftEvent delete failed:" << m_event.toString();
 }
 
 Event DraftEvent::event() const
@@ -159,7 +159,7 @@ void DraftEvent::setRemoteUids(const QStringList &remoteUids)
         return;
 
     if (m_event.localUid().isEmpty()) {
-        qWarning() << "DraftEvent cannot set remote UIDs without a local UID";
+        qCWarning(lcCommHistory) << "DraftEvent cannot set remote UIDs without a local UID";
         return;
     }
 

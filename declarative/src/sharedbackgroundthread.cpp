@@ -30,7 +30,7 @@
  */
 
 #include "sharedbackgroundthread.h"
-#include "debug_p.h"
+#include "debug.h"
 
 static void stopAndDeleteThread(QThread *thread)
 {

@@ -13,6 +13,7 @@ SOURCES += src/plugin.cpp \
     src/conversationproxymodel.cpp \
     src/declarativegroupmanager.cpp \
     src/sharedbackgroundthread.cpp \
+    src/debug.cpp \
     src/mmshelper.cpp \
     src/draftevent.cpp
 

@@ -33,7 +33,7 @@
 #include "sharedbackgroundthread.h"
 #include "singleeventmodel.h"
 #include <QTimer>
-#include "debug_p.h"
+#include "debug.h"
 
 using namespace CommHistory;
 
@@ -143,7 +143,7 @@ int DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStri
         groupId = ensureGroupExists(localUid, remoteUids);
     }
     if (groupId < 0) {
-        qWarning() << Q_FUNC_INFO << "Failed finding group for UIDs:" << localUid << remoteUids;
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed finding group for UIDs:" << localUid << remoteUids;
         return -1;
     }
 
@@ -153,7 +153,7 @@ int DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStri
     if (model.addEvent(event))
         return event.id();
 
-    qWarning() << Q_FUNC_INFO << "Failed creating event";
+    qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed creating event";
     return -1;
 }
 
@@ -167,11 +167,11 @@ void DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStr
                                                         const QStringList &remoteUids, const QString &text, QJSValue callback)
 {
     if (!callback.isCallable()) {
-        qWarning() << Q_FUNC_INFO << "Invalid callback argument:" << callback.toString();
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Invalid callback argument:" << callback.toString();
         return;
     }
     if (!useBackgroundThread()) {
-        qWarning() << Q_FUNC_INFO << "useBackgroundThread must be true to use asynchronous message event creation";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "useBackgroundThread must be true to use asynchronous message event creation";
         return;
     }
 
@@ -179,7 +179,7 @@ void DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStr
         groupId = ensureGroupExists(localUid, remoteUids);
     }
     if (groupId < 0) {
-        qWarning() << Q_FUNC_INFO << "Failed finding group for UIDs:" << localUid << remoteUids;
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed finding group for UIDs:" << localUid << remoteUids;
         callback.call(QJSValueList() << QJSValue(-1));
         return;
     }
@@ -196,7 +196,7 @@ void DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QStr
 
         QMetaObject::invokeMethod(writer, "writeEvent", Qt::QueuedConnection);
     } else {
-        qWarning() << Q_FUNC_INFO << "Could not dispatch event write to background thread";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Could not dispatch event write to background thread";
     }
 }
 
@@ -210,7 +210,7 @@ bool DeclarativeGroupManager::setEventStatus(int eventId, int status)
 {
     SingleEventModel model;
     if (!model.getEventById(eventId)) {
-        qWarning() << Q_FUNC_INFO << "No event with id" << eventId;
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "No event with id" << eventId;
         return false;
     }
 
@@ -235,7 +235,7 @@ int DeclarativeGroupManager::ensureGroupExists(const QString &localUid, const QS
         g.setChatType(Group::ChatTypeP2P);
         qCDebug(lcCommHistory) << Q_FUNC_INFO << "Creating group for" << localUid << remoteUids;
         if (!addGroup(g)) {
-            qWarning() << Q_FUNC_INFO << "Failed creating group";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Failed creating group";
             return -1;
         }
         return g.id();

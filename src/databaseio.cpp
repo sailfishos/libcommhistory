@@ -189,7 +189,7 @@ public:
                 case Event::EventCount:
                     break;
                 default:
-                    qWarning() << Q_FUNC_INFO << "Event field ignored:" << property;
+                    qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event field ignored:" << property;
                     break;
             }
         }
@@ -236,7 +236,7 @@ public:
                 case Group::SubscriberIdentity:
                     break;
                 default:
-                    qWarning() << Q_FUNC_INFO << "Group field ignored:" << property;
+                    qCWarning(lcCommHistory) << Q_FUNC_INFO << "Group field ignored:" << property;
                     break;
             }
         }
@@ -272,7 +272,7 @@ public:
         QSqlQuery query(db);
         bool re = query.exec("SAVEPOINT " + name);
         if (!re)
-            qWarning() << "Database savepoint failed:" << query.lastError();
+            qCWarning(lcCommHistory) << "Database savepoint failed:" << query.lastError();
         else
             active = true;
         return re;
@@ -285,7 +285,7 @@ public:
         QSqlQuery query(db);
         bool re = query.exec("RELEASE " + name);
         if (!re)
-            qWarning() << "Database savepoint release failed:" << query.lastError();
+            qCWarning(lcCommHistory) << "Database savepoint release failed:" << query.lastError();
         else
             active = false;
         return re;
@@ -298,7 +298,7 @@ public:
         QSqlQuery query(db);
         bool re = query.exec("ROLLBACK TO " + name);
         if (!re)
-            qWarning() << "Database savepoint rollback failed:" << query.lastError();
+            qCWarning(lcCommHistory) << "Database savepoint rollback failed:" << query.lastError();
         else
             active = false;
         return re;
@@ -365,22 +365,22 @@ QSqlQuery DatabaseIOPrivate::createQuery()
 bool DatabaseIO::addEvent(Event &event)
 {
     if (event.type() == Event::UnknownType) {
-        qWarning() << Q_FUNC_INFO << "Event type not set";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event type not set";
         return false;
     }
 
     if (event.direction() == Event::UnknownDirection) {
-        qWarning() << Q_FUNC_INFO << "Event direction not set";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event direction not set";
         return false;
     }
 
     if (event.groupId() == -1 && event.type() != Event::CallEvent) {
-        qWarning() << Q_FUNC_INFO << "Group id not set";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Group id not set";
         return false;
     }
 
     if (event.id() != -1)
-        qWarning() << Q_FUNC_INFO << "Adding event with an ID set. ID will be ignored.";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Adding event with an ID set. ID will be ignored.";
 
     AutoSavepoint savepoint(d->connection());
     if (!savepoint.begin())
@@ -390,9 +390,9 @@ bool DatabaseIO::addEvent(Event &event)
     QSqlQuery query = QueryHelper::insertQuery("INSERT INTO Events (:fields) VALUES (:values)", fields);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -420,9 +420,9 @@ bool DatabaseIOPrivate::insertEventProperties(int eventId, const QVariantMap &pr
         query.bindValue(":key", it.key());
         query.bindValue(":value", it.value().toString());
         if (!query.exec()) {
-            qWarning() << "Failed to execute query";
-            qWarning() << query.lastError();
-            qWarning() << query.lastQuery();
+            qCWarning(lcCommHistory) << "Failed to execute query";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << query.lastQuery();
             return false;
         }
     }
@@ -452,9 +452,9 @@ bool DatabaseIOPrivate::insertMessageParts(Event &event)
         query.bindValue(":contentType", part.contentType());
         query.bindValue(":path", part.path());
         if (!query.exec()) {
-            qWarning() << "Failed to execute query";
-            qWarning() << query.lastError();
-            qWarning() << query.lastQuery();
+            qCWarning(lcCommHistory) << "Failed to execute query";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << query.lastQuery();
             return false;
         }
         if (part.id() < 0)
@@ -481,9 +481,9 @@ bool DatabaseIO::reserveEventIds(int count, int *firstReservedId)
             DatabaseIOPrivate::instance()->connection());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         rollback();
         return false;
     }
@@ -501,9 +501,9 @@ bool DatabaseIO::reserveEventIds(int count, int *firstReservedId)
     update.bindValue(":seq", lastReservedId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         rollback();
         return false;
     }
@@ -664,9 +664,9 @@ bool DatabaseIO::getEvent(int id, Event &event)
     query.bindValue(":eventId", id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -695,9 +695,9 @@ bool DatabaseIO::getEventExtraProperties(Event &event)
     query.bindValue(":eventId", event.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -716,9 +716,9 @@ bool DatabaseIO::getMessageParts(Event &event)
     query.bindValue(":eventId", event.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -744,9 +744,9 @@ bool DatabaseIO::getEventByMessageToken(const QString &token, Event &event)
     query.bindValue(":messageToken", token);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -796,9 +796,9 @@ bool DatabaseIO::getEventByMmsId(const QString &mmsId, Event &event)
                 }
             }
         } else {
-            qWarning() << "Failed to execute query";
-            qWarning() << query.lastError();
-            qWarning() << query.lastQuery();
+            qCWarning(lcCommHistory) << "Failed to execute query";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << query.lastQuery();
         }
     }
 
@@ -815,9 +815,9 @@ bool DatabaseIO::eventExists(int id)
     if (query.exec()) {
         return query.next();
     } else {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 }
@@ -833,9 +833,9 @@ bool DatabaseIO::modifyEvent(Event &event)
     query.bindValue(":eventId", event.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
     query.finish();
@@ -845,9 +845,9 @@ bool DatabaseIO::modifyEvent(Event &event)
         query = CommHistoryDatabase::prepare(q, d->connection());
         query.bindValue(":eventId", event.id());
         if (!query.exec()) {
-            qWarning() << "Failed to execute query";
-            qWarning() << query.lastError();
-            qWarning() << query.lastQuery();
+            qCWarning(lcCommHistory) << "Failed to execute query";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << query.lastQuery();
             return false;
         }
         query.finish();
@@ -873,9 +873,9 @@ bool DatabaseIO::modifyEvent(Event &event)
         query = CommHistoryDatabase::prepare(q, d->connection());
         query.bindValue(":eventId", event.id());
         if (!query.exec()) {
-            qWarning() << "Failed to execute query";
-            qWarning() << query.lastError();
-            qWarning() << query.lastQuery();
+            qCWarning(lcCommHistory) << "Failed to execute query";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << query.lastQuery();
             return false;
         }
         query.finish();
@@ -895,9 +895,9 @@ bool DatabaseIO::moveEvent(Event &event, int groupId)
     query.bindValue(":id", event.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -912,9 +912,9 @@ bool DatabaseIO::deleteEvent(Event &event, QThread *)
     query.bindValue(":id", event.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -924,7 +924,7 @@ bool DatabaseIO::deleteEvent(Event &event, QThread *)
 bool DatabaseIO::addGroup(Group &group)
 {
     if (group.localUid().isEmpty() || group.recipients().isEmpty()) {
-        qWarning() << Q_FUNC_INFO << "No local/remote UIDs for new group";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "No local/remote UIDs for new group";
         return false;
     }
 
@@ -932,9 +932,9 @@ bool DatabaseIO::addGroup(Group &group)
     QSqlQuery query = QueryHelper::insertQuery("INSERT INTO Groups (:fields) VALUES (:values)", fields);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1028,9 +1028,9 @@ bool DatabaseIO::getGroup(int id, Group &group)
     query.bindValue(":groupId", id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1068,9 +1068,9 @@ bool DatabaseIO::getGroups(const QString &localUid, const QString &remoteUid, QL
         query.bindValue(":remoteUid", remoteUid);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1091,9 +1091,9 @@ bool DatabaseIO::modifyGroup(Group &group)
     query.bindValue(":groupId", group.id());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1125,9 +1125,9 @@ bool DatabaseIO::deleteGroups(QList<int> groupIds, QThread *backgroundThread)
     QSqlQuery query = CommHistoryDatabase::prepare(q, d->connection());
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1141,9 +1141,9 @@ bool DatabaseIO::totalEventsInGroup(int groupId, int &totalEvents)
     query.bindValue(":groupId", groupId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1162,9 +1162,9 @@ bool DatabaseIO::markAsReadGroup(int groupId)
     query.bindValue(":groupId", groupId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1178,9 +1178,9 @@ bool DatabaseIO::markAsRead(const QList<int> &eventIds)
 
     QSqlQuery query = CommHistoryDatabase::prepare(q, d->connection());
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1194,9 +1194,9 @@ bool DatabaseIO::markAsReadAll(Event::EventType eventType)
     query.bindValue(":eventType", eventType);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1214,9 +1214,9 @@ bool DatabaseIO::deleteAllEvents(Event::EventType eventType)
         query.bindValue(":eventType", eventType);
 
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1228,9 +1228,9 @@ bool DatabaseIOPrivate::deleteEmptyGroups()
     static const char *q = "DELETE FROM Groups WHERE (SELECT COUNT(id) FROM Events WHERE groupId=Groups.id) = 0";
     QSqlQuery query = CommHistoryDatabase::prepare(q, connection());
     if (!query.exec()) {
-        qWarning() << "Failed to execute query";
-        qWarning() << query.lastError();
-        qWarning() << query.lastQuery();
+        qCWarning(lcCommHistory) << "Failed to execute query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << query.lastQuery();
         return false;
     }
 
@@ -1244,8 +1244,8 @@ bool DatabaseIO::transaction()
 {
     bool re = d->connection().transaction();
     if (!re) {
-        qWarning() << "Failed to start transaction";
-        qWarning() << d->connection().lastError();
+        qCWarning(lcCommHistory) << "Failed to start transaction";
+        qCWarning(lcCommHistory) << d->connection().lastError();
     }
     return re;
 }
@@ -1254,8 +1254,8 @@ bool DatabaseIO::commit()
 {
     bool re = d->connection().commit();
     if (!re) {
-        qWarning() << "Failed to commit transaction";
-        qWarning() << d->connection().lastError();
+        qCWarning(lcCommHistory) << "Failed to commit transaction";
+        qCWarning(lcCommHistory) << d->connection().lastError();
         rollback();
     }
     return re;
@@ -1265,8 +1265,8 @@ bool DatabaseIO::rollback()
 {
     bool re = d->connection().rollback();
     if (!re) {
-        qWarning() << "Failed to rollback transaction";
-        qWarning() << d->connection().lastError();
+        qCWarning(lcCommHistory) << "Failed to rollback transaction";
+        qCWarning(lcCommHistory) << d->connection().lastError();
     }
     return re;
 }

@@ -21,7 +21,6 @@
 **
 ******************************************************************************/
 
-#include <QDebug>
 #include <QSharedDataPointer>
 #include <QDBusArgument>
 #include <QStringBuilder>
@@ -30,6 +29,7 @@
 #include <QTextCodec>
 #include <QDataStream>
 #include "messagepart.h"
+#include "debug_p.h"
 
 namespace CommHistory {
 
@@ -182,7 +182,7 @@ QString MessagePart::plainTextContent() const
 
     QFile file(d->path);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Message part" << id() << "at" << path() << "can't be read";
+        qCWarning(lcCommHistory) << "Message part" << id() << "at" << path() << "can't be read";
         return QString();
     }
 
@@ -196,7 +196,7 @@ QString MessagePart::plainTextContent() const
 
         codec = QTextCodec::codecForName(charset.toLatin1());
         if (!codec)
-            qWarning() << "Missing text codec for" << charset << "when parsing content of type" << d->contentType;
+            qCWarning(lcCommHistory) << "Missing text codec for" << charset << "when parsing content of type" << d->contentType;
     }
 
     if (codec)

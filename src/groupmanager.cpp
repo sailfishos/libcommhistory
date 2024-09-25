@@ -519,7 +519,7 @@ bool GroupManager::modifyGroup(Group &group)
     qCDebug(lcCommHistory) << Q_FUNC_INFO << group.id();
 
     if (group.id() == -1) {
-        qWarning() << Q_FUNC_INFO << "Group id not set";
+        qCWarning(lcCommHistory) << Q_FUNC_INFO << "Group id not set";
         return false;
     }
 

@@ -1,6 +1,7 @@
 #include "callproxymodel.h"
 #include "event.h"
 #include "eventmodel.h"
+#include "debug.h"
 
 using namespace CommHistory;
 
@@ -33,7 +34,7 @@ void CallProxyModel::componentComplete()
     connect(this, SIGNAL(modelReady(bool)), this, SLOT(onReadyChanged(bool)));
 
     if (!getEvents()) {
-        qWarning() << "getEvents() failed on CommHistory::CallModel";
+        qCWarning(lcCommHistory) << "getEvents() failed on CommHistory::CallModel";
     }
 }
 

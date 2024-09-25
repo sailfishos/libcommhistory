@@ -22,11 +22,11 @@
 
 #include "commhistorydatabase.h"
 #include "commhistorydatabasepath.h"
+#include "debug_p.h"
 #include <QDir>
 #include <QFile>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QDebug>
 #include <QStandardPaths>
 #include <QCoreApplication>
 
@@ -216,9 +216,9 @@ static bool execute(QSqlDatabase &database, const QString &statement)
 {
     QSqlQuery query(database);
     if (!query.exec(statement)) {
-        qWarning() << "Query failed";
-        qWarning() << query.lastError();
-        qWarning() << statement;
+        qCWarning(lcCommHistory) << "Query failed";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << statement;
         return false;
     } else {
         return true;
@@ -235,9 +235,9 @@ static bool prepareDatabase(QSqlDatabase &database)
         QSqlQuery query(database);
 
         if (!query.exec(QLatin1String(db_schema[i]))) {
-            qWarning() << "Table creation failed";
-            qWarning() << query.lastError();
-            qWarning() << db_schema[i];
+            qCWarning(lcCommHistory) << "Table creation failed";
+            qCWarning(lcCommHistory) << query.lastError();
+            qCWarning(lcCommHistory) << db_schema[i];
             error = true;
             break;
         }
@@ -256,7 +256,7 @@ static bool upgradeDatabase(QSqlDatabase &database)
     QSqlQuery query(database);
     query.prepare("PRAGMA user_version");
     if (!query.exec() || !query.next()) {
-        qWarning() << "User version query failed:" << query.lastError();
+        qCWarning(lcCommHistory) << "User version query failed:" << query.lastError();
         return false;
     }
 
@@ -264,7 +264,7 @@ static bool upgradeDatabase(QSqlDatabase &database)
     query.finish();
 
     while (user_version < db_upgrade_count) {
-        qWarning() << "Upgrading commhistory database from schema version" << user_version;
+        qCWarning(lcCommHistory) << "Upgrading commhistory database from schema version" << user_version;
 
         for (unsigned i = 0; db_upgrade[user_version][i]; i++) {
             if (!execute(database, QLatin1String(db_upgrade[user_version][i])))
@@ -272,7 +272,7 @@ static bool upgradeDatabase(QSqlDatabase &database)
         }
 
         if (!query.exec() || !query.next()) {
-            qWarning() << "User version query failed:" << query.lastError();
+            qCWarning(lcCommHistory) << "User version query failed:" << query.lastError();
             return false;
         }
 
@@ -281,7 +281,7 @@ static bool upgradeDatabase(QSqlDatabase &database)
     }
 
     if (user_version > db_upgrade_count)
-        qWarning() << "Commhistory database schema is newer than expected - this may result in failures or corruption";
+        qCWarning(lcCommHistory) << "Commhistory database schema is newer than expected - this may result in failures or corruption";
 
     return true;
 }
@@ -299,11 +299,11 @@ QSqlDatabase CommHistoryDatabase::open(const QString &databaseName)
     database.setDatabaseName(databaseFile);
 
     if (!database.open()) {
-        qWarning() << "Failed to open commhistory database";
-        qWarning() << database.lastError();
+        qCWarning(lcCommHistory) << "Failed to open commhistory database";
+        qCWarning(lcCommHistory) << database.lastError();
         return database;
     } else {
-        qWarning() << "Opened commhistory database:" << databaseFile;
+        qCWarning(lcCommHistory) << "Opened commhistory database:" << databaseFile;
     }
 
     for (int i = 0; i < db_setup_count; i++) {
@@ -340,9 +340,9 @@ QSqlQuery CommHistoryDatabase::prepare(const char *statement, const QSqlDatabase
     QSqlQuery query(database);
     query.setForwardOnly(true);
     if (!query.prepare(statement)) {
-        qWarning() << "Failed to prepare query";
-        qWarning() << query.lastError();
-        qWarning() << statement;
+        qCWarning(lcCommHistory) << "Failed to prepare query";
+        qCWarning(lcCommHistory) << query.lastError();
+        qCWarning(lcCommHistory) << statement;
         return QSqlQuery();
     }
     return query;
