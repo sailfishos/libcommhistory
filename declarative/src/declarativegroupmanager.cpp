@@ -33,7 +33,7 @@
 #include "sharedbackgroundthread.h"
 #include "singleeventmodel.h"
 #include <QTimer>
-#include "debug_p.h"
+#include "debug.h"
 
 using namespace CommHistory;
 

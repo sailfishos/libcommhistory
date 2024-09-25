@@ -32,7 +32,6 @@
 #include "draftevent.h"
 #include "singleeventmodel.h"
 #include "commonutils.h"
-#include <QDebug>
 
 using namespace CommHistory;
 

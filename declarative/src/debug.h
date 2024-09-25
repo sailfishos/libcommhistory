@@ -23,14 +23,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <QDebug>
+#include <QtCore/QLoggingCategory>
 
-// Define this if you'd like to see debug messages from declarative commhistory module
-// #define DEBUG_COMMHISTORY
-#ifdef DEBUG_COMMHISTORY
-# define DEBUG qDebug
-#else
-# define DEBUG if (0) qDebug
-#endif
+Q_DECLARE_LOGGING_CATEGORY(lcCommHistory)
 
 #endif // DEBUG_H

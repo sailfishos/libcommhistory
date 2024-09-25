@@ -36,7 +36,6 @@
 #include <QTextCodec>
 #include <QTemporaryDir>
 #include <QMimeDatabase>
-#include <QDebug>
 
 #include <unistd.h>
 
