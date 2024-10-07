@@ -42,8 +42,9 @@ UpdatesEmitter::UpdatesEmitter()
         qCWarning(lcCommHistory) << Q_FUNC_INFO << ": error registering object";
     }
     m_serviceName
-        = QString::fromLatin1("%1.p%2").arg(COMM_HISTORY_SERVICE_NAME_PREFIX,
-                                            QCoreApplication::applicationPid());
+        = QString::fromLatin1("%1.p%2")
+            .arg(COMM_HISTORY_SERVICE_NAME_PREFIX)
+            .arg(QCoreApplication::applicationPid());
     if (!QDBusConnection::sessionBus().registerService(m_serviceName)) {
         qCWarning(lcCommHistory) << Q_FUNC_INFO << ": error registering service"
                                  << QDBusConnection::sessionBus().lastError();
