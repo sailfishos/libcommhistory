@@ -60,6 +60,15 @@ Module {
             }
         }
         Enum {
+            name: "EventIncomingStatus"
+            values: {
+                "Received": 0,
+                "NotAnswered": 1,
+                "Ignored": 2,
+                "Rejected": 3
+            }
+        }
+        Enum {
             name: "GroupBy"
             values: {
                 "GroupByNone": 1,
