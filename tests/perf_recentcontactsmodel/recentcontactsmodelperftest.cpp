@@ -41,7 +41,11 @@ void RecentContactsModelPerfTest::initTestCase()
         logFile = 0;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
+#else
     qsrand( QDateTime::currentDateTime().toTime_t() );
+#endif
 }
 
 void RecentContactsModelPerfTest::init()
@@ -76,7 +80,9 @@ void RecentContactsModelPerfTest::getEvents()
     const int groups = contacts/2;
 
     QDateTime startTime = QDateTime::currentDateTime();
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     cleanupTestGroups();
     cleanupTestEvents();
 

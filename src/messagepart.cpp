@@ -26,7 +26,9 @@
 #include <QStringBuilder>
 #include <QFile>
 #include <QFileInfo>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QTextCodec>
+#endif
 #include <QDataStream>
 #include "messagepart.h"
 #include "debug_p.h"
@@ -187,21 +189,24 @@ QString MessagePart::plainTextContent() const
     }
 
     QByteArray content = file.readAll();
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QTextCodec *codec = 0;
+#endif
     int pos = d->contentType.indexOf(";charset=");
     if (pos > 0) {
         pos += strlen(";charset=");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QStringRef charset = d->contentType.midRef(pos, d->contentType.indexOf(';', pos) - pos).trimmed();
-
         codec = QTextCodec::codecForName(charset.toLatin1());
         if (!codec)
             qCWarning(lcCommHistory) << "Missing text codec for" << charset << "when parsing content of type" << d->contentType;
+#endif
     }
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (codec)
         return codec->toUnicode(content);
     else
+#endif
         return QString::fromUtf8(content);
 }
 

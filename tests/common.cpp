@@ -493,11 +493,19 @@ bool compareEvents(Event &e1, Event &e2)
         qWarning() << Q_FUNC_INFO << "direction:" << e1.direction() << e2.direction();
         return false;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    if (e1.startTime().toSecsSinceEpoch() != e2.startTime().toSecsSinceEpoch()) {
+#else
     if (e1.startTime().toTime_t() != e2.startTime().toTime_t()) {
+#endif
         qWarning() << Q_FUNC_INFO << "startTime:" << e1.startTime().toString() << e2.startTime().toString();
         return false;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    if (e1.endTime().toSecsSinceEpoch() != e2.endTime().toSecsSinceEpoch()) {
+#else
     if (e1.endTime().toTime_t() != e2.endTime().toTime_t()) {
+#endif
         qWarning() << Q_FUNC_INFO << "endTime:" << e1.endTime().toString() << e2.endTime().toString();
         return false;
     }
@@ -588,10 +596,18 @@ void deleteAll(bool deleteDb)
 
 QString randomMessage(int words)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
+
     QString msg;
     QTextStream msgStream(&msg, QIODevice::WriteOnly);
     for(int j = 0; j < words; j++) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        msgStream << msgWords[qrand.generate() % numWords] << " ";
+#else
         msgStream << msgWords[qrand() % numWords] << " ";
+#endif
     }
     return msg;
 }

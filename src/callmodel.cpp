@@ -985,7 +985,11 @@ void CallModel::setFilterType(CallEvent::CallType type)
 void CallModel::setFilterReferenceTime(const QDateTime &referenceTime)
 {
     Q_D(CallModel);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    d->referenceTime = referenceTime.isNull() ? 0 : referenceTime.toSecsSinceEpoch();
+#else
     d->referenceTime = referenceTime.isNull() ? 0 : referenceTime.toTime_t();
+#endif
 }
 
 void CallModel::setFilterAccount(const QString &localUid)

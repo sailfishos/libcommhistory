@@ -31,8 +31,8 @@ QT += dbus contacts
 CONFIG += debug \
     pkgconfig
 
-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
-LIBS += -L../src ../src/libcommhistory-qt5.so
+PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
+LIBS += -L../src ../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
 
 INCLUDEPATH += ../src 
 HEADERS += catcher.h

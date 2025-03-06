@@ -275,8 +275,13 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
 
     event.setId(p.id);
     event.setType(static_cast<Event::EventType>(type));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    event.setStartTimeT(p.startTime.toSecsSinceEpoch());
+    event.setEndTimeT(p.endTime.toSecsSinceEpoch());
+#else
     event.setStartTimeT(p.startTime.toTime_t());
     event.setEndTimeT(p.endTime.toTime_t());
+#endif
     event.setDirection(static_cast<Event::EventDirection>(direction));
     event.setIsDraft(isDraft);
     event.setIsRead(isRead);
@@ -291,7 +296,11 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
     event.setGroupId(p.groupId);
     event.setMessageToken(p.messageToken);
     event.setMmsId(p.mmsId);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    event.setLastModifiedT(p.lastModified.toSecsSinceEpoch());
+#else
     event.setLastModifiedT(p.lastModified.toTime_t());
+#endif
     event.setFromVCard(p.fromVCardFileName, p.fromVCardLabel);
     event.setReportDelivery(reportDelivery);
     event.setValidityPeriod(p.validityPeriod);
@@ -491,7 +500,11 @@ Event::EventCategory Event::category() const
 QDateTime Event::startTime() const
 {
     if (d->startTime.isNull() && d->startTimeT != 0) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->startTime = QDateTime::fromSecsSinceEpoch(d->startTimeT);
+#else
         d->startTime = QDateTime::fromTime_t(d->startTimeT);
+#endif
     }
     return d->startTime;
 }
@@ -499,7 +512,11 @@ QDateTime Event::startTime() const
 QDateTime Event::endTime() const
 {
     if (d->endTime.isNull() && d->endTimeT != 0) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->endTime = QDateTime::fromSecsSinceEpoch(d->endTimeT);
+#else
         d->endTime = QDateTime::fromTime_t(d->endTimeT);
+#endif
     }
     return d->endTime;
 }
@@ -640,7 +657,11 @@ QString Event::mmsId() const
 QDateTime Event::lastModified() const
 {
     if (d->lastModified.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
+#else
         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
+#endif
     }
     return d->lastModified;
 }
@@ -657,17 +678,29 @@ QList<MessagePart> Event::messageParts() const
 
 QStringList Event::toList() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    return d->headers.value(MMS_TO_HEADER).split("\x1e", Qt::SkipEmptyParts);
+#else
     return d->headers.value(MMS_TO_HEADER).split("\x1e", QString::SkipEmptyParts);
+#endif
 }
 
 QStringList Event::ccList() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    return d->headers.value(MMS_CC_HEADER).split("\x1e", Qt::SkipEmptyParts);
+#else
     return d->headers.value(MMS_CC_HEADER).split("\x1e", QString::SkipEmptyParts);
+#endif
 }
 
 QStringList Event::bccList() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    return d->headers.value(MMS_BCC_HEADER).split("\x1e", Qt::SkipEmptyParts);
+#else
     return d->headers.value(MMS_BCC_HEADER).split("\x1e", QString::SkipEmptyParts);
+#endif
 }
 
 Event::EventReadStatus Event::readStatus() const
@@ -775,10 +808,18 @@ void Event::setType(Event::EventType type)
 void Event::setStartTime(const QDateTime &startTime)
 {
     if (d->startTime.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->startTimeT = startTime.toUTC().toSecsSinceEpoch();
+#else
         d->startTimeT = startTime.toUTC().toTime_t();
+#endif
     } else {
         d->startTime = startTime.toUTC();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->startTimeT = d->startTime.toSecsSinceEpoch();
+#else
         d->startTimeT = d->startTime.toTime_t();
+#endif
     }
     d->propertyChanged(Event::StartTime);
 }
@@ -786,10 +827,18 @@ void Event::setStartTime(const QDateTime &startTime)
 void Event::setEndTime(const QDateTime &endTime)
 {
     if (d->endTime.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->endTimeT = endTime.toUTC().toSecsSinceEpoch();
+#else
         d->endTimeT = endTime.toUTC().toTime_t();
+#endif
     } else {
         d->endTime = endTime.toUTC();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->endTimeT = d->endTime.toSecsSinceEpoch();
+#else
         d->endTimeT = d->endTime.toTime_t();
+#endif
     }
     d->propertyChanged(Event::EndTime);
 }
@@ -899,10 +948,18 @@ void Event::setMmsId(const QString &mmsId)
 void Event::setLastModified(const QDateTime &modified)
 {
     if (d->lastModified.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->lastModifiedT = modified.toUTC().toSecsSinceEpoch();
+#else
         d->lastModifiedT = modified.toUTC().toTime_t();
+#endif
     } else {
         d->lastModified = modified.toUTC();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->lastModifiedT = d->lastModified.toSecsSinceEpoch();
+#else
         d->lastModifiedT = d->lastModified.toTime_t();
+#endif
     }
     d->propertyChanged(Event::LastModified);
 }
@@ -1058,7 +1115,11 @@ void Event::setStartTimeT(quint32 startTime)
 {
     d->startTimeT = startTime;
     if (!d->startTime.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->startTime = QDateTime::fromMSecsSinceEpoch(d->startTimeT);
+#else
         d->startTime = QDateTime::fromTime_t(d->startTimeT);
+#endif
     }
     d->propertyChanged(Event::StartTime);
 }
@@ -1067,7 +1128,11 @@ void Event::setEndTimeT(quint32 endTime)
 {
     d->endTimeT = endTime;
     if (!d->endTime.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->endTime = QDateTime::fromMSecsSinceEpoch(d->endTimeT);
+#else
         d->endTime = QDateTime::fromTime_t(d->endTimeT);
+#endif
     }
     d->propertyChanged(Event::EndTime);
 }
@@ -1076,7 +1141,11 @@ void Event::setLastModifiedT(quint32 modified)
 {
     d->lastModifiedT = modified;
     if (!d->lastModified.isNull()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        d->lastModified = QDateTime::fromMSecsSinceEpoch(d->lastModifiedT);
+#else
         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
+#endif
     }
     d->propertyChanged(Event::LastModified);
 }

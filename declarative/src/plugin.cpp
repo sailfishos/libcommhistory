@@ -73,6 +73,11 @@ void CommHistoryPlugin::registerTypes(const char *uri)
     qmlRegisterType<DraftEvent>(uri, 1, 0, "DraftEvent");
     qmlRegisterType<MmsHelper>(uri, 1, 0, "MmsHelper");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    qmlRegisterAnonymousType<CommHistory::GroupObject>(uri, 0);
+    qmlRegisterAnonymousType<CommHistory::ContactGroup>(uri, 0);
+#else
     qmlRegisterType<CommHistory::GroupObject>();
     qmlRegisterType<CommHistory::ContactGroup>();
+#endif
 }

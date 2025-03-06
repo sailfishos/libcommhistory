@@ -394,8 +394,11 @@ public:
      * \param another event
      */
     void copyValidProperties(const Event &other);
-
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    static quint32 currentTime_t() { return QDateTime::currentDateTimeUtc().toSecsSinceEpoch(); }
+#else
     static quint32 currentTime_t() { return QDateTime::currentDateTimeUtc().toTime_t(); }
+#endif
 
 private:
     QSharedDataPointer<EventPrivate> d;
