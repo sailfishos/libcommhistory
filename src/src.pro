@@ -38,6 +38,8 @@ CONFIG  += shared \
            no_install_prl \
            debug
 
+QMAKE_CXXFLAGS += -std=c++17
+
 QT += dbus sql contacts
 QT -= gui
 
