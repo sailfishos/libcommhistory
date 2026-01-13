@@ -87,7 +87,7 @@ static const char *db_schema[] = {
     "  readStatus INTEGER, "
     "  reportRead INTEGER, "
     "  reportedReadRequested INTEGER, "
-    "  mmsId INTEGER, "
+    "  mmsId TEXT, " // was INTEGER for over 10 years. changed without migration as it clearly worked good enough
     "  isAction INTEGER, "
     "  hasExtraProperties BOOL DEFAULT 0, "
     "  hasMessageParts BOOL DEFAULT 0, "
