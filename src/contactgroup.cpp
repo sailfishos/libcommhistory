@@ -500,6 +500,5 @@ GroupObject *ContactGroup::findGroup(const QString &localUid, const QStringList 
             return g;
     }
 
-    return 0;
+    return nullptr;
 }
-

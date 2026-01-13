@@ -607,7 +607,7 @@ QString Group::toString() const
 
 void Group::copyValidProperties(const Group &other)
 {
-    foreach(Property p, other.validProperties()) {
+    foreach (Property p, other.validProperties()) {
         switch (p) {
         case Id:
             setId(other.id());

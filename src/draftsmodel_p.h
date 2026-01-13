@@ -25,6 +25,7 @@
 
 #include "eventmodel_p.h"
 #include "draftsmodel.h"
+
 #include <QSet>
 
 namespace CommHistory {

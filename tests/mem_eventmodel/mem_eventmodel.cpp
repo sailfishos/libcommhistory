@@ -217,8 +217,7 @@ void MemEventModelTest::callSetFilter()
     QTRY_COMPARE(ready.count(), expectedReadyCount);
     expectedReadyCount++;
 
-    for(int i = 0; i < 5; i++) {
-
+    for (int i = 0; i < 5; i++) {
         if (i&1)
             model->setFilter(CallModel::SortByTime, CommHistory::CallEvent::MissedCallType);
         else

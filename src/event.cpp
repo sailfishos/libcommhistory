@@ -1159,7 +1159,7 @@ QString Event::toString() const
 
 void Event::copyValidProperties(const Event &other)
 {
-    foreach(Property p, other.validProperties()) {
+    foreach (Property p, other.validProperties()) {
         switch (p) {
         case Id:
             setId(other.id());

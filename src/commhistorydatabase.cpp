@@ -23,6 +23,7 @@
 #include "commhistorydatabase.h"
 #include "commhistorydatabasepath.h"
 #include "debug_p.h"
+
 #include <QDir>
 #include <QFile>
 #include <QSqlError>

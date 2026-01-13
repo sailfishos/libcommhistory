@@ -285,25 +285,22 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
         else
             e.setDirection(direction);
 
-        if (isMms)
-        {
+        if (isMms) {
             e.setType(Event::MMSEvent);
             e.setLocalUid(localUid);
             e.setSubject(mmsSubject[qrand() % numMmsSubjects]);
             e.setMessageToken(QUuid::createUuid().toString());
 
-            if(e.direction() == Event::Outbound || qrand() % 2 == 0)
-            {
-                if(qrand() % 2 == 0)
+            if (e.direction() == Event::Outbound || qrand() % 2 == 0) {
+                if (qrand() % 2 == 0)
                     e.setCcList(QStringList() << "111111" << "222222" << "iam@cc.list.com");
-                if(qrand() % 2 == 0)
+                if (qrand() % 2 == 0)
                     e.setBccList(QStringList() << "33333" << "44444" << "iam@bcc.list.com");
 
                 QList<MessagePart> parts;
 
                 bool smilAdded = false;
-                if (qrand() % 2 == 0)
-                {
+                if (qrand() % 2 == 0) {
                     MessagePart part1;
                     part1.setContentType("application/smil");
                     parts << part1;
@@ -313,8 +310,7 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
                 part2.setContentId("text_slide1");
                 part2.setContentType("text/plain");
                 parts << part2;
-                if (smilAdded || qrand() % 3 == 0)
-                {
+                if (smilAdded || qrand() % 3 == 0) {
                     MessagePart part3;
                     part3.setContentId("catphoto");
                     part3.setContentType("image/jpeg");
@@ -323,15 +319,11 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
                 }
                 e.setMessageParts(parts);
             }
-        }
-        else if (isSms)
-        {
+        } else if (isSms) {
             e.setType(Event::SMSEvent);
             e.setLocalUid(localUid);
             e.setMessageToken(QUuid::createUuid().toString());
-        }
-        else
-        {
+        } else {
             e.setType(Event::IMEvent);
             e.setLocalUid(localUid);
         }
@@ -368,11 +360,11 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
     return 0;
 }
 
-int doAddCall( const QStringList &arguments, const QVariantMap &options )
+int doAddCall(const QStringList &arguments, const QVariantMap &options)
 {
-    Q_UNUSED( options )
+    Q_UNUSED(options)
 
-    qsrand( QDateTime::currentDateTime().toTime_t() );
+    qsrand(QDateTime::currentDateTime().toTime_t());
 
     int count = 1;
     if (options.contains("-n")) {
@@ -391,11 +383,11 @@ int doAddCall( const QStringList &arguments, const QVariantMap &options )
     QList<Event> events;
     for (int i = 0; i < count; i++) {
         Event e;
-        e.setType( Event::CallEvent );
-        e.setStartTime( QDateTime::currentDateTime() );
-        e.setEndTime( QDateTime::currentDateTime() );
-        e.setLocalUid( localUid );
-        e.setGroupId( -1 );
+        e.setType(Event::CallEvent);
+        e.setStartTime(QDateTime::currentDateTime());
+        e.setEndTime(QDateTime::currentDateTime());
+        e.setLocalUid(localUid);
+        e.setGroupId(-1);
 
         int callType = -1;
         if (arguments.last() == "dialed") {
@@ -423,8 +415,8 @@ int doAddCall( const QStringList &arguments, const QVariantMap &options )
         } else {
             e.setRecipients(Recipient(localUid, remoteUids[0]));
         }
-        e.setDirection( direction );
-        e.setIsMissedCall( isMissed );
+        e.setDirection(direction);
+        e.setIsMissedCall(isMissed);
 
         events.append(e);
     }
@@ -447,13 +439,13 @@ int doAddVCard(const QStringList &arguments, const QVariantMap &options)
 
     bool conversionSuccess = false;
     int id = arguments.at(2).toInt(&conversionSuccess);
-    if(!conversionSuccess) {
+    if (!conversionSuccess) {
         qCritical() << "Invalid event id";
         return -1;
     }
     EventModel model;
     Event e;
-    if(!model.databaseIO().getEvent(id, e)) {
+    if (!model.databaseIO().getEvent(id, e)) {
         qCritical() << "Error getting event" << id;
         return -1;
     }
@@ -617,7 +609,7 @@ int doListGroups(const QStringList &arguments, const QVariantMap &options)
 
 int doListContact(const QStringList &arguments, const QVariantMap &options)
 {
-    Q_UNUSED( options );
+    Q_UNUSED(options);
 
     RecipientEventModel model;
 
@@ -647,24 +639,20 @@ int doListContact(const QStringList &arguments, const QVariantMap &options)
     return 0;
 }
 
-int doListCalls( const QStringList &arguments, const QVariantMap &options )
+int doListCalls(const QStringList &arguments, const QVariantMap &options)
 {
-    Q_UNUSED( options );
+    Q_UNUSED(options);
 
     CallModel::Sorting sorting = CallModel::SortByContact;
     CallModel::ContactResolveType resolve = CallModel::DoNotResolve;
 
-    if ( arguments.count() >= 3 )
-    {
-        if ( arguments.at( 2 ) == "bytime" )
-        {
+    if (arguments.count() >= 3 ) {
+        if (arguments.at(2) == "bytime") {
             sorting = CallModel::SortByTime;
         }
 
-        if ( arguments.count() == 4 )
-        {
-            if ( arguments.at( 3 ) == "resolve" )
-            {
+        if (arguments.count() == 4) {
+            if (arguments.at(3) == "resolve") {
                 resolve = CallModel::ResolveImmediately;
             }
         }
@@ -674,17 +662,15 @@ int doListCalls( const QStringList &arguments, const QVariantMap &options )
     model.setFilter(sorting);
     model.setResolveContacts(resolve);
     model.setQueryMode(resolve == CallModel::ResolveImmediately ? EventModel::AsyncQuery : EventModel::SyncQuery);
-    if ( !model.getEvents() )
-    {
+    if (!model.getEvents()) {
         qCritical() << "Error fetching events";
         return -1;
     }
-    if ( !model.isReady() ) {
+    if (!model.isReady()) {
         waitForReadiness(model);
     }
 
-    for ( int i = 0; i < model.rowCount(); i++ )
-    {
+    for (int i = 0; i < model.rowCount(); i++) {
         Event e = model.event(model.index(i, 0));
         printEvent(e);
     }
@@ -828,33 +814,22 @@ int doSetStatus(const QStringList &arguments, const QVariantMap &options)
     }
 
     Event::EventStatus status;
-    if ( arguments.count() == 4 && arguments.at( 3 ) == "sending" )
-    {
+    if (arguments.count() == 4 && arguments.at(3) == "sending") {
         status = Event::SendingStatus;
-    }
-    else if ( arguments.count() == 4 && arguments.at( 3 ) == "sent" )
-    {
+    } else if (arguments.count() == 4 && arguments.at(3) == "sent") {
         status = Event::SentStatus;
-    }
-    else if ( arguments.count() == 4 && arguments.at( 3 ) == "delivered" )
-    {
+    } else if (arguments.count() == 4 && arguments.at(3) == "delivered") {
         status = Event::DeliveredStatus;
-    }
-    else if ( arguments.count() == 4 && arguments.at( 3 ) == "temporarilyfailed" )
-    {
+    } else if (arguments.count() == 4 && arguments.at(3) == "temporarilyfailed") {
         status = Event::TemporarilyFailedStatus;
-    }
-    else if ( arguments.count() == 4 && arguments.at( 3 ) == "permanentlyfailed" )
-    {
+    } else if (arguments.count() == 4 && arguments.at(3) == "permanentlyfailed") {
         status = Event::PermanentlyFailedStatus;
-    }
-    else
-    {
+    } else {
         status = Event::UnknownStatus;
     }
 
     qDebug() << "Old status: " << event.status();
-    event.setStatus( status );
+    event.setStatus(status);
     qDebug() << "New status: " << event.status();
 
     Catcher c(&model);
@@ -1242,7 +1217,8 @@ int doJsonImport(const QStringList &arguments, const QVariantMap &options)
         if (type != Event::CallEvent) {
             groupCatcher.reset();
             if (!groupModel.addGroup(group)) {
-                qWarning() << "Error adding conversation" << groupCount << "( local" << group.localUid() << ", remote" << group.recipients().debugString() << ")";
+                qWarning() << "Error adding conversation" << groupCount << "( local" << group.localUid()
+                           << ", remote" << group.recipients().debugString() << ")";
                 ok = false;
                 continue;
             }
@@ -1349,7 +1325,7 @@ int main(int argc, char **argv)
         if (args.at(1) == "add" && args.count() > 3) {
             return doAdd(args, options);
         } else if (args.at(1) == "addcall" && args.count() >= 3) {
-            return doAddCall( args, options );
+            return doAddCall(args, options);
         } else if (args.at(1) == "addVCard") {
             return doAddVCard(args, options);
         } else if (args.at(1) == "addClass0") {
@@ -1378,7 +1354,7 @@ int main(int argc, char **argv)
                                           args.at(3) == "delivered" ||
                                           args.at(3) == "temporarilyfailed" ||
                                           args.at(3) == "permanentlyfailed"))) {
-            return doSetStatus( args, options );
+            return doSetStatus(args, options);
         } else if (args.at(1) == "delete" && args.count() > 2) {
             return doDelete(args, options);
         } else if (args.at(1) == "deletegroup" && args.count() > 2) {

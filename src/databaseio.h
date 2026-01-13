@@ -47,6 +47,7 @@ class LIBCOMMHISTORY_EXPORT DatabaseIO : public QObject
 public:
     DatabaseIO();
     ~DatabaseIO();
+
     static DatabaseIO* instance();
 
     /*!

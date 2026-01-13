@@ -36,19 +36,21 @@ namespace CommHistory {
 
 using namespace CommHistory;
 
-class SingleEventModelPrivate : public EventModelPrivate {
+class SingleEventModelPrivate : public EventModelPrivate
+{
 public:
     Q_DECLARE_PUBLIC(SingleEventModel)
 
     SingleEventModelPrivate(EventModel *model)
-        : EventModelPrivate(model) {
+        : EventModelPrivate(model)
+    {
         queryLimit = 1;
         m_eventId = -1;
         clearTokens();
     }
 
-    bool acceptsEvent(const Event &event) const {
-
+    bool acceptsEvent(const Event &event) const
+    {
         // If the urls match, we'll accept
         if (m_eventId >= 0 && event.id() == m_eventId)
             return true;
@@ -60,11 +62,12 @@ public:
         }
 
         // Accept the event if message tokens or mmsIds match
-        return (!m_token.isEmpty() && m_token == event.messageToken()) ||
-               (!m_mmsId.isEmpty() && m_mmsId == event.mmsId());
+        return (!m_token.isEmpty() && m_token == event.messageToken())
+               || (!m_mmsId.isEmpty() && m_mmsId == event.mmsId());
     }
 
-    void clearTokens() {
+    void clearTokens()
+    {
         m_token.clear();
         m_mmsId.clear();
         m_groupId = -1;
@@ -153,6 +156,5 @@ Event SingleEventModel::event() const
 {
     return EventModel::event(index(0, 0));
 }
-
 
 } // namespace CommHistory

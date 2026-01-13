@@ -455,4 +455,3 @@ void ContactGroupModel::fetchMore(const QModelIndex &parent)
 }
 
 #include "contactgroupmodel.moc"
-

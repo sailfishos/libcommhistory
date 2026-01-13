@@ -72,12 +72,12 @@ QSqlQuery MmsReadReportModel::Private::buildGroupQuery(int groupId)
 
 bool MmsReadReportModel::acceptsEvent(const Event &event)
 {
-    return (event.type() == Event::MMSEvent &&
-            event.direction() == Event::Inbound &&
-            event.isRead() &&
-            event.reportRead() &&
-            !event.mmsId().isEmpty() &&
-            !event.extraProperty(MMS_PROPERTY_UNREAD).toString().isEmpty());
+    return (event.type() == Event::MMSEvent
+            && event.direction() == Event::Inbound
+            && event.isRead()
+            && event.reportRead()
+            && !event.mmsId().isEmpty()
+            && !event.extraProperty(MMS_PROPERTY_UNREAD).toString().isEmpty());
 }
 
 MmsReadReportModel::MmsReadReportModel(QObject *parent) : EventModel(parent), d(NULL)

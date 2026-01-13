@@ -189,10 +189,10 @@ bool DraftEvent::isModified() const
 
 bool DraftEvent::isValid() const
 {
-    return !m_event.localUid().isEmpty() &&
-           !m_event.recipients().isEmpty() &&
-           !m_event.freeText().isEmpty() &&
-           m_event.groupId() >= 0;
+    return !m_event.localUid().isEmpty()
+            && !m_event.recipients().isEmpty()
+            && !m_event.freeText().isEmpty()
+            && m_event.groupId() >= 0;
 }
 
 bool DraftEvent::load(int eventId)
@@ -207,4 +207,3 @@ bool DraftEvent::load(int eventId)
 
     return false;
 }
-

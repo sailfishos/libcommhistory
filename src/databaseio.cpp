@@ -25,9 +25,10 @@
 #include "commhistorydatabase.h"
 #include "contactlistener.h"
 #include "group.h"
+#include "debug_p.h"
+
 #include <QSqlQuery>
 #include <QSqlError>
-#include "debug_p.h"
 
 using namespace CommHistory;
 
@@ -790,8 +791,8 @@ bool DatabaseIO::getEventByMmsId(const QString &mmsId, Event &event)
                 d->readEventResult(query, e, extra, parts);
                 query.finish();
 
-                if ((!extra || getEventExtraProperties(e)) &&
-                    (!parts || getMessageParts(e))) {
+                if ((!extra || getEventExtraProperties(e))
+                    && (!parts || getMessageParts(e))) {
                     ok = true;
                 }
             }

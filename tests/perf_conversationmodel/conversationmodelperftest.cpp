@@ -36,9 +36,9 @@ void ConversationModelPerfTest::initTestCase()
     initTestDatabase();
 
     logFile = new QFile("libcommhistory-performance-test.log");
-    if(!logFile->open(QIODevice::Append)) {
+    if (!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
-        logFile = 0;
+        logFile = nullptr;
     }
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
@@ -104,7 +104,7 @@ void ConversationModelPerfTest::getEvents()
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
 
     int ci = remoteUids.count();
-    while(ci < contacts) {
+    while (ci < contacts) {
         QString phoneNumber;
         do {
             phoneNumber = QString().setNum(qrand() % 10000000);
@@ -115,7 +115,7 @@ void ConversationModelPerfTest::getEvents()
 
         contactDetails.append(qMakePair(QString("Test Contact %1").arg(ci), qMakePair(phoneNumber, QString())));
 
-        if(ci % commitBatchSize == 0 && ci < contacts) {
+        if (ci % commitBatchSize == 0 && ci < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "contacts (" << ci << "/" << contacts << ")";
             addTestContacts(contactDetails);
@@ -140,7 +140,7 @@ void ConversationModelPerfTest::getEvents()
     GroupModel groupModel;
 
     int gi = 0;
-    while(gi < contacts) {
+    while (gi < contacts) {
         Group grp;
         grp.setLocalUid(RING_ACCOUNT);
         grp.setRecipients(RecipientList::fromPhoneNumbers(QStringList() << remoteUids.at(contactIndices.at(gi))));
@@ -150,7 +150,7 @@ void ConversationModelPerfTest::getEvents()
         groupIds << grp.id();
 
         gi++;
-        if(gi % commitBatchSize == 0 && gi < contacts) {
+        if (gi % commitBatchSize == 0 && gi < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "groups (" << gi << "/" << contacts << ")";
         }
@@ -166,7 +166,7 @@ void ConversationModelPerfTest::getEvents()
     QList<Event> eventList;
 
     int ei = 0;
-    while(ei < messages) {
+    while (ei < messages) {
         ei++;
 
         Event::EventDirection direction;
@@ -188,7 +188,7 @@ void ConversationModelPerfTest::getEvents()
 
         eventList << e;
 
-        if(ei % commitBatchSize == 0 && ei != messages) {
+        if (ei % commitBatchSize == 0 && ei != messages) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "messages (" << ei << "/" << messages << ")";
             QVERIFY(addModel.addEvents(eventList, false));
@@ -217,8 +217,7 @@ void ConversationModelPerfTest::getEvents()
     }
 
     qDebug() << Q_FUNC_INFO << "- Fetching messages." << iterations << "iterations";
-    for(int i = 0; i < iterations; i++) {
-
+    for (int i = 0; i < iterations; i++) {
         ConversationModel fetchModel;
         fetchModel.setResolveContacts(resolve ? EventModel::ResolveImmediately : EventModel::DoNotResolve);
 
@@ -248,10 +247,10 @@ void ConversationModelPerfTest::getEvents()
 
 void ConversationModelPerfTest::cleanupTestCase()
 {
-    if(logFile) {
+    if (logFile) {
         logFile->close();
         delete logFile;
-        logFile = 0;
+        logFile = nullptr;
     }
 
     deleteAll();

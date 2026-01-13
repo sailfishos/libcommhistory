@@ -62,7 +62,7 @@ void RecentContactsModelProfileTest::prepare()
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
 
     int ci = remoteUids.count();
-    while(ci < contacts) {
+    while (ci < contacts) {
         QString phoneNumber;
         do {
             phoneNumber = QString().setNum(qrand() % 10000000);
@@ -73,7 +73,7 @@ void RecentContactsModelProfileTest::prepare()
 
         contactDetails.append(qMakePair(QString("Test Contact %1").arg(ci), qMakePair(phoneNumber, (ci <= groups ? ACCOUNT1 : QString()))));
 
-        if(ci % commitBatchSize == 0 && ci < contacts) {
+        if (ci % commitBatchSize == 0 && ci < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "contacts (" << ci << "/" << contacts << ")";
             addTestContacts(contactDetails);
@@ -93,7 +93,7 @@ void RecentContactsModelProfileTest::prepare()
     QList<Group> groupList;
 
     int gi = 0;
-    while(gi < groups) {
+    while (gi < groups) {
         Group grp;
         grp.setLocalUid(ACCOUNT1);
         grp.setRecipients(RecipientList::fromUids(ACCOUNT1, QStringList() << remoteUids.at(contactIndices.at(gi))));
@@ -102,7 +102,7 @@ void RecentContactsModelProfileTest::prepare()
         groupList << grp;
 
         gi++;
-        if(gi % commitBatchSize == 0 && gi < groups) {
+        if (gi % commitBatchSize == 0 && gi < groups) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "groups (" << gi << "/" << groups << ")";
         }
@@ -115,7 +115,7 @@ void RecentContactsModelProfileTest::prepare()
     QList<Event> eventList;
 
     int ei = 0;
-    while(ei < events) {
+    while (ei < events) {
         ei++;
 
         int idIndex = contactIndices.at(qrand() % contacts);
@@ -137,7 +137,7 @@ void RecentContactsModelProfileTest::prepare()
 
         eventList << e;
 
-        if(ei % commitBatchSize == 0 && ei != events) {
+        if (ei % commitBatchSize == 0 && ei != events) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "events (" << ei << "/" << events << ")";
             QVERIFY(addModel.addEvents(eventList, false));
@@ -160,7 +160,7 @@ void RecentContactsModelProfileTest::execute()
     int iterations = 1;
 
     logFile = new QFile("libcommhistory-performance-test.log");
-    if(!logFile->open(QIODevice::Append)) {
+    if (!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
         logFile = 0;
     }
@@ -168,8 +168,8 @@ void RecentContactsModelProfileTest::execute()
     QDateTime startTime = QDateTime::currentDateTime();
 
     qDebug() << Q_FUNC_INFO << "- Fetching events." << iterations << "iterations";
-    for(int i = 0; i < iterations; i++) {
 
+    for (int i = 0; i < iterations; i++) {
         RecentContactsModel fetchModel;
         fetchModel.setLimit(limit);
 
@@ -199,10 +199,10 @@ void RecentContactsModelProfileTest::finalise()
 
 void RecentContactsModelProfileTest::cleanupTestCase()
 {
-    if(logFile) {
+    if (logFile) {
         logFile->close();
         delete logFile;
-        logFile = 0;
+        logFile = nullptr;
     }
 }
 

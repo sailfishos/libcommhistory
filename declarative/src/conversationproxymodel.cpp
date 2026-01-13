@@ -36,7 +36,9 @@
 using namespace CommHistory;
 
 ConversationProxyModel::ConversationProxyModel(QObject *parent)
-    : ConversationModel(parent), m_contactGroup(0), m_groupId(-1) 
+    : ConversationModel(parent)
+    , m_contactGroup(nullptr)
+    , m_groupId(-1)
 {
     // Defaults
     setQueryMode(EventModel::StreamedAsyncQuery);
@@ -95,7 +97,7 @@ void ConversationProxyModel::setGroupId(int g)
     if (m_contactGroup)
         setContactGroup(0);
     else
-        QTimer::singleShot(0, this, SLOT(reload()));
+        QTimer::singleShot(0, this, &ConversationProxyModel::reload);
 }
 
 bool ConversationProxyModel::resolveContacts() const
@@ -131,4 +133,3 @@ void ConversationProxyModel::reload()
         getEvents(QList<int>());
     }
 }
-

@@ -46,7 +46,7 @@ public:
      *
      * \param parent Parent object.
      */
-    explicit SingleEventModel(QObject *parent = 0);
+    explicit SingleEventModel(QObject *parent = nullptr);
 
     /*!
      * Destructor.

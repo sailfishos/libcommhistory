@@ -5,13 +5,13 @@
 
 using namespace CommHistory;
 
-CallProxyModel::CallProxyModel(QObject *parent) :
-    CommHistory::CallModel(parent),
-    m_grouping(GroupByNone),
-    m_limit(0),
-    m_resolveContacts(false),
-    m_componentComplete(false),
-    m_populated(false)
+CallProxyModel::CallProxyModel(QObject *parent)
+    : CommHistory::CallModel(parent)
+    , m_grouping(GroupByNone)
+    , m_limit(0)
+    , m_resolveContacts(false)
+    , m_componentComplete(false)
+    , m_populated(false)
 {
     setQueryMode(CommHistory::EventModel::AsyncQuery);
     setFilter(CommHistory::CallModel::Sorting(m_grouping));

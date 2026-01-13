@@ -34,6 +34,7 @@
 
 #include <QIdentityProxyModel>
 #include <QHash>
+
 #include "conversationmodel.h"
 #include "sharedbackgroundthread.h"
 #include "contactgroup.h"
@@ -47,7 +48,7 @@ class ConversationProxyModel : public CommHistory::ConversationModel
     Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
 
 public:
-    ConversationProxyModel(QObject *parent = 0);
+    ConversationProxyModel(QObject *parent = nullptr);
 
     CommHistory::ContactGroup *contactGroup() const { return m_contactGroup; }
     void setContactGroup(QObject *group);

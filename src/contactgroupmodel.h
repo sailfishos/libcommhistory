@@ -112,11 +112,11 @@ public:
     QList<QObject*> contactGroups() const;
 
     /* reimp */
-    virtual bool canFetchMore(const QModelIndex &parent) const;
-    virtual void fetchMore(const QModelIndex &parent);
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QHash<int,QByteArray> roleNames() const;
+    bool canFetchMore(const QModelIndex &parent) const override;
+    void fetchMore(const QModelIndex &parent) override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QHash<int,QByteArray> roleNames() const override;
     /***/
 
 Q_SIGNALS:

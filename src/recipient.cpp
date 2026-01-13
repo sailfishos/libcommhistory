@@ -123,7 +123,7 @@ Recipient::~Recipient()
 RecipientPrivate::RecipientPrivate(const QString &local, const QString &remote)
     : localUid(local)
     , remoteUid(remote)
-    , item(0)
+    , item(nullptr)
     , isResolved(false)
     , isPhoneNumber(localUidComparesPhoneNumbers(localUid))
     // The following members could be initialized on-demand, but that appears to be slower overall
@@ -328,7 +328,7 @@ void Recipient::setUnresolved() const
         recipientContactMap->remove(d->item->iid, d);
 
     d->isResolved = false;
-    d->item = 0;
+    d->item = nullptr;
     d->contactNameHash = 0;
     d->addressFlags = 0;
 }
@@ -781,4 +781,3 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, CommHistory::Reci
     argument.endArray();
     return argument;
 }
-

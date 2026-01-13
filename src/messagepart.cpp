@@ -187,16 +187,17 @@ QString MessagePart::plainTextContent() const
     }
 
     QByteArray content = file.readAll();
-
-    QTextCodec *codec = 0;
+    QTextCodec *codec = nullptr;
     int pos = d->contentType.indexOf(";charset=");
+
     if (pos > 0) {
         pos += strlen(";charset=");
         QStringRef charset = d->contentType.midRef(pos, d->contentType.indexOf(';', pos) - pos).trimmed();
 
         codec = QTextCodec::codecForName(charset.toLatin1());
         if (!codec)
-            qCWarning(lcCommHistory) << "Missing text codec for" << charset << "when parsing content of type" << d->contentType;
+            qCWarning(lcCommHistory) << "Missing text codec for" << charset
+                                     << "when parsing content of type" << d->contentType;
     }
 
     if (codec)
