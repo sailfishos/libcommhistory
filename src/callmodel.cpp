@@ -1178,10 +1178,9 @@ bool CallModel::deleteEvent(int id)
             return true;
         }
         default:
-        {
-            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Deleting of call events from model sorted by type or by service has not been implemented yet.";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO
+                                     << "Deleting of call events from model sorted by type or by service has not been implemented yet.";
             return false;
-        }
     }
 }
 

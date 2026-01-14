@@ -49,7 +49,7 @@ class DraftEvent : public QObject
     Q_PROPERTY(bool isValid READ isValid NOTIFY isValidChanged)
 
 public:
-    DraftEvent(QObject *parent = 0);
+    DraftEvent(QObject *parent = nullptr);
     ~DraftEvent();
 
     CommHistory::Event event() const;

@@ -61,8 +61,7 @@ public:
     /*!
      * Identifier for this part within an event, set externally.
      *
-     * For example, in a MMS message this is the content ID referenced
-     * in SMIL.
+     * For example, in an MMS message this is the content ID referenced in SMIL.
      */
     QString contentId() const;
     void setContentId(const QString &id);

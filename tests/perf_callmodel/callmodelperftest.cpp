@@ -35,9 +35,9 @@ void CallModelPerfTest::initTestCase()
     initTestDatabase();
 
     logFile = new QFile("libcommhistory-performance-test.log");
-    if(!logFile->open(QIODevice::Append)) {
+    if (!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
-        logFile = 0;
+        logFile = nullptr;
     }
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
@@ -105,7 +105,7 @@ void CallModelPerfTest::getEvents()
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
 
     int ci = remoteUids.count();
-    while(ci < contacts) {
+    while (ci < contacts) {
         QString phoneNumber;
         do {
             phoneNumber = QString().setNum(qrand() % 10000000);
@@ -116,7 +116,7 @@ void CallModelPerfTest::getEvents()
 
         contactDetails.append(qMakePair(QString("Test Contact %1").arg(ci), qMakePair(phoneNumber, QString())));
 
-        if(ci % commitBatchSize == 0 && ci < contacts) {
+        if (ci % commitBatchSize == 0 && ci < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "contacts (" << ci << "/" << contacts << ")";
             addTestContacts(contactDetails);
@@ -138,13 +138,13 @@ void CallModelPerfTest::getEvents()
     random_shuffle(contactIndices.begin(), contactIndices.end());
 
     int ei = 0;
-    while(ei < events) {
+    while (ei < events) {
         ei++;
 
         Event::EventDirection direction;
         bool isMissed = false;
 
-        if(qrand() % 2 > 0) {
+        if (qrand() % 2 > 0) {
             direction = Event::Inbound;
             isMissed = (qrand() % 2 > 0);
         } else {
@@ -165,7 +165,7 @@ void CallModelPerfTest::getEvents()
 
         eventList << e;
 
-        if(ei % commitBatchSize == 0 && ei != events) {
+        if (ei % commitBatchSize == 0 && ei != events) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "events (" << ei << "/" << events << ")";
             QVERIFY(addModel.addEvents(eventList, false));
@@ -194,7 +194,7 @@ void CallModelPerfTest::getEvents()
     }
 
     qDebug() << Q_FUNC_INFO << "- Fetching events." << iterations << "iterations";
-    for(int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++) {
 
         CallModel fetchModel;
 
@@ -222,10 +222,10 @@ void CallModelPerfTest::getEvents()
 
 void CallModelPerfTest::cleanupTestCase()
 {
-    if(logFile) {
+    if (logFile) {
         logFile->close();
         delete logFile;
-        logFile = 0;
+        logFile = nullptr;
     }
 
     deleteAll();

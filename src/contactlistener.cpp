@@ -234,4 +234,3 @@ void ContactListenerPrivate::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
 }
 
 #include "contactlistener.moc"
-

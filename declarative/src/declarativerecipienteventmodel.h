@@ -47,7 +47,7 @@ class DeclarativeRecipientEventModel : public CommHistory::RecipientEventModel, 
     Q_PROPERTY(QString remoteUid READ remoteUid WRITE setRemoteUid NOTIFY remoteUidChanged)
 
 public:
-    DeclarativeRecipientEventModel(QObject *parent = 0);
+    DeclarativeRecipientEventModel(QObject *parent = nullptr);
 
     int contactId() const;
     void setContactId(int contactId);

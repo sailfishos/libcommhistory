@@ -38,12 +38,16 @@ class Catcher : public QObject
 {
     Q_OBJECT
 public:
-    Catcher(CommHistory::EventModel *model) : ok(true), count(0), stop(false) {
+    Catcher(CommHistory::EventModel *model)
+        : ok(true), count(0), stop(false)
+    {
         connect(model, SIGNAL(eventsCommitted(QList<CommHistory::Event>,bool)),
                 this, SLOT(eventsCommittedSlot(QList<CommHistory::Event>,bool)));
     };
 
-    Catcher(CommHistory::GroupModel *model) : ok(true), count(0), stop(false) {
+    Catcher(CommHistory::GroupModel *model)
+        : ok(true), count(0), stop(false)
+    {
         connect((QObject*)model, SIGNAL(groupsCommitted(QList<int>,bool)),
                 this, SLOT(groupsCommittedSlot(QList<int>,bool)));
     };
@@ -54,8 +58,9 @@ public:
         stop = false;
     }
 
-    void waitCommit(int numEvents = 1) {
-        while(count < numEvents || (numEvents == 0 && !stop)) {
+    void waitCommit(int numEvents = 1)
+    {
+        while (count < numEvents || (numEvents == 0 && !stop)) {
             qDebug() << ".";
             QCoreApplication::instance()->processEvents(QEventLoop::WaitForMoreEvents);
         }
@@ -67,7 +72,8 @@ public:
     bool stop;
 
 public Q_SLOTS:
-    void eventsCommittedSlot(QList<CommHistory::Event> committedEvents, bool success) {
+    void eventsCommittedSlot(QList<CommHistory::Event> committedEvents, bool success)
+    {
         qDebug() << Q_FUNC_INFO;
         ok = success;
         events = committedEvents;
@@ -75,7 +81,8 @@ public Q_SLOTS:
         stop = true;
     };
 
-    void groupsCommittedSlot(QList<int> committedGroups, bool success) {
+    void groupsCommittedSlot(QList<int> committedGroups, bool success)
+    {
         Q_UNUSED(committedGroups);
 
         qDebug() << Q_FUNC_INFO;

@@ -40,12 +40,11 @@
 class DeclarativeGroupManager : public CommHistory::GroupManager
 {
     Q_OBJECT
-
     Q_PROPERTY(bool useBackgroundThread READ useBackgroundThread WRITE setUseBackgroundThread NOTIFY backgroundThreadChanged)
     Q_PROPERTY(bool resolveContacts READ resolveContacts WRITE setResolveContacts NOTIFY resolveContactsChanged)
 
 public:
-    DeclarativeGroupManager(QObject *parent = 0);
+    DeclarativeGroupManager(QObject *parent = nullptr);
     virtual ~DeclarativeGroupManager();
 
     bool useBackgroundThread() { return backgroundThread() != 0; }
@@ -62,8 +61,10 @@ public:
      *
      * If groupId is negative, an appropriate group will be found or created
      * inline if necessary. */
-    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid, const QString &text);
-    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids, const QString &text);
+    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid,
+                                               const QString &text);
+    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids,
+                                               const QString &text);
 
     /* Create an event for an outgoing plain text message, which will be
      * in the sending state. The event ID will be passed to the callback
@@ -73,8 +74,10 @@ public:
      *
      * If groupId is negative, an appropriate group will be found or created
      * inline if necessary. */
-    Q_INVOKABLE void createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid, const QString &text, QJSValue callback);
-    Q_INVOKABLE void createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids, const QString &text, QJSValue callback);
+    Q_INVOKABLE void createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid,
+                                                const QString &text, QJSValue callback);
+    Q_INVOKABLE void createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids,
+                                                const QString &text, QJSValue callback);
 
     Q_INVOKABLE bool setEventStatus(int eventId, int status);
 
@@ -95,4 +98,3 @@ private:
 };
 
 #endif
-

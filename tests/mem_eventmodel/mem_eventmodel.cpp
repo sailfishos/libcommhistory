@@ -37,7 +37,7 @@ Group group;
 #define WAIT_TIMEOUT 30000
 #define CALM_TIMEOUT 500
 
-#define MALLINFO_DUMP(s) {struct mallinfo m = mallinfo();qDebug() << "MALLINFO" << (s) << m.arena << m.uordblks << m.fordblks;}
+#define MALLINFO_DUMP(s) {struct mallinfo2 m = mallinfo2();qDebug() << "MALLINFO" << (s) << m.arena << m.uordblks << m.fordblks;}
 
 static void waitWithDeletes(int msec)
 {
@@ -217,8 +217,7 @@ void MemEventModelTest::callSetFilter()
     QTRY_COMPARE(ready.count(), expectedReadyCount);
     expectedReadyCount++;
 
-    for(int i = 0; i < 5; i++) {
-
+    for (int i = 0; i < 5; i++) {
         if (i&1)
             model->setFilter(CallModel::SortByTime, CommHistory::CallEvent::MissedCallType);
         else

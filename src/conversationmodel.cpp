@@ -33,13 +33,14 @@
 #include "debug_p.h"
 
 namespace {
-static CommHistory::Event::PropertySet unusedProperties = CommHistory::Event::PropertySet()
+CommHistory::Event::PropertySet unusedProperties = CommHistory::Event::PropertySet()
                                              << CommHistory::Event::IsDraft
                                              << CommHistory::Event::IsMissedCall
                                              << CommHistory::Event::IsEmergencyCall
                                              << CommHistory::Event::BytesReceived
                                              << CommHistory::Event::EventCount;
 }
+
 namespace CommHistory {
 
 ConversationModelPrivate::ConversationModelPrivate(EventModel *model)

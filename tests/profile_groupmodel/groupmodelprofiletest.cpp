@@ -35,7 +35,7 @@ void GroupModelProfileTest::initTestCase()
 {
     initTestDatabase();
 
-    logFile = 0;
+    logFile = nullptr;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
 }
@@ -59,7 +59,7 @@ void GroupModelProfileTest::prepare()
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
 
     int ci = remoteUids.count();
-    while(ci < contacts) {
+    while (ci < contacts) {
         QString phoneNumber;
         do {
             phoneNumber = QString().setNum(qrand() % 10000000);
@@ -70,7 +70,7 @@ void GroupModelProfileTest::prepare()
 
         contactDetails.append(qMakePair(QString("Test Contact %1").arg(ci), qMakePair(phoneNumber, QString())));
 
-        if(ci % commitBatchSize == 0 && ci < contacts) {
+        if (ci % commitBatchSize == 0 && ci < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "contacts (" << ci << "/" << contacts << ")";
             addTestContacts(contactDetails);
@@ -93,7 +93,7 @@ void GroupModelProfileTest::prepare()
     GroupModel addModel;
 
     int gi = 0;
-    while(gi < groups) {
+    while (gi < groups) {
         Group grp;
         grp.setLocalUid(RING_ACCOUNT);
         grp.setRecipients(RecipientList::fromPhoneNumbers(QStringList() << remoteUids.at(contactIndices.at(gi))));
@@ -102,7 +102,7 @@ void GroupModelProfileTest::prepare()
         groupList << grp;
 
         gi++;
-        if(gi % commitBatchSize == 0 && gi < groups) {
+        if (gi % commitBatchSize == 0 && gi < groups) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "groups (" << gi << "/" << groups << ")";
         }
@@ -118,8 +118,8 @@ void GroupModelProfileTest::prepare()
     gi = 0;
     foreach (Group grp, groupList) {
         QList<Event> eventList;
-        for(int i = 0; i < messages; i++) {
 
+        for (int i = 0; i < messages; i++) {
             Event e;
             e.setType(Event::SMSEvent);
             e.setDirection(qrand() % 2 ? Event::Inbound : Event::Outbound);
@@ -152,16 +152,16 @@ void GroupModelProfileTest::execute()
     int iterations = 1;
 
     logFile = new QFile("libcommhistory-performance-test.log");
-    if(!logFile->open(QIODevice::Append)) {
+    if (!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
-        logFile = 0;
+        logFile = nullptr;
     }
 
     QDateTime startTime = QDateTime::currentDateTime();
 
     qDebug() << Q_FUNC_INFO << "- Fetching groups." << iterations << "iterations";
-    for(int i = 0; i < iterations; i++) {
 
+    for (int i = 0; i < iterations; i++) {
         GroupModel fetchModel;
 
         GroupManager manager;
@@ -195,10 +195,10 @@ void GroupModelProfileTest::finalise()
 
 void GroupModelProfileTest::cleanupTestCase()
 {
-    if(logFile) {
+    if (logFile) {
         logFile->close();
         delete logFile;
-        logFile = 0;
+        logFile = nullptr;
     }
 }
 

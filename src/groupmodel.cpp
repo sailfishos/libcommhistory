@@ -198,7 +198,7 @@ QHash<int, QByteArray> GroupModel::roleNames() const
 GroupModel::~GroupModel()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 GroupManager *GroupModel::manager() const
@@ -449,4 +449,3 @@ void GroupModel::setResolveContacts(GroupManager::ContactResolveType type)
     d->ensureManager();
     d->manager->setResolveContacts(type);
 }
-

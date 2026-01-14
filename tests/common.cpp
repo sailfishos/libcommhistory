@@ -590,7 +590,7 @@ QString randomMessage(int words)
 {
     QString msg;
     QTextStream msgStream(&msg, QIODevice::WriteOnly);
-    for(int j = 0; j < words; j++) {
+    for (int j = 0; j < words; j++) {
         msgStream << msgWords[qrand() % numWords] << " ";
     }
     return msg;
@@ -639,4 +639,3 @@ void summarizeResults(const QString &className, QList<int> &times, QFile *logFil
             << "\n";
     }
 }
-

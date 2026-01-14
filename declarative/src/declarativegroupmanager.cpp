@@ -32,8 +32,9 @@
 #include "declarativegroupmanager.h"
 #include "sharedbackgroundthread.h"
 #include "singleeventmodel.h"
-#include <QTimer>
 #include "debug.h"
+
+#include <QTimer>
 
 using namespace CommHistory;
 
@@ -243,4 +244,3 @@ int DeclarativeGroupManager::ensureGroupExists(const QString &localUid, const QS
 }
 
 #include "declarativegroupmanager.moc"
-

@@ -36,7 +36,7 @@ void CallModelProfileTest::initTestCase()
 {
     initTestDatabase();
 
-    logFile = 0;
+    logFile = nullptr;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
 }
@@ -63,7 +63,7 @@ void CallModelProfileTest::prepare()
     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
 
     int ci = remoteUids.count();
-    while(ci < contacts) {
+    while (ci < contacts) {
         QString phoneNumber;
         do {
             phoneNumber = QString().setNum(qrand() % 10000000);
@@ -74,7 +74,7 @@ void CallModelProfileTest::prepare()
 
         contactDetails.append(qMakePair(QString("Test Contact %1").arg(ci), qMakePair(phoneNumber, QString())));
 
-        if(ci % commitBatchSize == 0 && ci < contacts) {
+        if (ci % commitBatchSize == 0 && ci < contacts) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "contacts (" << ci << "/" << contacts << ")";
             addTestContacts(contactDetails);
@@ -96,13 +96,13 @@ void CallModelProfileTest::prepare()
     QList<Event> eventList;
 
     int ei = 0;
-    while(ei < events) {
+    while (ei < events) {
         ei++;
 
         Event::EventDirection direction;
         bool isMissed = false;
 
-        if(qrand() % 2 > 0) {
+        if (qrand() % 2 > 0) {
             direction = Event::Inbound;
             isMissed = (qrand() % 2 > 0);
         } else {
@@ -123,7 +123,7 @@ void CallModelProfileTest::prepare()
 
         eventList << e;
 
-        if(ei % commitBatchSize == 0 && ei != events) {
+        if (ei % commitBatchSize == 0 && ei != events) {
             qDebug() << Q_FUNC_INFO << "- adding" << commitBatchSize
                 << "events (" << ei << "/" << events << ")";
             QVERIFY(addModel.addEvents(eventList, false));
@@ -146,16 +146,16 @@ void CallModelProfileTest::execute()
     int iterations = 1;
 
     logFile = new QFile("libcommhistory-performance-test.log");
-    if(!logFile->open(QIODevice::Append)) {
+    if (!logFile->open(QIODevice::Append)) {
         qDebug() << "!!!! Failed to open log file !!!!";
-        logFile = 0;
+        logFile = nullptr;
     }
 
     QDateTime startTime = QDateTime::currentDateTime();
 
     qDebug() << Q_FUNC_INFO << "- Fetching events." << iterations << "iterations";
-    for(int i = 0; i < iterations; i++) {
 
+    for (int i = 0; i < iterations; i++) {
         CallModel fetchModel;
 
         fetchModel.setResolveContacts(resolve ? EventModel::ResolveImmediately : EventModel::DoNotResolve);
@@ -190,7 +190,7 @@ void CallModelProfileTest::cleanupTestCase()
     if (logFile) {
         logFile->close();
         delete logFile;
-        logFile = 0;
+        logFile = nullptr;
     }
 }
 

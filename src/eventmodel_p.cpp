@@ -579,10 +579,10 @@ void EventModelPrivate::setResolveContacts(EventModel::ContactResolveType type)
         contactListener.clear();
 
         delete receiveResolver;
-        receiveResolver = 0;
+        receiveResolver = nullptr;
 
         delete onDemandResolver;
-        onDemandResolver = 0;
+        onDemandResolver = nullptr;
     }
 }
 
@@ -593,4 +593,3 @@ void EventModelPrivate::emitDataChanged(int row, void *data)
     const QModelIndex modelIndex(q->createIndex(row, 0, data));
     emit q->dataChanged(modelIndex, modelIndex);
 }
-

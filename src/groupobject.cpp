@@ -590,4 +590,3 @@ void GroupObject::copyValidProperties(const Group &other)
 {
     ::copyValidProperties(other, *this);
 }
-

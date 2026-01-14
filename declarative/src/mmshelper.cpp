@@ -33,6 +33,7 @@
 #include "mmsconstants.h"
 #include "singleeventmodel.h"
 #include "debug.h"
+
 #include <QtDBus>
 #include <QTextCodec>
 #include <QTemporaryDir>
@@ -72,7 +73,8 @@ using namespace CommHistory;
 
 // QObject wrapper around QTemporaryDir to keep the temporary directory around
 // until the D-Bus call completes
-class MmsHelper::TempDir : public QObject {
+class MmsHelper::TempDir : public QObject
+{
     Q_OBJECT
 
 public:
@@ -218,7 +220,8 @@ static QString createTemporaryFile(const QString &dir, const QString &source)
     return targetFile;
 }
 
-bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc, const QString &subject, const QVariantList &parts)
+bool MmsHelper::sendMessage(const QStringList &to, const QStringList &cc, const QStringList &bcc,
+                            const QString &subject, const QVariantList &parts)
 {
     return sendMessage(QString(), to, cc, bcc, subject, parts);
 }
