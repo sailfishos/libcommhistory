@@ -70,19 +70,19 @@ public:
 };
 
 GroupObjectPrivate::GroupObjectPrivate(GroupManager *m, GroupObject *parent)
-        : q_ptr(parent)
-        , manager(m)
-        , id(-1)
-        , chatType(Group::ChatTypeP2P)
-        , unreadMessages(0)
-        , lastEventId(-1)
-        , lastEventType(Event::UnknownType)
-        , lastEventStatus(Event::UnknownStatus)
-        , lastEventIsDraft(false)
-        , recipientsResolved(manager->resolveContacts() == GroupManager::ResolveImmediately)
-        , startTimeT(0)
-        , endTimeT(0)
-        , lastModifiedT(0)
+    : q_ptr(parent)
+    , manager(m)
+    , id(-1)
+    , chatType(Group::ChatTypeP2P)
+    , unreadMessages(0)
+    , lastEventId(-1)
+    , lastEventType(Event::UnknownType)
+    , lastEventStatus(Event::UnknownStatus)
+    , lastEventIsDraft(false)
+    , recipientsResolved(manager->resolveContacts() == GroupManager::ResolveImmediately)
+    , startTimeT(0)
+    , endTimeT(0)
+    , lastModifiedT(0)
 {
 }
 
@@ -122,12 +122,14 @@ void GroupObjectPrivate::propertyChanged(Group::Property property)
 using namespace CommHistory;
 
 GroupObject::GroupObject(GroupManager *parent)
-        : QObject(parent), d(new GroupObjectPrivate(parent, this))
+    : QObject(parent)
+    , d(new GroupObjectPrivate(parent, this))
 {
 }
 
 GroupObject::GroupObject(const CommHistory::Group &other, GroupManager *parent)
-        : QObject(parent), d(new GroupObjectPrivate(parent, this))
+    : QObject(parent)
+    , d(new GroupObjectPrivate(parent, this))
 {
     set(other);
 }

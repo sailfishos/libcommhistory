@@ -30,29 +30,27 @@
 
 using namespace CommHistory;
 
-ModelWatcher watcher;
-
 typedef QPair<int, QString> ContactDetails;
 
-const QString REMOTEUID1( "user1@remotehost" );
-const QString REMOTEUID2( "user2@remotehost" );
+static ModelWatcher watcher;
+
+static const QString REMOTEUID1( "user1@remotehost" );
+static const QString REMOTEUID2( "user2@remotehost" );
+static QList<TestCallItem> testCalls;
 
 class TestCallItem
 {
 public:
-    TestCallItem( const QString &remoteUid, CallEvent::CallType callType, int eventCount )
-            : remoteUid( remoteUid )
-            , callType( callType )
-            , eventCount( eventCount )
-        {};
+    TestCallItem(const QString &remoteUid, CallEvent::CallType callType, int eventCount)
+        : remoteUid( remoteUid )
+        , callType( callType )
+        , eventCount( eventCount )
+    {}
 
     QString remoteUid;
     CallEvent::CallType callType;
     int eventCount;
 };
-
-QList<TestCallItem> testCalls;
-
 
 void CallModelTest::initTestCase()
 {

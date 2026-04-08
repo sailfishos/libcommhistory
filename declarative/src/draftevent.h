@@ -34,6 +34,7 @@
 
 #include <QObject>
 #include <QStringList>
+
 #include "event.h"
 
 class DraftEvent : public QObject

@@ -52,8 +52,8 @@ inline bool groupObjectSort(GroupObject *a, GroupObject *b)
 bool groupmodel_initialized = initializeTypes();
 
 GroupModelPrivate::GroupModelPrivate(GroupModel *model)
-        : q_ptr(model)
-        , manager(0)
+    : q_ptr(model)
+    , manager(nullptr)
 {
 }
 

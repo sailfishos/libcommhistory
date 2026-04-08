@@ -100,8 +100,8 @@ void MemEventModelTest::addEvents()
     MALLINFO_DUMP("start");
 
     MALLINFO_DUMP("model ready");
-    int mem=0;
-    int lastMem=0;
+    int mem = 0;
+    int lastMem = 0;
 
     for (int i = 0; i < 100; i++) {
         EventModel *model = new EventModel();

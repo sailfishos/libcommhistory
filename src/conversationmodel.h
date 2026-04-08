@@ -84,6 +84,7 @@ public:
      * \return true if successful, otherwise false
      */
     bool getEvents(int groupId);
+
     /*!
      * Reset model to events from the specified groups.
      *
@@ -91,6 +92,7 @@ public:
      * \return true if successful, otherwise false
      */
     bool getEvents(QList<int> groupIds);
+
     /*!
      * Reset model to all events.
      *

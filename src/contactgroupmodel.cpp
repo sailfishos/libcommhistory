@@ -88,9 +88,9 @@ private:
 }
 
 ContactGroupModelPrivate::ContactGroupModelPrivate(ContactGroupModel *model)
-        : QObject(model)
-        , q_ptr(model)
-        , manager(0)
+    : QObject(model)
+    , q_ptr(model)
+    , manager(nullptr)
 {
 }
 
