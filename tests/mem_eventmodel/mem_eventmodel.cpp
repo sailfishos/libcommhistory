@@ -125,7 +125,7 @@ void MemEventModelTest::addEvents()
 
         waitWithDeletes(100);
         MALLINFO_DUMP("query done");
-        struct mallinfo m = mallinfo();
+        struct mallinfo2 m = mallinfo2();
 
         if (i >= 50)
             mem += m.uordblks - lastMem;
