@@ -130,18 +130,18 @@ public:
 using namespace CommHistory;
 
 GroupManagerPrivate::GroupManagerPrivate(GroupManager *manager)
-        : q_ptr(manager)
-        , queryMode(EventModel::AsyncQuery)
-        , chunkSize(defaultChunkSize)
-        , firstChunkSize(0)
-        , queryLimit(0)
-        , queryOffset(0)
-        , isReady(true)
-        , filterLocalUid(QString())
-        , filterRemoteUid(QString())
-        , bgThread(0)
-        , contactResolver(0)
-        , resolveContacts(GroupManager::DoNotResolve)
+    : q_ptr(manager)
+    , queryMode(EventModel::AsyncQuery)
+    , chunkSize(defaultChunkSize)
+    , firstChunkSize(0)
+    , queryLimit(0)
+    , queryOffset(0)
+    , isReady(true)
+    , filterLocalUid(QString())
+    , filterRemoteUid(QString())
+    , bgThread(nullptr)
+    , contactResolver(nullptr)
+    , resolveContacts(GroupManager::DoNotResolve)
 {
     emitter = UpdatesEmitter::instance();
 

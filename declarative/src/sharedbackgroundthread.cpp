@@ -51,4 +51,3 @@ QSharedPointer<QThread> getSharedBackgroundThread()
     re->start();
     return re;
 }
-

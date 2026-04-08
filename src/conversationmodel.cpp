@@ -44,11 +44,11 @@ CommHistory::Event::PropertySet unusedProperties = CommHistory::Event::PropertyS
 namespace CommHistory {
 
 ConversationModelPrivate::ConversationModelPrivate(EventModel *model)
-            : EventModelPrivate(model)
-            , filterType(Event::UnknownType)
-            , filterAccount(QString())
-            , filterDirection(Event::UnknownDirection)
-            , allGroups(false)
+    : EventModelPrivate(model)
+    , filterType(Event::UnknownType)
+    , filterAccount(QString())
+    , filterDirection(Event::UnknownDirection)
+    , allGroups(false)
 {
     QDBusConnection::sessionBus().connect(
         QString(), QString(), COMM_HISTORY_INTERFACE, GROUPS_ADDED_SIGNAL,
@@ -228,7 +228,7 @@ bool ConversationModelPrivate::isModelReady() const
 }
 
 ConversationModel::ConversationModel(QObject *parent)
-        : EventModel(*new ConversationModelPrivate(this), parent)
+    : EventModel(*new ConversationModelPrivate(this), parent)
 {
 }
 

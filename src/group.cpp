@@ -67,40 +67,40 @@ public:
 };
 
 GroupPrivate::GroupPrivate()
-        : id(-1)
-        , chatType(Group::ChatTypeP2P)
-        , unreadMessages(0)
-        , lastEventId(-1)
-        , lastEventType(Event::UnknownType)
-        , lastEventStatus(Event::UnknownStatus)
-        , lastEventIsDraft(false)
-        , startTimeT(0)
-        , endTimeT(0)
-        , lastModifiedT(0)
+    : id(-1)
+    , chatType(Group::ChatTypeP2P)
+    , unreadMessages(0)
+    , lastEventId(-1)
+    , lastEventType(Event::UnknownType)
+    , lastEventStatus(Event::UnknownStatus)
+    , lastEventIsDraft(false)
+    , startTimeT(0)
+    , endTimeT(0)
+    , lastModifiedT(0)
 {
 }
 
 GroupPrivate::GroupPrivate(const GroupPrivate &other)
-        : QSharedData(other)
-        , id(other.id)
-        , localUid(other.localUid)
-        , recipients(other.recipients)
-        , chatType(other.chatType)
-        , chatName(other.chatName)
-        , unreadMessages(other.unreadMessages)
-        , lastEventId(other.lastEventId)
-        , lastMessageText(other.lastMessageText)
-        , lastVCardFileName(other.lastVCardFileName)
-        , lastVCardLabel(other.lastVCardLabel)
-        , subscriberIdentity(other.subscriberIdentity)
-        , lastEventType(other.lastEventType)
-        , lastEventStatus(other.lastEventStatus)
-        , lastEventIsDraft(other.lastEventIsDraft)
-        , startTimeT(other.startTimeT)
-        , endTimeT(other.endTimeT)
-        , lastModifiedT(other.lastModifiedT)
-        , validProperties(other.validProperties)
-        , modifiedProperties(other.modifiedProperties)
+    : QSharedData(other)
+    , id(other.id)
+    , localUid(other.localUid)
+    , recipients(other.recipients)
+    , chatType(other.chatType)
+    , chatName(other.chatName)
+    , unreadMessages(other.unreadMessages)
+    , lastEventId(other.lastEventId)
+    , lastMessageText(other.lastMessageText)
+    , lastVCardFileName(other.lastVCardFileName)
+    , lastVCardLabel(other.lastVCardLabel)
+    , subscriberIdentity(other.subscriberIdentity)
+    , lastEventType(other.lastEventType)
+    , lastEventStatus(other.lastEventStatus)
+    , lastEventIsDraft(other.lastEventIsDraft)
+    , startTimeT(other.startTimeT)
+    , endTimeT(other.endTimeT)
+    , lastModifiedT(other.lastModifiedT)
+    , validProperties(other.validProperties)
+    , modifiedProperties(other.modifiedProperties)
 {
 }
 
@@ -125,12 +125,12 @@ Group::PropertySet Group::allProperties()
 }
 
 Group::Group()
-        : d(new GroupPrivate)
+    : d(new GroupPrivate)
 {
 }
 
 Group::Group(const Group &other)
-        : d(other.d)
+    : d(other.d)
 {
 }
 

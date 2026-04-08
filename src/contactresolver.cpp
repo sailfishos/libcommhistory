@@ -39,17 +39,17 @@ class ContactResolverPrivate : public QObject, public SeasideCache::ResolveListe
     Q_DECLARE_PUBLIC(ContactResolver)
 
 public:
-    ContactResolver *q_ptr;
-    QSet<Recipient> pending;
-    bool resolving;
-    bool forceResolving;
-
     explicit ContactResolverPrivate(ContactResolver *parent);
     ~ContactResolverPrivate();
 
     void resolve(Recipient recipient);
     void checkIfFinishedAsynchronously();
     virtual void addressResolved(const QString &first, const QString &second, SeasideCache::CacheItem *item);
+
+    ContactResolver *q_ptr;
+    QSet<Recipient> pending;
+    bool resolving;
+    bool forceResolving;
 
 public slots:
     bool checkIfFinished();
@@ -58,7 +58,8 @@ public slots:
 } // namespace CommHistory
 
 ContactResolver::ContactResolver(QObject *parent)
-    : QObject(parent), d_ptr(new ContactResolverPrivate(this))
+    : QObject(parent)
+    , d_ptr(new ContactResolverPrivate(this))
 {
 }
 

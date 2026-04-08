@@ -96,11 +96,11 @@ public:
 };
 
 CallModelPrivate::CallModelPrivate(EventModel *model)
-        : EventModelPrivate(model)
-        , sortBy(CallModel::SortByContact)
-        , eventType(CallEvent::UnknownCallType)
-        , referenceTime(0)
-        , hasBeenFetched(false)
+    : EventModelPrivate(model)
+    , sortBy(CallModel::SortByContact)
+    , eventType(CallEvent::UnknownCallType)
+    , referenceTime(0)
+    , hasBeenFetched(false)
 {
     propertyMask -= unusedProperties;
 }
@@ -938,7 +938,7 @@ void CallModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, bool
  * ************************************************************************** */
 
 CallModel::CallModel(QObject *parent)
-        : EventModel(*new CallModelPrivate(this), parent)
+    : EventModel(*new CallModelPrivate(this), parent)
 {
     Q_D(CallModel);
     d->isInTreeMode = true;
