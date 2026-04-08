@@ -136,6 +136,7 @@ GroupObject::GroupObject(const CommHistory::Group &other, GroupManager *parent)
 
 GroupObject::~GroupObject()
 {
+    delete d;
 }
 
 int GroupObject::urlToId(const QString &url)
