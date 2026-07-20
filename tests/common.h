@@ -35,7 +35,9 @@
 #include <QFile>
 #include <QSignalSpy>
 #include <QStandardPaths>
-
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 #include <iterator>
 
 namespace CommHistory {
@@ -43,10 +45,17 @@ namespace CommHistory {
 template <class RandomAccessIterator>
 void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRandomGenerator qrand;
+#endif
     typename std::iterator_traits<RandomAccessIterator>::difference_type i, n;
     n = (last-first);
     for (i=n-1; i>0; --i) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        qSwap(first[i],first[qrand.generate() % (i+1)]);
+#else
         qSwap(first[i],first[qrand() % (i+1)]);
+#endif
     }
 }
 
