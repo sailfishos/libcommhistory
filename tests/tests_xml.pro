@@ -2,19 +2,19 @@ TEMPLATE = aux
 
 OTHER_FILES += $$PWD/ performance_tests.xml.in $$PWD/run_test.sh
 
-RUN_TEST=/opt/tests/libcommhistory-qt5/run_test.sh
+RUN_TEST=/opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/run_test.sh
 
 
 run_test_install.files = $$PWD/run_test.sh
-run_test_install.path = /opt/tests/libcommhistory-qt5
+run_test_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}
 
 
 unit_xml.target = tests.xml
-unit_xml.depends = $$PWD/tests.xml.in
+unit_xml.depends = $$tests.xml.in
 unit_xml.commands = sed -e "s:@RUN_TEST@:$${RUN_TEST}:g" $< > $@
 unit_xml.CONFIG += no_check_exist
 
-unit_tests_install.path = /opt/tests/libcommhistory-qt5/auto
+unit_tests_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/auto
 unit_tests_install.files = $$unit_xml.target
 unit_tests_install.depends = unit_xml
 unit_tests_install.CONFIG += no_check_exist
@@ -25,7 +25,7 @@ perf_xml.depends = $$PWD/performance_tests.xml.in
 perf_xml.commands = sed -e "s:@RUN_TEST@:$${RUN_TEST}:g" $< > $@
 perf_xml.CONFIG += no_check_exist
 
-perf_tests_install.path = /opt/tests/libcommhistory-qt5/performance
+perf_tests_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/performance
 perf_tests_install.files = $$perf_xml.target
 perf_tests_install.depends = perf_xml
 perf_tests_install.CONFIG += no_check_exist

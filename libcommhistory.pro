@@ -25,8 +25,7 @@
 TEMPLATE  = subdirs
 SUBDIRS   = src   \
             declarative \
-            tools \
-            tests
+            tools
 
 declarative.depends = src
 tools.depends = src

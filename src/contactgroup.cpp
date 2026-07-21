@@ -293,13 +293,21 @@ QStringList ContactGroup::displayNames() const
 QDateTime ContactGroup::startTime() const
 {
     Q_D(const ContactGroup);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    return QDateTime::fromSecsSinceEpoch(d->startTimeT);
+#else
     return QDateTime::fromTime_t(d->startTimeT);
+#endif
 }
 
 QDateTime ContactGroup::endTime() const
 {
     Q_D(const ContactGroup);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    return QDateTime::fromSecsSinceEpoch(d->endTimeT);
+#else
     return QDateTime::fromTime_t(d->endTimeT);
+#endif
 }
 
 int ContactGroup::unreadMessages() const
@@ -359,7 +367,11 @@ bool ContactGroup::lastEventIsDraft() const
 QDateTime ContactGroup::lastModified() const
 {
     Q_D(const ContactGroup);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    return QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
+#else
     return QDateTime::fromTime_t(d->lastModifiedT);
+#endif
 }
 
 QString ContactGroup::subscriberIdentity() const

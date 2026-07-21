@@ -25,9 +25,9 @@ TEMPLATE     = app
 INCLUDEPATH += . ../../src ..
 DEPENDPATH  += $${INCLUDEPATH}
 
-LIBS += ../../src/libcommhistory-qt5.so
+LIBS += ../../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
 QT += contacts
-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
+PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
 
 SOURCES += ../common.cpp
 HEADERS += ../common.h

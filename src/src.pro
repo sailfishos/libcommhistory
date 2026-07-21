@@ -43,8 +43,8 @@ QMAKE_CXXFLAGS += -std=c++17
 QT += dbus sql contacts
 QT -= gui
 
-TARGET = commhistory-qt5
-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
+TARGET = commhistory-qt$${QT_MAJOR_VERSION}
+PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
 LIBS += -lphonenumber
 
 DEFINES += LIBCOMMHISTORY_SHARED
@@ -165,7 +165,7 @@ SOURCES += commonutils.cpp \
 headers.files = $$PUBLIC_HEADERS \
                 $$QT_LIKE_HEADERS
 
-headers.path = $${INSTALL_PREFIX}/include/commhistory-qt5/CommHistory
+headers.path = $${INSTALL_PREFIX}/include/commhistory-qt$${QT_MAJOR_VERSION}/CommHistory
 
 # -----------------------------------------------------------------------------
 # Installation target for .pc file

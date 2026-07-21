@@ -35,7 +35,6 @@
 #include "debug.h"
 
 #include <QtDBus>
-#include <QTextCodec>
 #include <QTemporaryDir>
 #include <QMimeDatabase>
 
