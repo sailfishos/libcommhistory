@@ -35,7 +35,8 @@
 static void stopAndDeleteThread(QThread *thread)
 {
     qCDebug(lcCommHistory) << "libcommhistory-declarative SharedBackgroundThread deleted";
-    QObject::connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    QObject::connect(thread, &QThread::finished,
+                     thread, &QThread::deleteLater);
     thread->quit();
 }
 

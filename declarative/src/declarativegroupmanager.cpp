@@ -67,7 +67,9 @@ class EventWriter : public QObject
     QJSValue m_callback;
 
 public:
-    EventWriter(const CommHistory::Event &event, QJSValue callback) : m_event(event), m_callback(callback) {}
+    EventWriter(const CommHistory::Event &event, QJSValue callback)
+        : m_event(event), m_callback(callback)
+    {}
 
     Q_INVOKABLE void writeEvent();
 
@@ -110,7 +112,7 @@ void DeclarativeGroupManager::setUseBackgroundThread(bool enabled)
         threadInstance = getSharedBackgroundThread();
         setBackgroundThread(threadInstance.data());
     } else {
-        setBackgroundThread(0);
+        setBackgroundThread(nullptr);
         threadInstance.clear();
     }
 

@@ -98,22 +98,22 @@ void GroupObjectPrivate::propertyChanged(Group::Property property)
     modifiedProperties += property;
 
     switch (property) {
-        case Group::LocalUid: emit q->localUidChanged(); break;
-        case Group::Recipients: emit q->recipientsChanged(); break;
-        case Group::Type: emit q->chatTypeChanged(); break;
-        case Group::ChatName: emit q->chatNameChanged(); break;
-        case Group::StartTime: emit q->startTimeChanged(); break;
-        case Group::EndTime: emit q->endTimeChanged(); break;
-        case Group::UnreadMessages: emit q->unreadMessagesChanged(); break;
-        case Group::LastEventId: emit q->lastEventIdChanged(); break;
-        case Group::LastMessageText: emit q->lastMessageTextChanged(); break;
-        case Group::LastVCardFileName: emit q->lastVCardFileNameChanged(); break;
-        case Group::SubscriberIdentity: emit q->subscriberIdentityChanged(); break;
-        case Group::LastEventType: emit q->lastEventTypeChanged(); break;
-        case Group::LastEventStatus: emit q->lastEventStatusChanged(); break;
-        case Group::LastEventIsDraft: emit q->lastEventIsDraftChanged(); break;
-        case Group::LastModified: emit q->lastModifiedChanged(); break;
-        default: break;
+    case Group::LocalUid: emit q->localUidChanged(); break;
+    case Group::Recipients: emit q->recipientsChanged(); break;
+    case Group::Type: emit q->chatTypeChanged(); break;
+    case Group::ChatName: emit q->chatNameChanged(); break;
+    case Group::StartTime: emit q->startTimeChanged(); break;
+    case Group::EndTime: emit q->endTimeChanged(); break;
+    case Group::UnreadMessages: emit q->unreadMessagesChanged(); break;
+    case Group::LastEventId: emit q->lastEventIdChanged(); break;
+    case Group::LastMessageText: emit q->lastMessageTextChanged(); break;
+    case Group::LastVCardFileName: emit q->lastVCardFileNameChanged(); break;
+    case Group::SubscriberIdentity: emit q->subscriberIdentityChanged(); break;
+    case Group::LastEventType: emit q->lastEventTypeChanged(); break;
+    case Group::LastEventStatus: emit q->lastEventStatusChanged(); break;
+    case Group::LastEventIsDraft: emit q->lastEventIsDraftChanged(); break;
+    case Group::LastModified: emit q->lastModifiedChanged(); break;
+    default: break;
     }
 }
 

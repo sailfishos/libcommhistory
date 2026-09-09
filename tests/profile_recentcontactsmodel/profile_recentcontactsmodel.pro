@@ -20,12 +20,11 @@
 #
 ###############################################################################
 
-include( ../../common-project-config.pri )
-include( ../../common-vars.pri )
-include( ../performance_tests.pri )
+include(../../common-project-config.pri)
+include(../../common-vars.pri)
+include(../performance_tests.pri)
 
 TARGET = profile_recentcontactsmodel
 QT -= gui
 SOURCES += recentcontactsmodelprofiletest.cpp
 HEADERS += recentcontactsmodelprofiletest.h
-

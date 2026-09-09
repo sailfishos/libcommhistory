@@ -20,9 +20,9 @@
 #
 ###############################################################################
 
-include( ../../common-project-config.pri )
-include( ../../common-vars.pri )
-include( ../performance_tests.pri )
+include(../../common-project-config.pri)
+include(../../common-vars.pri)
+include(../performance_tests.pri)
 
 TARGET = perf_groupmodel
 QT -= gui

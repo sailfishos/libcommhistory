@@ -20,8 +20,9 @@
 #
 ###############################################################################
 
-include( ../common-project-config.pri )
-include( ../common-vars.pri )
+include(../common-project-config.pri)
+include(../common-vars.pri)
+
 TEMPLATE = app
 VERSION = $$PROJECT_VERSION
 TARGET = commhistory-tool

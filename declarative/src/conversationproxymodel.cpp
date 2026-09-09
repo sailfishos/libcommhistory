@@ -56,7 +56,7 @@ void ConversationProxyModel::setUseBackgroundThread(bool enabled)
         threadInstance = getSharedBackgroundThread();
         setBackgroundThread(threadInstance.data());
     } else {
-        setBackgroundThread(0);
+        setBackgroundThread(nullptr);
         threadInstance.clear();
     }
 

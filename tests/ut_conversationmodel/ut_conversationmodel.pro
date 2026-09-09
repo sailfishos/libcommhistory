@@ -20,12 +20,11 @@
 #
 ###############################################################################
 
-include( ../../common-project-config.pri )
-include( ../../common-vars.pri )
-include( ../tests.pri )
+include(../../common-project-config.pri)
+include(../../common-vars.pri)
+include(../tests.pri)
 
 TARGET = ut_conversationmodel
 QT -= gui
 SOURCES += conversationmodeltest.cpp
 HEADERS += conversationmodeltest.h
-

@@ -256,37 +256,31 @@ int CallModelPrivate::calculateEventCount(EventTreeItem *item)
 {
     int count = -1;
 
-    switch (sortBy)
-    {
-        case CallModel::SortByContact:
-        case CallModel::SortByContactAndType:
-        {
-            // set event count for missed calls only,
-            // leave the default value for non-missed ones
-            if (item->event().isMissedCall())
-            {
-                count = 1;
-                // start looping the list from index number 1, because
-                // the index number 0 is the same item as the top level
-                // one
-                for (int i = 1; i < item->childCount(); i++) {
-                    if (item->event().incomingStatus()
-                        == item->child(i)->event().incomingStatus()) {
-                        count++;
-                    } else {
-                        break;
-                    }
+    switch (sortBy) {
+    case CallModel::SortByContact:
+    case CallModel::SortByContactAndType:
+        // set event count for missed calls only,
+        // leave the default value for non-missed ones
+        if (item->event().isMissedCall()) {
+            count = 1;
+            // start looping the list from index number 1, because
+            // the index number 0 is the same item as the top level one
+            for (int i = 1; i < item->childCount(); i++) {
+                if (item->event().incomingStatus()
+                    == item->child(i)->event().incomingStatus()) {
+                    count++;
+                } else {
+                    break;
                 }
             }
-            return (count < 0) ? 0 : count;
         }
-        case CallModel::SortByTime:
-        {
-            count = item->childCount();
-            break;
-        }
-        default:
-            break;
+
+        return (count < 0) ? 0 : count;
+    case CallModel::SortByTime:
+        count = item->childCount();
+        break;
+    default:
+        break;
     }
 
     if (count < 1)
@@ -320,8 +314,7 @@ bool CallModelPrivate::fillModel(int start, int end, QList<CommHistory::Event> e
          * on second level, there are all call events listed (also group reps)
          */
 
-        switch (sortBy)
-        {
+        switch (sortBy) {
             /*
              * if sorted by contact,
              * then event count is meaningful only for missed calls.
@@ -590,7 +583,8 @@ void CallModelPrivate::insertEvent(Event event)
         }
         default:
         {
-            qCWarning(lcCommHistory) << Q_FUNC_INFO << "Adding call events to model sorted by type or by service has not been implemented yet.";
+            qCWarning(lcCommHistory) << Q_FUNC_INFO
+                                     << "Adding call events to model sorted by type or by service has not been implemented yet.";
             return;
         }
     }
@@ -705,6 +699,7 @@ void CallModelPrivate::deleteFromModel(int id)
     // if event is a top level item (i.e. the whole group), then delete it
     int row = index.row();
     int column = index.column();
+
     if (column == 0) {
         bool isRegroupingNeeded = false;
         // regrouping is needed/possible only if sorting is SortByTime...
@@ -739,9 +734,7 @@ void CallModelPrivate::deleteFromModel(int id)
             emitDataChanged(row, eventRootItem->child(row - 1));
         }
         q->endRemoveRows();
-    }
-    // otherwise item is a grouped event
-    else {
+    } else { // otherwise item is a grouped event
         EventTreeItem *group = eventRootItem->child(row);
         group->removeAt(column - 1);
 
@@ -1142,8 +1135,7 @@ bool CallModel::deleteEvent(int id)
     if (!index.isValid())
         return false;
 
-    switch (d->sortBy)
-    {
+    switch (d->sortBy) {
         case SortByContact:
         case SortByContactAndType:
         case SortByTime:
@@ -1195,4 +1187,3 @@ bool CallModel::deleteEvent(Event &event)
 }
 
 #include "callmodel.moc"
-

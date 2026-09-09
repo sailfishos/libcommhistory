@@ -247,6 +247,7 @@ int addTestEvent(EventModel &model,
     event.setIsMissedCall(isMissedCall);
     event.setMessageToken(messageToken);
     event.setSubscriberIdentity(subscriberIdentity);
+
     if (model.addEvent(event, toModelOnly)) {
         addedEventIds.insert(event.id());
         return event.id();

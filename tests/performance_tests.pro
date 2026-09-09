@@ -20,7 +20,7 @@
 #
 ###############################################################################
 
-!include( ../common-vars.pri ):error( "Unable to install common-vars.pri" )
+!include(../common-vars.pri): error("Unable to install common-vars.pri")
 
 TEMPLATE = subdirs
 
@@ -34,4 +34,3 @@ SUBDIRS = \
     profile_groupmodel \
     profile_recentcontactsmodel \
     mem_eventmodel \
-

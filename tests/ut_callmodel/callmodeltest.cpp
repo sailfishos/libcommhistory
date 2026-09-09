@@ -22,6 +22,7 @@
 
 #include <QtTest/QtTest>
 #include <QDBusConnection>
+
 #include "callmodeltest.h"
 #include "commonutils.h"
 #include "common.h"
@@ -34,17 +35,17 @@ typedef QPair<int, QString> ContactDetails;
 
 static ModelWatcher watcher;
 
-static const QString REMOTEUID1( "user1@remotehost" );
-static const QString REMOTEUID2( "user2@remotehost" );
+static const QString REMOTEUID1("user1@remotehost");
+static const QString REMOTEUID2("user2@remotehost");
 static QList<TestCallItem> testCalls;
 
 class TestCallItem
 {
 public:
     TestCallItem(const QString &remoteUid, CallEvent::CallType callType, int eventCount)
-        : remoteUid( remoteUid )
-        , callType( callType )
-        , eventCount( eventCount )
+        : remoteUid(remoteUid)
+        , callType(callType)
+        , eventCount(eventCount)
     {}
 
     QString remoteUid;
@@ -55,12 +56,12 @@ public:
 void CallModelTest::initTestCase()
 {
     initTestDatabase();
-    QVERIFY( QDBusConnection::sessionBus().isConnected() );
+    QVERIFY(QDBusConnection::sessionBus().isConnected());
 
-    qsrand( QDateTime::currentDateTime().toTime_t() );
+    qsrand(QDateTime::currentDateTime().toTime_t());
 
     Group group1, group2;
-    addTestGroups( group1, group2 );
+    addTestGroups(group1, group2);
 
     // add 8 call events from user1
     int cnt = 0;
@@ -69,52 +70,63 @@ void CallModelTest::initTestCase()
     EventModel model;
     watcher.setModel(&model);
     // 2 dialed
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when,               REMOTEUID1 ); cnt++;
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(  5 ), REMOTEUID1 ); cnt++;
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::DialedCallType, 2 ) );
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when, REMOTEUID1);
+    cnt++;
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(5), REMOTEUID1);
+    cnt++;
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::DialedCallType, 2));
 
     // 1 missed
-    addTestEvent( model, Event::CallEvent, Event::Inbound,  ACCOUNT1, -1, "", false, true,  when.addSecs( 10 ), REMOTEUID1 ); cnt++;
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::MissedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(10), REMOTEUID1);
+    cnt++;
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::MissedCallType, 1));
 
     // 2 received
-    addTestEvent( model, Event::CallEvent, Event::Inbound,  ACCOUNT1, -1, "", false, false, when.addSecs( 15 ), REMOTEUID1 ); cnt++;
-    addTestEvent( model, Event::CallEvent, Event::Inbound,  ACCOUNT1, -1, "", false, false, when.addSecs( 20 ), REMOTEUID1 ); cnt++;
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::ReceivedCallType, 2 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(15), REMOTEUID1);
+    cnt++;
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(20), REMOTEUID1);
+    cnt++;
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::ReceivedCallType, 2));
 
     // 1 dialed
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs( 25 ), REMOTEUID1 ); cnt++;
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::DialedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(25), REMOTEUID1);
+    cnt++;
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::DialedCallType, 1));
 
     // 2 missed
-    addTestEvent( model, Event::CallEvent, Event::Inbound,  ACCOUNT1, -1, "", false, true,  when.addSecs( 30 ), REMOTEUID1 ); cnt++;
-    addTestEvent( model, Event::CallEvent, Event::Inbound,  ACCOUNT1, -1, "", false, true,  when.addSecs( 35 ), REMOTEUID1 ); cnt++;
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::MissedCallType, 2 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true,  when.addSecs(30), REMOTEUID1);
+    cnt++;
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true,  when.addSecs(35), REMOTEUID1);
+    cnt++;
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::MissedCallType, 2));
 
     // add 1 im and 2 sms events
-    addTestEvent( model, Event::IMEvent,   Event::Outbound, ACCOUNT1, group1.id(), "test" );        cnt++;
-    addTestEvent( model, Event::SMSEvent,  Event::Inbound,  ACCOUNT1, group1.id(), "test" );        cnt++;
-    addTestEvent( model, Event::SMSEvent,  Event::Outbound, ACCOUNT1, group2.id(), "draft", true ); cnt++;
+    addTestEvent(model, Event::IMEvent, Event::Outbound, ACCOUNT1, group1.id(), "test");
+    cnt++;
+    addTestEvent(model, Event::SMSEvent, Event::Inbound, ACCOUNT1, group1.id(), "test");
+    cnt++;
+    addTestEvent(model, Event::SMSEvent, Event::Outbound, ACCOUNT1, group2.id(), "draft", true);
+    cnt++;
 
     QVERIFY(watcher.waitForAdded(cnt));
 }
 
-void CallModelTest::testGetEvents( CallModel::Sorting sorting, int row_count, QList<TestCallItem> calls )
+void CallModelTest::testGetEvents(CallModel::Sorting sorting, int row_count, QList<TestCallItem> calls)
 {
     CallModel model;
     model.setQueryMode(EventModel::SyncQuery);
 
-    model.setFilter(  sorting  );
-    QVERIFY( model.getEvents() );
+    model.setFilter(sorting);
+    QVERIFY(model.getEvents());
 
-    QCOMPARE( model.rowCount(), row_count );
+    QCOMPARE(model.rowCount(), row_count);
 
     QSet<QString> countedUids;
-    for ( int i = 0; i < row_count; i++ )
-    {
-        Event e = model.event( model.index( i, 0 ) );
-        QCOMPARE( e.type(), Event::CallEvent );
-        QCOMPARE( e.recipients().value(0).remoteUid(), calls.at( i ).remoteUid );
+
+    for (int i = 0; i < row_count; i++) {
+        Event e = model.event(model.index(i, 0));
+        QCOMPARE(e.type(), Event::CallEvent);
+        QCOMPARE(e.recipients().value(0).remoteUid(), calls.at(i).remoteUid);
 
         bool addressFound = false;
         foreach (QString address, countedUids) {
@@ -124,45 +136,36 @@ void CallModelTest::testGetEvents( CallModel::Sorting sorting, int row_count, QL
             }
         }
 
-        switch ( calls.at( i ).callType )
-        {
-            case CallEvent::MissedCallType :
-            {
-                QCOMPARE( e.direction(), Event::Inbound );
-                QCOMPARE( e.isMissedCall(), true );
-                if (addressFound)
-                    QVERIFY(e.eventCount() <= 1);
-                else
-                    QCOMPARE( e.eventCount(), calls.at( i ).eventCount );
-                break;
-            }
-            case CallEvent::ReceivedCallType :
-            {
-                QCOMPARE( e.direction(), Event::Inbound );
-                QCOMPARE( e.isMissedCall(), false );
-                // received and missed calls have invalid event count if sorted by contact
-                if (addressFound)
-                    QVERIFY(e.eventCount() <= 1);
-                else
-                    QCOMPARE( e.eventCount(), sorting == CallModel::SortByContact ? 0 : calls.at( i ).eventCount );
-                break;
-            }
-            case CallEvent::DialedCallType :
-            {
-                QCOMPARE( e.direction(), Event::Outbound );
-                QCOMPARE( e.isMissedCall(), false );
-                // received and missed calls have invalid event count if sorted by contact
-                if (addressFound)
-                    QVERIFY(e.eventCount() <= 1);
-                else
-                    QCOMPARE( e.eventCount(), sorting == CallModel::SortByContact ? 0 : calls.at( i ).eventCount );
-                break;
-            }
-            default :
-            {
-                qCritical() << "Unknown call type!";
-                return;
-            }
+        switch (calls.at(i).callType) {
+        case CallEvent::MissedCallType:
+            QCOMPARE(e.direction(), Event::Inbound);
+            QCOMPARE(e.isMissedCall(), true);
+            if (addressFound)
+                QVERIFY(e.eventCount() <= 1);
+            else
+                QCOMPARE(e.eventCount(), calls.at(i).eventCount);
+            break;
+        case CallEvent::ReceivedCallType:
+            QCOMPARE(e.direction(), Event::Inbound);
+            QCOMPARE(e.isMissedCall(), false);
+            // received and missed calls have invalid event count if sorted by contact
+            if (addressFound)
+                QVERIFY(e.eventCount() <= 1);
+            else
+                QCOMPARE(e.eventCount(), sorting == CallModel::SortByContact ? 0 : calls.at(i).eventCount);
+            break;
+        case CallEvent::DialedCallType:
+            QCOMPARE(e.direction(), Event::Outbound);
+            QCOMPARE(e.isMissedCall(), false);
+            // received and missed calls have invalid event count if sorted by contact
+            if (addressFound)
+                QVERIFY(e.eventCount() <= 1);
+            else
+                QCOMPARE(e.eventCount(), sorting == CallModel::SortByContact ? 0 : calls.at(i).eventCount);
+            break;
+        default:
+            qCritical() << "Unknown call type!";
+            return;
         }
 
         countedUids.insert(e.recipients().value(0).remoteUid());
@@ -173,13 +176,13 @@ void CallModelTest::testAddEvent()
 {
     CallModel model;
     watcher.setModel(&model);
-    model.setQueryMode( EventModel::SyncQuery );
+    model.setQueryMode(EventModel::SyncQuery);
 
     /* by contact:
      * -----------
      * user1, missed   (2)
      */
-    testGetEvents( CallModel::SortByContact, 1, testCalls );
+    testGetEvents(CallModel::SortByContact, 1, testCalls);
     /* by time:
      * --------
      * user1, missed   (2)
@@ -188,19 +191,19 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 1 dialed from user1
     QDateTime when = QDateTime::currentDateTime();
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs( 40 ), REMOTEUID1 );
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::DialedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(40), REMOTEUID1);
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::DialedCallType, 1));
     QVERIFY(watcher.waitForAdded());
 
     /* by contact:
      * -----------
      * user1, dialed   (-1)
      */
-    testGetEvents( CallModel::SortByContact, 1, testCalls );
+    testGetEvents(CallModel::SortByContact, 1, testCalls);
     /* by time:
      * --------
      * user1, dialed   (1)
@@ -210,22 +213,22 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 5 received from user1
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 45 ), REMOTEUID1 );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 50 ), REMOTEUID1 );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 55 ), REMOTEUID1 );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 60 ), REMOTEUID1 );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 65 ), REMOTEUID1 );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(45), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(50), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(55), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(60), REMOTEUID1);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(65), REMOTEUID1);
     QVERIFY(watcher.waitForAdded(5));
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::ReceivedCallType, 5 ) );
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::ReceivedCallType, 5));
 
     /* by contact:
      * -----------
      * user1, received (-1)
      */
-    testGetEvents( CallModel::SortByContact, 1, testCalls );
+    testGetEvents(CallModel::SortByContact, 1, testCalls);
     /* by time:
      * --------
      * user1, received (5)
@@ -236,11 +239,11 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 1 missed from user2
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs( 70 ), REMOTEUID2 );
-    testCalls.insert( 0, TestCallItem( REMOTEUID2, CallEvent::MissedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(70), REMOTEUID2);
+    testCalls.insert(0, TestCallItem(REMOTEUID2, CallEvent::MissedCallType, 1));
     QVERIFY(watcher.waitForAdded());
 
     /* by contact:
@@ -248,7 +251,7 @@ void CallModelTest::testAddEvent()
      * user2, missed   (1)
      * user1, received (0)
      */
-    testGetEvents( CallModel::SortByContact, 2, testCalls );
+    testGetEvents(CallModel::SortByContact, 2, testCalls);
     /* by time:
      * --------
      * user2, received (1)
@@ -260,11 +263,11 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 1 received from user1
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 75 ), REMOTEUID1 );
-    testCalls.insert( 0, TestCallItem( REMOTEUID1, CallEvent::ReceivedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(75), REMOTEUID1);
+    testCalls.insert(0, TestCallItem(REMOTEUID1, CallEvent::ReceivedCallType, 1));
     QVERIFY(watcher.waitForAdded());
 
     /* by contact: ***REORDERING
@@ -272,7 +275,7 @@ void CallModelTest::testAddEvent()
      * user1, received (0)
      * user2, missed   (1)
      */
-    testGetEvents( CallModel::SortByContact, 2, testCalls );
+    testGetEvents(CallModel::SortByContact, 2, testCalls);
     /* by time:
      * --------
      * user1, received (1)
@@ -285,11 +288,11 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 1 received from user2
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs( 80 ), REMOTEUID2 );
-    testCalls.insert( 0, TestCallItem( REMOTEUID2, CallEvent::ReceivedCallType, 1 ) );
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(80), REMOTEUID2);
+    testCalls.insert(0, TestCallItem(REMOTEUID2, CallEvent::ReceivedCallType, 1));
     QVERIFY(watcher.waitForAdded());
 
     /* by contact:
@@ -297,7 +300,7 @@ void CallModelTest::testAddEvent()
      * user2, received (0)
      * user1, received (0)
      */
-    testGetEvents( CallModel::SortByContact, 2, testCalls );
+    testGetEvents(CallModel::SortByContact, 2, testCalls);
     /* by time:
      * --------
      * user2, received (1)
@@ -311,7 +314,7 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     // add 1 received from hidden number
     addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(90), "<hidden>");
@@ -324,7 +327,7 @@ void CallModelTest::testAddEvent()
      * user2, received (0)
      * user1, received (0)
      */
-    testGetEvents( CallModel::SortByContact, 3, testCalls );
+    testGetEvents(CallModel::SortByContact, 3, testCalls);
     /* by time:
      * --------
      * "", received (1)
@@ -339,7 +342,7 @@ void CallModelTest::testAddEvent()
      * user1, missed   (1)
      * user1, dialed   (2)
      */
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 }
 
 void CallModelTest::testDeleteEvent()
@@ -369,8 +372,8 @@ void CallModelTest::testDeleteEvent()
     // force change of sorting to SortByContact
     modelReady.clear();
     model.setTreeMode(true);
-    QVERIFY( model.setFilter( CallModel::SortByContact ) );
-    QVERIFY( model.getEvents() );
+    QVERIFY(model.setFilter(CallModel::SortByContact));
+    QVERIFY(model.getEvents());
     QTRY_COMPARE(modelReady.count(), 2);  // setFilter() internally called getEvents(), triggers an additional modelReady()
 
     /* by contact:
@@ -379,15 +382,15 @@ void CallModelTest::testDeleteEvent()
      * user1, received (0)
      */
     // delete first group from user2
-    e = model.event( model.index( 0, 0 ) );
-    QVERIFY( e.isValid() );
-    QCOMPARE( e.type(), Event::CallEvent );
-    QCOMPARE( e.direction(), Event::Inbound );
-    QCOMPARE( e.isMissedCall(), false );
-    QCOMPARE( e.recipients().value(0).remoteUid(), REMOTEUID2 );
+    e = model.event(model.index(0, 0));
+    QVERIFY(e.isValid());
+    QCOMPARE(e.type(), Event::CallEvent);
+    QCOMPARE(e.direction(), Event::Inbound);
+    QCOMPARE(e.isMissedCall(), false);
+    QCOMPARE(e.recipients().value(0).remoteUid(), REMOTEUID2);
     // delete it
-    QVERIFY( model.deleteEvent( e.id() ) );
-    QVERIFY( watcher.waitForDeleted(2) );
+    QVERIFY(model.deleteEvent(e.id()));
+    QVERIFY(watcher.waitForDeleted(2));
     // correct test helper lists to match current situation
     i = QMutableListIterator<TestCallItem>(testCalls);
     while (i.hasNext()) {
@@ -396,11 +399,11 @@ void CallModelTest::testDeleteEvent()
             i.remove();
     }
     // test if model contains what we want it does
-    testGetEvents( CallModel::SortByContact, 1, testCalls );
+    testGetEvents(CallModel::SortByContact, 1, testCalls);
 
     // force change of sorting to SortByTime
     modelReady.clear();
-    QVERIFY( model.setFilter( CallModel::SortByTime ) );
+    QVERIFY(model.setFilter(CallModel::SortByTime));
     QTRY_COMPARE(modelReady.count(), 1);
 
     /* by time:
@@ -424,18 +427,18 @@ void CallModelTest::testDeleteEvent()
      * user1, dialed   (2)
      */
     // take the event
-    e = model.event( model.index( 0, 0 ) );
-    QVERIFY( e.isValid() );
-    QCOMPARE( e.type(), Event::CallEvent );
-    QCOMPARE( e.direction(), Event::Inbound );
-    QCOMPARE( e.isMissedCall(), false );
+    e = model.event(model.index(0, 0));
+    QVERIFY(e.isValid());
+    QCOMPARE(e.type(), Event::CallEvent);
+    QCOMPARE(e.direction(), Event::Inbound);
+    QCOMPARE(e.isMissedCall(), false);
     // delete it
-    QVERIFY( model.deleteEvent( e.id() ) );
-    QVERIFY( watcher.waitForDeleted(6) );
+    QVERIFY(model.deleteEvent(e.id()));
+    QVERIFY(watcher.waitForDeleted(6));
     // correct test helper lists to match current situation
     testCalls.takeFirst(); testCalls.takeFirst();
     // test if model contains what we want it does
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
     /* by time:
      * --------
@@ -455,23 +458,23 @@ void CallModelTest::testDeleteEvent()
      * user1, dialed   (2)
      */
     // take the event
-    e = model.event( model.index( 1, 0 ) );
-    QVERIFY( e.isValid() );
-    QCOMPARE( e.type(), Event::CallEvent );
-    QCOMPARE( e.direction(), Event::Inbound );
-    QCOMPARE( e.isMissedCall(), true );
+    e = model.event(model.index(1, 0));
+    QVERIFY(e.isValid());
+    QCOMPARE(e.type(), Event::CallEvent);
+    QCOMPARE(e.direction(), Event::Inbound);
+    QCOMPARE(e.isMissedCall(), true);
     // delete it
-    QVERIFY( model.deleteEvent( e.id() ) );
-    QVERIFY( watcher.waitForDeleted(2) );
+    QVERIFY(model.deleteEvent(e.id()));
+    QVERIFY(watcher.waitForDeleted(2));
     // correct test helper lists to match current situation
     testCalls.takeFirst(); testCalls.takeFirst(); testCalls.first().eventCount = 2;
     // test if model contains what we want it does
-    testGetEvents( CallModel::SortByTime, testCalls.count(), testCalls );
+    testGetEvents(CallModel::SortByTime, testCalls.count(), testCalls);
 
 
     // force change of sorting to SortByContact
     modelReady.clear();
-    QVERIFY( model.setFilter( CallModel::SortByContact ) );
+    QVERIFY(model.setFilter(CallModel::SortByContact));
     QTRY_COMPARE(modelReady.count(), 1);
     /* by contact:
      * -----------
@@ -483,18 +486,18 @@ void CallModelTest::testDeleteEvent()
      * (empty)
      */
     // take the event
-    e = model.event( model.index( 0, 0 ) );
-    QVERIFY( e.isValid() );
-    QCOMPARE( e.type(), Event::CallEvent );
-    QCOMPARE( e.direction(), Event::Outbound );
-    QCOMPARE( e.isMissedCall(), false );
+    e = model.event(model.index(0, 0));
+    QVERIFY(e.isValid());
+    QCOMPARE(e.type(), Event::CallEvent);
+    QCOMPARE(e.direction(), Event::Outbound);
+    QCOMPARE(e.isMissedCall(), false);
     // delete it
-    QVERIFY( model.deleteEvent( e.id() ) );
-    QVERIFY( watcher.waitForDeleted(7) );
+    QVERIFY(model.deleteEvent(e.id()));
+    QVERIFY(watcher.waitForDeleted(7));
     // correct test helper lists to match current situation
     testCalls.clear();
     // test if model contains what we want it does
-    testGetEvents( CallModel::SortByContact, 0, testCalls );
+    testGetEvents(CallModel::SortByContact, 0, testCalls);
 }
 
 void CallModelTest::testGetEventsTimeTypeFilter_data()
@@ -543,21 +546,21 @@ void CallModelTest::testGetEventsTimeTypeFilter()
     QTRY_COMPARE(modelReady.count(), 2);
     int receivedCallCount = model.rowCount();
 
-    //3 dialled
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when );
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(5) );
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(10) );
+    // 3 dialled
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when);
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(5));
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(10));
     QVERIFY(watcher.waitForAdded(3));
 
-    //2 received
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(5) );
+    // 2 received
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, when.addSecs(5));
     QVERIFY(watcher.waitForAdded(2));
 
-    //3 missed
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(5) );
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(10) );
+    // 3 missed
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when);
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(5));
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when.addSecs(10));
     QVERIFY(watcher.waitForAdded(3));
 
     QDateTime time = when;
@@ -591,22 +594,25 @@ void CallModelTest::testGetEventsTimeTypeFilter()
       * testing to check for adding events with wrong filters
       */
     time = when.addSecs(-60*5);
-    //adding one more received but 5 minutes before the set time filter
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, time );
+    // adding one more received but 5 minutes before the set time filter
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, false, time);
     QVERIFY(watcher.waitForAdded());
-    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same for received calls
-    //filter is set for received call, try to add missed and dialled calls with correct time filter
-    addTestEvent( model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when );
+    // event should not be added to model, so rowCount should remain same for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2);
+    // filter is set for received call, try to add missed and dialled calls with correct time filter
+    addTestEvent(model, Event::CallEvent, Event::Inbound, ACCOUNT1, -1, "", false, true, when);
     QVERIFY(watcher.waitForAdded());
-    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same which was for received calls
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when );
+    // event should not be added to model, so rowCount should remain same which was for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2);
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when);
     QVERIFY(watcher.waitForAdded());
-    QCOMPARE(model.rowCount(), receivedCallCount + 2); //event should not be added to model, so rowCount should remain same which was for received calls
+    // event should not be added to model, so rowCount should remain same which was for received calls
+    QCOMPARE(model.rowCount(), receivedCallCount + 2);
 
     /**
       ** testing to check for getting events after he time when all events addition was complete
       */
-    //Trying to get events after 5 minutes after the  first event was added
+    // Trying to get events after 5 minutes after the  first event was added
     time = when.addSecs(60*5);
     modelReady.clear();
     QVERIFY(model.setFilter(CallModel::SortByTime, CallEvent::ReceivedCallType, time));
@@ -864,7 +870,7 @@ void CallModelTest::deleteAllCalls()
     watcher.setModel(&model);
     model.setQueryMode(EventModel::SyncQuery);
     QDateTime when = QDateTime::currentDateTime();
-    addTestEvent( model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs( 54 ), REMOTEUID1 );
+    addTestEvent(model, Event::CallEvent, Event::Outbound, ACCOUNT1, -1, "", false, false, when.addSecs(54), REMOTEUID1);
     QVERIFY(watcher.waitForAdded());
 
     QVERIFY(model.getEvents());

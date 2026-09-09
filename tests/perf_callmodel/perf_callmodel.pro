@@ -20,12 +20,11 @@
 #
 ###############################################################################
 
-include( ../../common-project-config.pri )
-include( ../../common-vars.pri )
-include( ../performance_tests.pri )
+include(../../common-project-config.pri)
+include(../../common-vars.pri)
+include(../performance_tests.pri)
 
 TARGET = perf_callmodel
 QT -= gui
 SOURCES += callmodelperftest.cpp
 HEADERS += callmodelperftest.h
-

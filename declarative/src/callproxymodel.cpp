@@ -26,12 +26,15 @@ void CallProxyModel::classBegin()
 void CallProxyModel::componentComplete()
 {
     m_componentComplete = true;
+    connect(this, &CallProxyModel::rowsInserted,
+            this, &CallProxyModel::countChanged);
+    connect(this, &CallProxyModel::rowsRemoved,
+            this, &CallProxyModel::countChanged);
+    connect(this, &CallProxyModel::modelReset,
+            this, &CallProxyModel::countChanged);
 
-    connect(this, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SIGNAL(countChanged()));
-    connect(this, SIGNAL(rowsRemoved(const QModelIndex&,int,int)), this, SIGNAL(countChanged()));
-    connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
-
-    connect(this, SIGNAL(modelReady(bool)), this, SLOT(onReadyChanged(bool)));
+    connect(this, &CallProxyModel::modelReady,
+            this, &CallProxyModel::onReadyChanged);
 
     if (!getEvents()) {
         qCWarning(lcCommHistory) << "getEvents() failed on CommHistory::CallModel";
