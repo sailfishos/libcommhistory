@@ -300,8 +300,14 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
     }
     case DateAndAccountGroupingRole:
         return event.dateAndAccountGrouping();
-    case ContactNameRole:
-        return QVariant::fromValue(event.contactName());
+    case ContactNameRole: {
+        static bool warned = false;
+        if (!warned) {
+            qWarning() << "Deprecated EventModel::ContactName used. Migrate to contacts list instead";
+            warned = true;
+        }
+        return QVariant::fromValue(event.recipients().value(0).contactName());
+    }
     case EventIdRole:
         return QVariant::fromValue(event.id());
     case EventTypeRole:

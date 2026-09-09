@@ -159,7 +159,7 @@ void CallModelProfileTest::execute()
         CallModel fetchModel;
 
         fetchModel.setResolveContacts(resolve ? EventModel::ResolveImmediately : EventModel::DoNotResolve);
-        fetchModel.setFilter(CallModel::SortByContact);
+        fetchModel.setSorting(CallModel::SortByContact);
 
         QElapsedTimer time;
         time.start();

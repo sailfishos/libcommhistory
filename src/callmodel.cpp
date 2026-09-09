@@ -1045,7 +1045,15 @@ bool CallModel::getEvents(CallModel::Sorting sortBy,
 
     d->hasBeenFetched = true;
 
-    return setFilter(sortBy, type, referenceTime);
+    setSorting(sortBy);
+    setFilterType(type);
+    setFilterReferenceTime(referenceTime);
+    setFilterAccount(QString());
+
+    if (d->hasBeenFetched) {
+        return getEvents();
+    }
+    return true;
 }
 
 bool CallModel::deleteAll()

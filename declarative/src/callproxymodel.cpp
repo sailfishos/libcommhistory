@@ -14,7 +14,7 @@ CallProxyModel::CallProxyModel(QObject *parent)
     , m_populated(false)
 {
     setQueryMode(CommHistory::EventModel::AsyncQuery);
-    setFilter(CommHistory::CallModel::Sorting(m_grouping));
+    setSorting(CommHistory::CallModel::Sorting(m_grouping));
     setLimit(m_limit);
     setResolveContacts(m_resolveContacts ? EventModel::ResolveImmediately : EventModel::ResolveOnDemand);
 }
@@ -51,7 +51,10 @@ void CallProxyModel::setGroupBy(GroupBy grouping)
     if (m_grouping != grouping) {
         m_grouping = grouping;
 
-        setFilter(CommHistory::CallModel::Sorting(grouping));
+        setSorting(CommHistory::CallModel::Sorting(grouping));
+        if (m_componentComplete) {
+            getEvents();
+        }
         emit groupByChanged();
     }
 }

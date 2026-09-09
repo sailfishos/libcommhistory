@@ -218,15 +218,20 @@ void MemEventModelTest::callSetFilter()
     expectedReadyCount++;
 
     for (int i = 0; i < 5; i++) {
-        if (i&1)
-            model->setFilter(CallModel::SortByTime, CommHistory::CallEvent::MissedCallType);
-        else
-            model->setFilter(CallModel::SortByContact, CommHistory::CallEvent::UnknownCallType);
+        if (i&1) {
+            model->setSorting(CallModel::SortByTime);
+            model->setFilterType(CommHistory::CallEvent::MissedCallType);
+        } else {
+            model->setSorting(CallModel::SortByContact);
+            model->setFilterType(CommHistory::CallEvent::UnknownCallType);
+        }
 
+        model->getEvents();
         QTRY_COMPARE(ready.count(), expectedReadyCount);
         expectedReadyCount++;
         MALLINFO_DUMP("get");
     }
+
     delete model;
     MALLINFO_DUMP("del");
     QTest::qWait(CALM_TIMEOUT);

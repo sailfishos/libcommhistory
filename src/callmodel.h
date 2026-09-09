@@ -90,7 +90,7 @@ public:
      *
      * \return true if successful; false, otherwise
      */
-    bool setFilter(CallModel::Sorting sortBy = SortByContact,
+    Q_DECL_DEPRECATED_X("Use setSorting and setFilter*") bool setFilter(CallModel::Sorting sortBy = SortByContact,
                    CallEvent::CallType type = CallEvent::UnknownCallType,
                    const QDateTime &referenceTime = QDateTime());
 
@@ -164,7 +164,7 @@ public:
      *
      * \return true if successful; false, otherwise
      */
-    bool getEvents(CallModel::Sorting sortBy,
+    Q_DECL_DEPRECATED_X("Use getEvents() and setFilter()") bool getEvents(CallModel::Sorting sortBy,
                    CallEvent::CallType type = CallEvent::UnknownCallType,
                    const QDateTime &referenceTime = QDateTime());
 
