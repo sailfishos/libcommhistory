@@ -221,6 +221,7 @@ void ContactListenerPrivate::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
     if (!recipients.isEmpty()) {
         foreach (const Recipient &recipient, recipients) {
             qCDebug(lcCommHistory) << "Recipient" << recipient << "matched removed contact" << item->iid;
+            recipient.setUnresolved();
         }
 
         const bool retryPending(!unresolvedRecipients.isEmpty());
