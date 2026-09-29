@@ -509,7 +509,8 @@ bool EventModelPrivate::canFetchMore() const
     return threadCanFetchMore;
 }
 
-void EventModelPrivate::recipientsChangedRecursive(const QSet<Recipient> &recipients, EventTreeItem *parent, bool resolved)
+void EventModelPrivate::recipientsChangedRecursive(const QSet<Recipient> &recipients, EventTreeItem *parent,
+                                                   bool resolved)
 {
     for (int row = 0; row < parent->childCount(); row++) {
         const Event &event(parent->eventAt(row));

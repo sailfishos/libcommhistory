@@ -90,7 +90,7 @@ public:
      *
      * \return true if successful; false, otherwise
      */
-    bool setFilter(CallModel::Sorting sortBy = SortByContact,
+    Q_DECL_DEPRECATED_X("Use setSorting and setFilter*") bool setFilter(CallModel::Sorting sortBy = SortByContact,
                    CallEvent::CallType type = CallEvent::UnknownCallType,
                    const QDateTime &referenceTime = QDateTime());
 
@@ -102,6 +102,7 @@ public:
      * \param sortBy Sorting mode
      */
     void setSorting(CallModel::Sorting sortBy);
+
     /*!
      * \brief Filter calls by type
      *
@@ -112,6 +113,7 @@ public:
      * \param type Call type
      */
     void setFilterType(CallEvent::CallType type);
+
     /*!
      * \brief Filter calls by start time
      *
@@ -121,6 +123,7 @@ public:
      * \param referenceTime Reference time
      */
     void setFilterReferenceTime(const QDateTime &referenceTime);
+
     /*!
      * \brief Filter calls by account
      *
@@ -130,6 +133,7 @@ public:
      * \param localUid Local account UID
      */
     void setFilterAccount(const QString &localUid);
+
     /*!
      * \brief Reset call filters and sorting
      *
@@ -160,7 +164,7 @@ public:
      *
      * \return true if successful; false, otherwise
      */
-    bool getEvents(CallModel::Sorting sortBy,
+    Q_DECL_DEPRECATED_X("Use getEvents() and setFilter()") bool getEvents(CallModel::Sorting sortBy,
                    CallEvent::CallType type = CallEvent::UnknownCallType,
                    const QDateTime &referenceTime = QDateTime());
 

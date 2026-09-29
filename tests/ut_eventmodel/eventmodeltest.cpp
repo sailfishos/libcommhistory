@@ -1424,32 +1424,32 @@ void EventModelTest::testContactMatching()
 
     Event event;
     model.databaseIO().getEvent(eventId, event);
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     // Add a non-matching contact and check the contact does not resolve in the model.
     int contactId1 = addTestContact("Really Bad", remoteId + "123", localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
-    QCOMPARE(event.contactId(), 0);
-    QCOMPARE(event.contactName(), QString());
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactName(), QString());
 
     int contactId = addTestContact("Really Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Really Bad"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Really Bad"));
 
     // If a new contact is added with the same address, it will replace the previous resolution
     int replacementContactId = addTestContact("Moderately Bad", remoteId, localId, &contactChangeListener);
     event = model.event(model.findEvent(eventId));
-    QCOMPARE(event.contactId(), replacementContactId);
-    QCOMPARE(event.contactName(), QString("Moderately Bad"));
+    QCOMPARE(event.recipients().value(0).contactId(), replacementContactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Moderately Bad"));
 
     // After the contacts are removed, the events resolve to nothing
     deleteTestContact(contactId1);
     deleteTestContact(contactId);
     deleteTestContact(replacementContactId);
 
-    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactId(), 0);
-    QTRY_COMPARE(model.event(model.findEvent(eventId)).contactName(), QString());
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).recipients().value(0).contactId(), 0);
+    QTRY_COMPARE(model.event(model.findEvent(eventId)).recipients().value(0).contactName(), QString());
 }
 
 void EventModelTest::testAddNonDigitRemoteId_data()

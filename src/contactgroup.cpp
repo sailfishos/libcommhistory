@@ -71,7 +71,7 @@ ContactGroupPrivate::ContactGroupPrivate(ContactGroup *q)
     , lastModifiedT(0)
     , unreadMessages(0)
     , lastEventId(-1)
-    , lastEventGroup(0)
+    , lastEventGroup(nullptr)
     , lastEventType(Event::UnknownType)
     , lastEventStatus(Event::UnknownStatus)
     , lastEventIsDraft(false)
@@ -80,7 +80,8 @@ ContactGroupPrivate::ContactGroupPrivate(ContactGroup *q)
 }
 
 ContactGroup::ContactGroup(QObject *parent)
-    : QObject(parent), d_ptr(new ContactGroupPrivate(this))
+    : QObject(parent)
+    , d_ptr(new ContactGroupPrivate(this))
 {
 }
 
@@ -117,7 +118,8 @@ void ContactGroup::updateGroup(GroupObject *group)
 
 void ContactGroupPrivate::updateForGroup(GroupObject *group,
                                          quint32 &uStartTimeT, quint32 &uEndTimeT, quint32 &uLastModifiedT,
-                                         int &uUnreadMessages, QString &uSubscriberIdentity, GroupObject *&uLastEventGroup)
+                                         int &uUnreadMessages, QString &uSubscriberIdentity,
+                                         GroupObject *&uLastEventGroup)
 {
     const quint32 gStartTimeT = group->startTimeT();
     const quint32 gEndTimeT = group->endTimeT();
@@ -138,7 +140,8 @@ void ContactGroupPrivate::updateForGroup(GroupObject *group,
 
 void ContactGroupPrivate::setValues(const QList<int> &uContactIds, const QStringList &uDisplayNames,
                                     quint32 &uStartTimeT, quint32 &uEndTimeT, quint32 &uLastModifiedT,
-                                    int &uUnreadMessages, const QString &uSubscriberIdentity, GroupObject *&uLastEventGroup)
+                                    int &uUnreadMessages, const QString &uSubscriberIdentity,
+                                    GroupObject *&uLastEventGroup)
 {
     Q_Q(ContactGroup);
 
@@ -188,13 +191,13 @@ void ContactGroupPrivate::setValues(const QList<int> &uContactIds, const QString
         if (uLastEventGroup != lastEventGroup) {
             lastEventGroup = uLastEventGroup;
             changed = true;
-        } else if (lastEventId != lastEventGroup->lastEventId() ||
-                   lastMessageText != lastEventGroup->lastMessageText() ||
-                   lastVCardFileName != lastEventGroup->lastVCardFileName() ||
-                   lastVCardLabel != lastEventGroup->lastVCardLabel() ||
-                   lastEventType != lastEventGroup->lastEventType() ||
-                   lastEventStatus != lastEventGroup->lastEventStatus() ||
-                   lastEventIsDraft != lastEventGroup->lastEventIsDraft()) {
+        } else if (lastEventId != lastEventGroup->lastEventId()
+                   || lastMessageText != lastEventGroup->lastMessageText()
+                   || lastVCardFileName != lastEventGroup->lastVCardFileName()
+                   || lastVCardLabel != lastEventGroup->lastVCardLabel()
+                   || lastEventType != lastEventGroup->lastEventType()
+                   || lastEventStatus != lastEventGroup->lastEventStatus()
+                   || lastEventIsDraft != lastEventGroup->lastEventIsDraft()) {
             changed = true;
         }
 
@@ -233,7 +236,7 @@ void ContactGroupPrivate::recalculate()
     quint32 uStartTimeT = 0, uEndTimeT = 0, uLastModifiedT = 0;
     int uUnreadMessages = 0;
     QString uSubscriberIdentity;
-    GroupObject *uLastEventGroup = 0;
+    GroupObject *uLastEventGroup = nullptr;
 
     if (!groups.isEmpty()) {
         /* Because of the mechanics of hasSameContacts, these values must be the
@@ -246,9 +249,11 @@ void ContactGroupPrivate::recalculate()
     }
 
     foreach (GroupObject *group, groups)
-        updateForGroup(group, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages, uSubscriberIdentity, uLastEventGroup);
+        updateForGroup(group, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages,
+                       uSubscriberIdentity, uLastEventGroup);
 
-    setValues(uContactIds, uDisplayNames, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages, uSubscriberIdentity, uLastEventGroup);
+    setValues(uContactIds, uDisplayNames, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages,
+              uSubscriberIdentity, uLastEventGroup);
 }
 
 void ContactGroupPrivate::includeGroup(GroupObject *group)
@@ -263,9 +268,11 @@ void ContactGroupPrivate::includeGroup(GroupObject *group)
     QString uSubscriberIdentity = group->subscriberIdentity();
     GroupObject *uLastEventGroup = lastEventGroup;
 
-    updateForGroup(group, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages, uSubscriberIdentity, uLastEventGroup);
+    updateForGroup(group, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages,
+                   uSubscriberIdentity, uLastEventGroup);
 
-    setValues(uContactIds, uDisplayNames, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages, uSubscriberIdentity, uLastEventGroup);
+    setValues(uContactIds, uDisplayNames, uStartTimeT, uEndTimeT, uLastModifiedT, uUnreadMessages,
+              uSubscriberIdentity, uLastEventGroup);
 }
 
 QList<int> ContactGroup::contactIds() const

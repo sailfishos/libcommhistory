@@ -52,7 +52,9 @@ public:
     void checkIfFinishedAsynchronously();
 
     virtual void itemUpdated(SeasideCache::CacheItem *item);
-    virtual void itemAboutToBeRemoved(SeasideCache::CacheItem *) {}
+    virtual void itemAboutToBeRemoved(SeasideCache::CacheItem *)
+    {
+    }
 
 public slots:
     void resolverFinished();
@@ -62,7 +64,7 @@ public slots:
 ContactFetcherPrivate::ContactFetcherPrivate(ContactFetcher *parent)
     : QObject(parent)
     , q_ptr(parent)
-    , m_resolver(0)
+    , m_resolver(nullptr)
     , m_fetching(false)
 {
     SeasideCache::registerChangeListener(this, SeasideCache::FetchAvatar);

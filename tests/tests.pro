@@ -22,4 +22,3 @@
 
 TEMPLATE = subdirs
 SUBDIRS = unit_tests.pro performance_tests.pro tests_xml.pro
-

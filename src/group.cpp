@@ -36,7 +36,8 @@ public:
     GroupPrivate(const GroupPrivate &other);
     ~GroupPrivate();
 
-    void propertyChanged(Group::Property property) {
+    void propertyChanged(Group::Property property)
+    {
         validProperties += property;
         modifiedProperties += property;
     }

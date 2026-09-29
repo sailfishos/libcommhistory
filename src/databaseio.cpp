@@ -83,115 +83,115 @@ public:
 
         foreach (Event::Property property, properties) {
             switch (property) {
-                case Event::Type:
-                    fields.append(QueryHelper::Field("type", event.type()));
-                    break;
-                case Event::StartTime:
-                    fields.append(QueryHelper::Field("startTime", event.startTimeT()));
-                    break;
-                case Event::EndTime:
-                    fields.append(QueryHelper::Field("endTime", event.endTimeT()));
-                    break;
-                case Event::Direction:
-                    fields.append(QueryHelper::Field("direction", event.direction()));
-                    break;
-                case Event::IsDraft:
-                    fields.append(QueryHelper::Field("isDraft", event.isDraft()));
-                    break;
-                case Event::IsRead:
-                    fields.append(QueryHelper::Field("isRead", event.isRead()));
-                    break;
-                case Event::IsMissedCall:
-                    fields.append(QueryHelper::Field("isMissedCall", event.isMissedCall()));
-                    break;
-                case Event::IsEmergencyCall:
-                    fields.append(QueryHelper::Field("isEmergencyCall", event.isEmergencyCall()));
-                    break;
-                case Event::Status:
-                    fields.append(QueryHelper::Field("status", event.status()));
-                    break;
-                case Event::BytesReceived:
-                    fields.append(QueryHelper::Field("bytesReceived", event.bytesReceived()));
-                    break;
-                case Event::LocalUid:
-                    fields.append(QueryHelper::Field("localUid", event.localUid()));
-                    break;
-                case Event::RemoteUid:
-                    fields.append(QueryHelper::Field("remoteUid", event.recipients().value(0).remoteUid()));
-                    break;
-                case Event::Subject:
-                    fields.append(QueryHelper::Field("subject", event.subject()));
-                    break;
-                case Event::FreeText:
-                    fields.append(QueryHelper::Field("freeText", event.freeText()));
-                    break;
-                case Event::GroupId:
-                    fields.append(QueryHelper::Field("groupId", event.groupId() == -1 ? QVariant() : event.groupId()));
-                    break;
-                case Event::MessageToken:
-                    fields.append(QueryHelper::Field("messageToken", event.messageToken()));
-                    break;
-                case Event::LastModified:
-                    fields.append(QueryHelper::Field("lastModified", event.lastModifiedT()));
-                    break;
-                case Event::FromVCardFileName:
-                    fields.append(QueryHelper::Field("vCardFileName", event.fromVCardFileName()));
-                    break;
-                case Event::FromVCardLabel:
-                    fields.append(QueryHelper::Field("vCardLabel", event.fromVCardLabel()));
-                    break;
-                case Event::ReportDelivery:
-                    fields.append(QueryHelper::Field("reportDelivery", event.reportDelivery()));
-                    break;
-                case Event::ValidityPeriod:
-                    fields.append(QueryHelper::Field("validityPeriod", event.validityPeriod()));
-                    break;
-                case Event::ContentLocation:
-                    fields.append(QueryHelper::Field("contentLocation", event.contentLocation()));
-                    break;
-                case Event::ReadStatus:
-                    fields.append(QueryHelper::Field("readStatus", event.readStatus()));
-                    break;
-                case Event::ReportRead:
-                    fields.append(QueryHelper::Field("reportRead", event.reportRead()));
-                    break;
-                case Event::ReportReadRequested:
-                    fields.append(QueryHelper::Field("reportedReadRequested", event.reportReadRequested()));
-                    break;
-                case Event::MmsId:
-                    fields.append(QueryHelper::Field("mmsId", event.mmsId()));
-                    break;
-                case Event::IsAction:
-                    fields.append(QueryHelper::Field("isAction", event.isAction()));
-                    break;
-                case Event::Headers:
-                    {
-                        QHash<QString,QString> headers = event.headers();
-                        QString re;
-                        for (QHash<QString,QString>::iterator it = headers.begin(); it != headers.end(); it++) {
-                            if (!re.isEmpty())
-                                re += '\x1c';
-                            re += it.key() + '\x1d' + it.value();
-                        }
-                        fields.append(QueryHelper::Field("headers", re));
-                    }
-                    break;
-                /* Irrelevant properties from Event */
-                case Event::Id:
-                case Event::ContactId:
-                case Event::ContactName:
-                case Event::Contacts:
-                case Event::ExtraProperties:
-                case Event::Recipients:
-                case Event::IsResolved:
-                    break;
-                /* Handled separately */
-                case Event::MessageParts:
-                case Event::EventCount:
-                    break;
-                default:
-                    qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event field ignored:" << property;
-                    break;
+            case Event::Type:
+                fields.append(QueryHelper::Field("type", event.type()));
+                break;
+            case Event::StartTime:
+                fields.append(QueryHelper::Field("startTime", event.startTimeT()));
+                break;
+            case Event::EndTime:
+                fields.append(QueryHelper::Field("endTime", event.endTimeT()));
+                break;
+            case Event::Direction:
+                fields.append(QueryHelper::Field("direction", event.direction()));
+                break;
+            case Event::IsDraft:
+                fields.append(QueryHelper::Field("isDraft", event.isDraft()));
+                break;
+            case Event::IsRead:
+                fields.append(QueryHelper::Field("isRead", event.isRead()));
+                break;
+            case Event::IsMissedCall:
+                fields.append(QueryHelper::Field("isMissedCall", event.isMissedCall()));
+                break;
+            case Event::IsEmergencyCall:
+                fields.append(QueryHelper::Field("isEmergencyCall", event.isEmergencyCall()));
+                break;
+            case Event::Status:
+                fields.append(QueryHelper::Field("status", event.status()));
+                break;
+            case Event::BytesReceived:
+                fields.append(QueryHelper::Field("bytesReceived", event.bytesReceived()));
+                break;
+            case Event::LocalUid:
+                fields.append(QueryHelper::Field("localUid", event.localUid()));
+                break;
+            case Event::RemoteUid:
+                fields.append(QueryHelper::Field("remoteUid", event.recipients().value(0).remoteUid()));
+                break;
+            case Event::Subject:
+                fields.append(QueryHelper::Field("subject", event.subject()));
+                break;
+            case Event::FreeText:
+                fields.append(QueryHelper::Field("freeText", event.freeText()));
+                break;
+            case Event::GroupId:
+                fields.append(QueryHelper::Field("groupId", event.groupId() == -1 ? QVariant() : event.groupId()));
+                break;
+            case Event::MessageToken:
+                fields.append(QueryHelper::Field("messageToken", event.messageToken()));
+                break;
+            case Event::LastModified:
+                fields.append(QueryHelper::Field("lastModified", event.lastModifiedT()));
+                break;
+            case Event::FromVCardFileName:
+                fields.append(QueryHelper::Field("vCardFileName", event.fromVCardFileName()));
+                break;
+            case Event::FromVCardLabel:
+                fields.append(QueryHelper::Field("vCardLabel", event.fromVCardLabel()));
+                break;
+            case Event::ReportDelivery:
+                fields.append(QueryHelper::Field("reportDelivery", event.reportDelivery()));
+                break;
+            case Event::ValidityPeriod:
+                fields.append(QueryHelper::Field("validityPeriod", event.validityPeriod()));
+                break;
+            case Event::ContentLocation:
+                fields.append(QueryHelper::Field("contentLocation", event.contentLocation()));
+                break;
+            case Event::ReadStatus:
+                fields.append(QueryHelper::Field("readStatus", event.readStatus()));
+                break;
+            case Event::ReportRead:
+                fields.append(QueryHelper::Field("reportRead", event.reportRead()));
+                break;
+            case Event::ReportReadRequested:
+                fields.append(QueryHelper::Field("reportedReadRequested", event.reportReadRequested()));
+                break;
+            case Event::MmsId:
+                fields.append(QueryHelper::Field("mmsId", event.mmsId()));
+                break;
+            case Event::IsAction:
+                fields.append(QueryHelper::Field("isAction", event.isAction()));
+                break;
+            case Event::Headers:
+            {
+                QHash<QString,QString> headers = event.headers();
+                QString re;
+                for (QHash<QString,QString>::iterator it = headers.begin(); it != headers.end(); it++) {
+                    if (!re.isEmpty())
+                        re += '\x1c';
+                    re += it.key() + '\x1d' + it.value();
+                }
+                fields.append(QueryHelper::Field("headers", re));
+            }
+            break;
+            /* Irrelevant properties from Event */
+            case Event::Id:
+            case Event::ContactId:
+            case Event::ContactName:
+            case Event::Contacts:
+            case Event::ExtraProperties:
+            case Event::Recipients:
+            case Event::IsResolved:
+                break;
+            /* Handled separately */
+            case Event::MessageParts:
+            case Event::EventCount:
+                break;
+            default:
+                qCWarning(lcCommHistory) << Q_FUNC_INFO << "Event field ignored:" << property;
+                break;
             }
         }
 

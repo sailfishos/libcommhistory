@@ -14,7 +14,7 @@ CallProxyModel::CallProxyModel(QObject *parent)
     , m_populated(false)
 {
     setQueryMode(CommHistory::EventModel::AsyncQuery);
-    setFilter(CommHistory::CallModel::Sorting(m_grouping));
+    setSorting(CommHistory::CallModel::Sorting(m_grouping));
     setLimit(m_limit);
     setResolveContacts(m_resolveContacts ? EventModel::ResolveImmediately : EventModel::ResolveOnDemand);
 }
@@ -26,12 +26,15 @@ void CallProxyModel::classBegin()
 void CallProxyModel::componentComplete()
 {
     m_componentComplete = true;
+    connect(this, &CallProxyModel::rowsInserted,
+            this, &CallProxyModel::countChanged);
+    connect(this, &CallProxyModel::rowsRemoved,
+            this, &CallProxyModel::countChanged);
+    connect(this, &CallProxyModel::modelReset,
+            this, &CallProxyModel::countChanged);
 
-    connect(this, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SIGNAL(countChanged()));
-    connect(this, SIGNAL(rowsRemoved(const QModelIndex&,int,int)), this, SIGNAL(countChanged()));
-    connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
-
-    connect(this, SIGNAL(modelReady(bool)), this, SLOT(onReadyChanged(bool)));
+    connect(this, &CallProxyModel::modelReady,
+            this, &CallProxyModel::onReadyChanged);
 
     if (!getEvents()) {
         qCWarning(lcCommHistory) << "getEvents() failed on CommHistory::CallModel";
@@ -48,7 +51,10 @@ void CallProxyModel::setGroupBy(GroupBy grouping)
     if (m_grouping != grouping) {
         m_grouping = grouping;
 
-        setFilter(CommHistory::CallModel::Sorting(grouping));
+        setSorting(CommHistory::CallModel::Sorting(grouping));
+        if (m_componentComplete) {
+            getEvents();
+        }
         emit groupByChanged();
     }
 }

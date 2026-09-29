@@ -32,4 +32,3 @@ SUBDIRS = \
     ut_recentcontactsmodel \
     ut_singleeventmodel \
     ut_recipienteventmodel
-

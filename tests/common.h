@@ -44,9 +44,9 @@ template <class RandomAccessIterator>
 void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 {
     typename std::iterator_traits<RandomAccessIterator>::difference_type i, n;
-    n = (last-first);
-    for (i=n-1; i>0; --i) {
-        qSwap(first[i],first[qrand() % (i+1)]);
+    n = (last - first);
+    for (i = n-1; i > 0; --i) {
+        qSwap(first[i], first[qrand() % (i+1)]);
     }
 }
 
@@ -107,7 +107,8 @@ int addTestEvent(EventModel &model,
 
 void addTestGroups(Group &group1, Group &group2);
 void addTestGroup(Group& grp, QString localUid, QString remoteUid);
-int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid=QString(), ContactChangeListener *listener = nullptr);
+int addTestContact(const QString &name, const QString &remoteUid, const QString &localUid=QString(),
+                   ContactChangeListener *listener = nullptr);
 QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> > > &details);
 bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid=QString());
 void modifyTestContact(int id, const QString &name, bool favorite = false);

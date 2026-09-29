@@ -73,7 +73,7 @@ private:
 
 using namespace CommHistory;
 
-Q_GLOBAL_STATIC(QWeakPointer<ContactListener>, contactListenerInstance);
+Q_GLOBAL_STATIC(QWeakPointer<ContactListener>, contactListenerInstance)
 
 ContactListener::ContactListener(QObject *parent)
     : QObject(parent),
@@ -98,7 +98,7 @@ QSharedPointer<ContactListener> ContactListener::instance()
 
 ContactListenerPrivate::ContactListenerPrivate(ContactListener *q)
     : QObject(q)
-    , retryResolver(0)
+    , retryResolver(nullptr)
     , q_ptr(q)
 {
     SeasideCache::registerChangeListener(this, SeasideCache::FetchAvatar);
@@ -221,6 +221,7 @@ void ContactListenerPrivate::itemAboutToBeRemoved(SeasideCache::CacheItem *item)
     if (!recipients.isEmpty()) {
         foreach (const Recipient &recipient, recipients) {
             qCDebug(lcCommHistory) << "Recipient" << recipient << "matched removed contact" << item->iid;
+            recipient.setUnresolved();
         }
 
         const bool retryPending(!unresolvedRecipients.isEmpty());

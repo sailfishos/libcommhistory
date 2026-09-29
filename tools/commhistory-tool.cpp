@@ -659,7 +659,7 @@ int doListCalls(const QStringList &arguments, const QVariantMap &options)
     }
 
     CallModel model;
-    model.setFilter(sorting);
+    model.setSorting(sorting);
     model.setResolveContacts(resolve);
     model.setQueryMode(resolve == CallModel::ResolveImmediately ? EventModel::AsyncQuery : EventModel::SyncQuery);
     if (!model.getEvents()) {
@@ -915,7 +915,7 @@ int doDeleteAll(const QStringList &arguments, const QVariantMap &options)
     if (!hasAnyOption || options.contains("-calls")) {
         CallModel callModel;
         callModel.setTreeMode(false);
-        callModel.setFilter(CallModel::SortByTime);
+        callModel.setSorting(CallModel::SortByTime);
         callModel.setQueryMode(EventModel::SyncQuery);
         if (!callModel.getEvents()) {
             qCritical() << "Error fetching calls";
@@ -1030,7 +1030,7 @@ int doExport(const QStringList &arguments, const QVariantMap &options)
     if (options.contains("-calls")) {
         CallModel callModel;
         callModel.setTreeMode(false);
-        callModel.setFilter(CallModel::SortByTime);
+        callModel.setSorting(CallModel::SortByTime);
         callModel.setQueryMode(EventModel::SyncQuery);
         if (!callModel.getEvents()) {
             qCritical() << "Error reading calls";

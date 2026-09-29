@@ -40,7 +40,7 @@
 class DraftEvent : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(CommHistory::Event event READ event WRITE setEvent RESET reset NOTIFY eventChanged)
+    Q_PROPERTY(CommHistory::Event event READ getEvent WRITE setEvent RESET reset NOTIFY eventChanged)
     Q_PROPERTY(int eventId READ eventId WRITE setEventId NOTIFY eventIdChanged)
     Q_PROPERTY(int groupId READ groupId WRITE setGroupId NOTIFY groupIdChanged)
     Q_PROPERTY(QString localUid READ localUid WRITE setLocalUid NOTIFY localUidChanged)
@@ -53,7 +53,7 @@ public:
     DraftEvent(QObject *parent = nullptr);
     ~DraftEvent();
 
-    CommHistory::Event event() const;
+    CommHistory::Event getEvent() const;
     void setEvent(const CommHistory::Event &event);
 
     int eventId() const;

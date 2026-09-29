@@ -31,15 +31,15 @@ DOC_FOLDERS = doc/html \
 # files and folders listed in the installation target's .files section
 # must exist _before_ qmake generates the Makefile...so, make sure our
 # documentation target folders exist in the current build folder
-for( folder, DOC_FOLDERS ) {
-    system( mkdir -p $$(PWD)/$${folder} )
+for(folder, DOC_FOLDERS) {
+    system(mkdir -p $$(PWD)/$${folder})
 }
 
 
 #-----------------------------------------------------------------------------
 # extra build targets for generating and cleaning documentation
 #-----------------------------------------------------------------------------
-for( subdir, SUBDIRS) {
+for(subdir, SUBDIRS) {
     DOC_INPUT += $${_PRO_FILE_PWD_}/$${subdir}
 }
 
@@ -74,21 +74,15 @@ QMAKE_EXTRA_TARGETS     += doccleantarget
 # NOTE: remember to set headers.files before this include to have the headers
 # properly setup.
 #-----------------------------------------------------------------------------
-include( ../common-installs-config.pri )
+include(../common-installs-config.pri)
 
 
 #-----------------------------------------------------------------------------
 # Installation target setup for documentation
 #-----------------------------------------------------------------------------
 documentation.path = $${INSTALL_PREFIX}/share/doc/$${PROJECT_NAME}
-for( folder, DOC_FOLDERS ) {
+for(folder, DOC_FOLDERS) {
     documentation.files += $${OUT_PWD}/$${folder}
 }
 
-INSTALLS              += documentation
-message("====")
-message("==== INSTALLS += documentation")
-
-
-# End of File
-
+INSTALLS += documentation

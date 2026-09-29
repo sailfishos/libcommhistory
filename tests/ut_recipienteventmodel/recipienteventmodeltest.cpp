@@ -162,7 +162,7 @@ void RecipientEventModelTest::testGetContactEvents()
 
     Event event;
     model.databaseIO().getEvent(eventId, event);
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     int contactId = addTestContact("Correspondent", readableRemoteId, localId, &contactChangeListener);
     QVERIFY(addTestContactAddress(contactId, remoteId + "123", localId));
@@ -174,8 +174,8 @@ void RecipientEventModelTest::testGetContactEvents()
 
     event = model.event(model.index(0, 0));
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Correspondent"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Correspondent"));
 
     // Reset to an unused recipient
     model.setRecipients(Recipient::fromPhoneNumber("not-a-real-number"));
@@ -191,8 +191,8 @@ void RecipientEventModelTest::testGetContactEvents()
 
     event = model.event(model.index(0, 0));
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Correspondent"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Correspondent"));
 
     // Look up the contact via the a different UID
     model.setRecipients(Recipient(localId, remoteId + "123"));
@@ -202,8 +202,8 @@ void RecipientEventModelTest::testGetContactEvents()
 
     event = model.event(model.index(0, 0));
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Correspondent"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Correspondent"));
 
     // Add a non-matching event
     eventId = addTestEvent(model, (Event::EventType)eventType, Event::Inbound, localId, group1.id(),
@@ -224,8 +224,8 @@ void RecipientEventModelTest::testGetContactEvents()
 
     event = model.event(model.findEvent(eventId));
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Correspondent"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Correspondent"));
 }
 
 void RecipientEventModelTest::testLimitOffset_data()

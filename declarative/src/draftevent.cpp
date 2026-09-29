@@ -92,7 +92,7 @@ void DraftEvent::deleteEvent()
         qCWarning(lcCommHistory) << "DraftEvent delete failed:" << m_event.toString();
 }
 
-Event DraftEvent::event() const
+Event DraftEvent::getEvent() const
 {
     return m_event;
 }

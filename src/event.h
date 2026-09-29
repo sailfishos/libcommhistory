@@ -263,11 +263,11 @@ public:
     const RecipientList &recipients() const;
     RecipientList contactRecipients() const;
 
-    /* DEPRECATED - use contacts(). Returns the id of the first matching contact. */
-    int contactId() const;
+    /* DEPRECATED - use contacts() or recipients(). Returns the id of the first matching contact. */
+    Q_DECL_DEPRECATED_X("Use contacts() or recipients()") int contactId() const;
 
-    /* DEPRECATED - use contacts(). Returns the name of the first matching contact. */
-    QString contactName() const;
+    /* DEPRECATED - use contacts() or recipients(). Returns the name of the first matching contact. */
+    Q_DECL_DEPRECATED_X("Use contacts() or recipients()") QString contactName() const;
 
     QList<Event::Contact> contacts() const;
     QString subject() const;

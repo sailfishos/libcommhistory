@@ -36,3 +36,5 @@ DEFINES += PERF_ITERATIONS=5
 DEFINES += PERF_BATCH_SIZE=25
 
 target.path = /opt/tests/$${PROJECT_NAME}/performance
+
+INSTALLS += target

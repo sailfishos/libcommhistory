@@ -433,7 +433,7 @@ void ConversationModelTest::contacts()
 
     Event event;
     event = model.event(model.index(0, 0));
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     // Add a non-matching contact and check the contact does not resolve in the model.
     int contactId1 = addTestContact("Really1Funny", remoteId + "123", localId, &contactChangeListener);
@@ -441,15 +441,15 @@ void ConversationModelTest::contacts()
     QTRY_COMPARE(modelReady.count(), 1);
     modelReady.clear();
     event = model.event(model.index(0, 0));
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     // Add a matching contact and check the contact is resolved in the model.
     int contactId = addTestContact("ReallyUFunny", remoteId, localId, &contactChangeListener);
     QVERIFY(model.getEvents(group.id()));
     QTRY_COMPARE(modelReady.count(), 1);
     modelReady.clear();
-    QTRY_COMPARE(model.event(model.index(0, 0)).contactId(), contactId);
-    QCOMPARE(model.event(model.index(0, 0)).contactName(), QString("ReallyUFunny"));
+    QTRY_COMPARE(model.event(model.index(0, 0)).recipients().value(0).contactId(), contactId);
+    QCOMPARE(model.event(model.index(0, 0)).recipients().value(0).contactName(), QString("ReallyUFunny"));
 
     deleteTestContact(contactId1, &contactChangeListener);
     deleteTestContact(contactId, &contactChangeListener);

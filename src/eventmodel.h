@@ -88,7 +88,7 @@ public:
         SubjectRole,
         AccountRole,
         DateAndAccountGroupingRole,
-        ContactNameRole,
+        ContactNameRole, // Deprecated
         EventIdRole,
         EventTypeRole,
         StartTimeRole,

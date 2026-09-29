@@ -32,8 +32,8 @@ PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
 SOURCES += ../common.cpp ../modelwatcher.cpp
 HEADERS += ../common.h ../modelwatcher.h
 
-!include( ../common-installs-config.pri ) : \
-    error( "Unable to include common-installs-config.pri!" )
+!include(../common-installs-config.pri): \
+    error("Unable to include common-installs-config.pri!")
 
 target.path = /opt/tests/$${PROJECT_NAME}/auto
 INSTALLS += target

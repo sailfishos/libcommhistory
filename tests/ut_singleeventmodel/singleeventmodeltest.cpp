@@ -210,7 +210,7 @@ void SingleEventModelTest::contactMatching()
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     Event event = model.event();
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     // Add a non-matching contact and check the contact does not resolve in the model.
     int contactId1 = addTestContact("Really1Bad", remoteId + "123", localId, &contactChangeListener);
@@ -218,7 +218,7 @@ void SingleEventModelTest::contactMatching()
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     event = model.event();
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), 0);
+    QCOMPARE(event.recipients().value(0).contactId(), 0);
 
     // Add a matching contact and check the contact is resolved in the model.
     int contactId = addTestContact("Really Bad", remoteId, localId, &contactChangeListener);
@@ -226,8 +226,8 @@ void SingleEventModelTest::contactMatching()
     QVERIFY(model.getEventById(eventId));
     QTRY_COMPARE(modelReady.count(), 1); modelReady.clear();
     QCOMPARE(event.id(), eventId);
-    QCOMPARE(event.contactId(), contactId);
-    QCOMPARE(event.contactName(), QString("Really Bad"));
+    QCOMPARE(event.recipients().value(0).contactId(), contactId);
+    QCOMPARE(event.recipients().value(0).contactName(), QString("Really Bad"));
 
     deleteTestContact(contactId1, &contactChangeListener);
     deleteTestContact(contactId, &contactChangeListener);

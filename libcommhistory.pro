@@ -20,7 +20,7 @@
 #
 ###############################################################################
 
-!include( common-vars.pri ):error( "Unable to install common-vars.pri" )
+!include(common-vars.pri):error("Unable to install common-vars.pri")
 
 TEMPLATE  = subdirs
 SUBDIRS   = src   \
@@ -37,13 +37,13 @@ OTHER_FILES += rpm/libcommhistory-qt5.spec
 #-----------------------------------------------------------------------------
 # installation setup
 #-----------------------------------------------------------------------------
-!include( common-installs-config.pri ) : \
-         error( "Unable to include common-installs-config.pri!" )
+!include(common-installs-config.pri) : \
+         error("Unable to include common-installs-config.pri!")
 
-include( doc/doc.pri )
+include(doc/doc.pri)
 
 # default prefix can be overriden by defining PREFIX when running qmake
-isEmpty( PREFIX ) {
+isEmpty(PREFIX) {
     message("====")
     message("==== NOTE: To override the installation path run: `qmake PREFIX=/custom/path'")
     message("==== (current installation path is `$${INSTALL_PREFIX}')")

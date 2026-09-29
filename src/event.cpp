@@ -51,7 +51,8 @@ public:
     EventPrivate(const EventPrivate &other);
     ~EventPrivate();
 
-    void propertyChanged(Event::Property property) {
+    void propertyChanged(Event::Property property)
+    {
         validProperties += property;
         modifiedProperties += property;
     }
@@ -478,13 +479,14 @@ Event::EventType Event::type() const
 Event::EventCategory Event::category() const
 {
     switch (type()) {
-        case IMEvent: return InstantMessagingCategory;
-        case SMSEvent: return ShortMessagingCategory;
-        case CallEvent: return VoicecallCategory;
-        case VoicemailEvent: return VoicemailCategory;
-        case MMSEvent: return MultimediaMessagingCategory;
-        default: break;
+    case IMEvent: return InstantMessagingCategory;
+    case SMSEvent: return ShortMessagingCategory;
+    case CallEvent: return VoicecallCategory;
+    case VoicemailEvent: return VoicemailCategory;
+    case MMSEvent: return MultimediaMessagingCategory;
+    default: break;
     }
+
     return OtherCategory;
 }
 
@@ -549,6 +551,7 @@ Event::EventStatus Event::status() const
 Event::EventIncomingStatus Event::incomingStatus() const
 {
     const QString type = extraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID).toString();
+
     if (type.isEmpty() && isMissedCall()) {
         return Event::NotAnswered;
     } else if (type == INCOMING_STATUS_IGNORED) {
@@ -1089,6 +1092,7 @@ void Event::setSubscriberIdentity(const QString &id)
 void Event::setIncomingStatus(Event::EventIncomingStatus status)
 {
     setIsMissedCall(status != Event::Received);
+
     switch (status) {
     case Event::Ignored:
         setExtraProperty(EVENT_PROPERTY_INCOMING_STATUS_ID,

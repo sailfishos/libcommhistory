@@ -133,7 +133,8 @@ void ContactResolverPrivate::resolve(Recipient recipient)
     if (pending.contains(recipient))
         return;
 
-    SeasideCache::CacheItem *item = 0;
+    SeasideCache::CacheItem *item = nullptr;
+
     if (recipient.isPhoneNumber()) {
         item = SeasideCache::resolvePhoneNumber(this, recipient.remoteUid(), false);
     } else {
